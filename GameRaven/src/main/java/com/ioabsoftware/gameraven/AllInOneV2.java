@@ -3152,14 +3152,16 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     public void uploadImage(View view) {
         PackageManager pm = getPackageManager();
-        if (isPackageInstalled("com.ioabsoftware.imgtcuploader", pm)) {
+        if (isPackageInstalled("com.ioabsoftware.railgun", pm)) {
+            startActivity(new Intent("com.ioabsoftware.railgun.INVOKE_FROM_APP"));
+        } else if (isPackageInstalled("com.ioabsoftware.imgtcuploader", pm)) {
             startActivity(new Intent("com.ioabsoftware.imgtcuploader.INVOKE_FROM_APP"));
         } else if (isPackageInstalled("com.android.vending", pm)) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.railgun")));
         } else {
             AlertDialog.Builder noAppStore = new AlertDialog.Builder(this);
-            noAppStore.setTitle("Share to ImgTC");
-            noAppStore.setMessage("There is no app store installed to download Share to ImgTC.");
+            noAppStore.setTitle("Railgun Image Uploader");
+            noAppStore.setMessage("The Google Play Store is not available on this phone. How did you install GameRaven?");
             noAppStore.setPositiveButton("OK", null);
             noAppStore.show();
         }
