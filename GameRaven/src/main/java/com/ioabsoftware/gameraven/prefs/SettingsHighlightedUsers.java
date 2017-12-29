@@ -2,7 +2,7 @@ package com.ioabsoftware.gameraven.prefs;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -15,7 +15,7 @@ import com.ioabsoftware.gameraven.db.HlUDDismissListener;
 import com.ioabsoftware.gameraven.util.Theming;
 import com.ioabsoftware.gameraven.views.rowview.HighlightedUserView;
 
-public class SettingsHighlightedUsers extends ActionBarActivity implements HlUDDismissListener {
+public class SettingsHighlightedUsers extends AppCompatActivity implements HlUDDismissListener {
 
     private LinearLayout wrapper;
     private ScrollView scroller;
