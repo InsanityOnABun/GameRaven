@@ -932,23 +932,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
         } catch (ConnectionClosedException connClosedEx) {
             aio.genError("Connection Closed", "The connection was closed before the the response was completed.", "Ok");
         } catch (Throwable ex) {
-            ex.printStackTrace();
-            String url, body;
-            if (result != null) {
-                try {
-                    url = result.getRequest().getUri().toString();
-                } catch (Exception e1) {
-                    url = "uri is null";
-                }
-                try {
-                    body = new String(result.getResult().bytes);
-                } catch (Exception e1) {
-                    body = "result bytes are null";
-                }
-            } else
-                url = body = "res is null";
 
-            aio.tryCaught(url, desc.toString(), ex, body);
+            throw new RuntimeException(ex);
         }
 
         if (BuildConfig.DEBUG) AllInOneV2.wtl("session hNR finishing, desc: " + desc.name());

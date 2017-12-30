@@ -92,7 +92,6 @@ import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
-import org.acra.ACRA;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.codechimp.apprater.AppRater;
@@ -3054,19 +3053,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
             msg = elapsed + "// " + msg;
             Log.d("logger", msg);
-        }
-    }
-
-    public void tryCaught(String url, String desc, Throwable e, String source) {
-        if (!BuildConfig.DEBUG) {
-            ACRA.getErrorReporter().putCustomData("URL", url);
-            ACRA.getErrorReporter().putCustomData("NetDesc", desc);
-            ACRA.getErrorReporter().putCustomData("Page Source", StringEscapeUtils.escapeJava(source));
-            ACRA.getErrorReporter().putCustomData("Last Attempted Path", session.getLastAttemptedPath());
-            ACRA.getErrorReporter().putCustomData("Last Attempted Desc", session.getLastAttemptedDesc().toString());
-            ACRA.getErrorReporter().handleException(e);
-        } else {
-            Log.e("tryCaught", "", e);
         }
     }
 

@@ -50,7 +50,6 @@ dependencies {
     compile 'com.koushikdutta.ion:ion:2.2.1'
     compile 'org.jsoup:jsoup:1.11.1'
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'ch.acra:acra:4.8.1@aar'
     compile('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
         // exclusion is not neccessary, but generally a good idea.
         exclude group: 'com.google.android', module: 'support-v4'

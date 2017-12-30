@@ -98,12 +98,6 @@
             android:name=".prefs.SettingsHighlightedUsers"
             android:configChanges="orientation|screenSize" />
         <activity android:name=".About" />
-        <activity
-            android:name="org.acra.CrashReportDialog"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Holo.Dialog" />
 
         <service
             android:name=".NotifierService"
