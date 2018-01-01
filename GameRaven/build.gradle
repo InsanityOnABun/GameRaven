@@ -8,8 +8,8 @@ android {
         applicationId "com.ioabsoftware.gameraven"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 343
-        versionName "3.3"
+        versionCode 30400000 // <1-or-2-digit-major><2-digit-minor><2-digit-point><3-digit-increment>
+        versionName "3.4"
     }
     signingConfigs {
         release {
