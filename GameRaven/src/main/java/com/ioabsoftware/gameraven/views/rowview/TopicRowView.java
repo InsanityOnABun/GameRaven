@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
@@ -55,7 +54,7 @@ public class TopicRowView extends BaseRowView {
         title = (TextView) findViewById(R.id.tvTitle);
         tc = (TextView) findViewById(R.id.tvTC);
         msgLP = (TextView) findViewById(R.id.tvMsgCountLastPost);
-        lpLink = (TextView) findViewById(R.id.tvLastPostLink);
+        lpLink = (TextView) findViewById(R.id.tvRightButton);
 
         typeIndicator = (TextView) findViewById(R.id.tvTypeIndicator);
 
@@ -130,7 +129,7 @@ public class TopicRowView extends BaseRowView {
             msgLP.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
             lpLink.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
 
-            lpLink.setText(R.string.last_unread_post);
+            lpLink.setText(R.string.first_unread);
         } else {
             tc.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
             title.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);

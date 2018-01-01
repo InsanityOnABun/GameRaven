@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/tvTC"
-        android:layout_toLeftOf="@+id/tvLPSep"
+        android:layout_toLeftOf="@+id/tvRightSep"
         android:text="500 Msgs, Last: 12/12 12:12PM"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp" />
@@ -50,8 +50,8 @@
         android:layout_alignWithParentIfMissing="true"
         android:layout_below="@+id/tvTC"
         android:layout_marginLeft="@dimen/item_padding_horizontal"
-        android:layout_toLeftOf="@+id/tvLPSep"
-        android:layout_toRightOf="@+id/tvStopTracking"
+        android:layout_toLeftOf="@+id/tvRightSep"
+        android:layout_toRightOf="@+id/tvLeftButton"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:lines="2"
@@ -60,7 +60,7 @@
         android:textSize="13sp" />
 
     <View
-        android:id="@+id/tvLPSep"
+        android:id="@+id/tvRightSep"
         android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/tvBottomSpacer"
@@ -68,11 +68,11 @@
         android:layout_marginBottom="6dp"
         android:layout_marginLeft="6dp"
         android:layout_marginTop="6dp"
-        android:layout_toLeftOf="@+id/tvLastPostLink"
+        android:layout_toLeftOf="@+id/tvRightButton"
         android:background="#ff545454" />
 
     <TextView
-        android:id="@+id/tvLastPostLink"
+        android:id="@+id/tvRightButton"
         android:layout_width="48dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/tvBottomSpacer"
@@ -87,7 +87,7 @@
         android:textSize="12sp" />
 
     <View
-        android:id="@+id/tvSTSep"
+        android:id="@+id/tvLeftSep"
         android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/tvBottomSpacer"
@@ -95,12 +95,12 @@
         android:layout_marginBottom="6dp"
         android:layout_marginRight="6dp"
         android:layout_marginTop="6dp"
-        android:layout_toRightOf="@+id/tvStopTracking"
+        android:layout_toRightOf="@+id/tvLeftButton"
         android:background="#ff545454"
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/tvStopTracking"
+        android:id="@+id/tvLeftButton"
         android:layout_width="45dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/tvBottomSpacer"
