@@ -48,7 +48,7 @@
     <string name="reply">Reply</string>
     <string name="refresh">Refresh</string>
     <string name="last_post">Last\nPost</string>
-    <string name="last_unread_post">First\nUnread</string>
+    <string name="first_unread">First\nUnread</string>
     <string name="click_to_change"> (Click to Change)</string>
     <string name="view_results">View Results</string>
 </resources>
