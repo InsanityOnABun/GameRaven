@@ -7,16 +7,7 @@ import com.ioabsoftware.gameraven.views.RowType;
 public class TopicRowData extends BaseRowData {
 
     public enum TopicType {
-        NORMAL(0), POLL(1), LOCKED(2), ARCHIVED(3), PINNED(4);
-
-        private final int value;
-        TopicType(int value) {
-            this.value = value;
-        }
-
-        public int getValue(){
-            return value;
-        }
+        NORMAL, POLL, LOCKED, ARCHIVED, PINNED
     }
 
     private String title, tc, lastPost, mCount, url, lPostUrl;
