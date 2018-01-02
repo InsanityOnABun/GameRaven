@@ -82,7 +82,6 @@
         android:background="?attr/selectableItemBackground"
         android:gravity="center"
         android:paddingBottom="10dp"
-        android:paddingRight="2dp"
         android:paddingTop="10dp"
         android:text="@string/last_post"
         android:textSize="12sp"
@@ -95,20 +94,17 @@
         android:layout_width="1dp"
         android:layout_height="0dp"
         android:layout_marginBottom="6dp"
-        android:layout_marginLeft="1dp"
         android:layout_marginRight="6dp"
         android:layout_marginTop="6dp"
         android:background="#ff545454"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/tvBottomSpacer"
         app:layout_constraintLeft_toRightOf="@+id/tvLeftButton"
         app:layout_constraintTop_toTopOf="@id/tvTopSpacer" />
 
     <TextView
         android:id="@+id/tvLeftButton"
-        android:layout_width="45dp"
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="1dp"
         android:background="?attr/selectableItemBackground"
         android:gravity="center"
         android:lines="2"
@@ -116,7 +112,6 @@
         android:paddingTop="10dp"
         android:text="X"
         android:textSize="12sp"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/tvBottomSpacer"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvTopSpacer" />

@@ -21,18 +21,22 @@ import com.ioabsoftware.gameraven.views.rowdata.TopicRowData;
 public class TopicRowView extends BaseRowView {
 
     TextView title;
-    TextView tc;
+    TextView tcOrBoard;
     TextView msgLP;
-    TextView lpLink;
+    TextView rightButton, leftButton;
+    View rightSep, leftSep;
+
+    OnClickListener lastPostListener, untrackListener;
 
     TextView typeIndicator;
 
     TopicRowData myData;
 
-    private int defaultTitleColor, defaultTCColor, defaultMsgLPColor, defaultLPLinkColor;
+
+    private int defaultTitleColor, defaultTCColor, defaultMsgLPColor, defaultButtonColor;
 
     private static float titleTextSize = 0;
-    private static float tcTextSize, msgLPTextSize, lpLinkTextSize;
+    private static float tcTextSize, msgLPTextSize, buttonTextSize;
 
     public TopicRowView(Context context) {
         super(context);
@@ -51,32 +55,42 @@ public class TopicRowView extends BaseRowView {
         myType = RowType.TOPIC;
         LayoutInflater.from(context).inflate(R.layout.topicview, this, true);
 
-        title = (TextView) findViewById(R.id.tvTitle);
-        tc = (TextView) findViewById(R.id.tvTC);
-        msgLP = (TextView) findViewById(R.id.tvMsgCountLastPost);
-        lpLink = (TextView) findViewById(R.id.tvRightButton);
+        title = findViewById(R.id.tvTitle);
+        tcOrBoard = findViewById(R.id.tvTC);
+        msgLP = findViewById(R.id.tvMsgCountLastPost);
+        rightButton = findViewById(R.id.tvRightButton);
+        leftButton = findViewById(R.id.tvLeftButton);
+        rightSep = findViewById(R.id.tvRightSep);
+        leftSep = findViewById(R.id.tvLeftSep);
 
-        typeIndicator = (TextView) findViewById(R.id.tvTypeIndicator);
+        typeIndicator = findViewById(R.id.tvTypeIndicator);
 
         defaultTitleColor = title.getCurrentTextColor();
-        defaultTCColor = tc.getCurrentTextColor();
+        defaultTCColor = tcOrBoard.getCurrentTextColor();
         defaultMsgLPColor = msgLP.getCurrentTextColor();
-        defaultLPLinkColor = lpLink.getCurrentTextColor();
+        defaultButtonColor = rightButton.getCurrentTextColor();
 
         if (titleTextSize == 0) {
             titleTextSize = title.getTextSize();
-            tcTextSize = tc.getTextSize();
+            tcTextSize = tcOrBoard.getTextSize();
             msgLPTextSize = msgLP.getTextSize();
-            lpLinkTextSize = lpLink.getTextSize();
+            buttonTextSize = rightButton.getTextSize();
         }
 
-        lpLink.setOnClickListener(new OnClickListener() {
+        lastPostListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
                 AllInOneV2.get().enableGoToUrlDefinedPost();
                 AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getLastPostUrl());
             }
-        });
+        };
+
+        untrackListener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AllInOneV2.get().getSession().get(NetDesc.TRACKED_TOPICS, myData.getUntrackUrl());
+            }
+        };
 
         setOnClickListener(new OnClickListener() {
             @Override
@@ -84,14 +98,24 @@ public class TopicRowView extends BaseRowView {
                 AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getUrl());
             }
         });
+
+        setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                String url = myData.getUrl().substring(0, myData.getUrl().lastIndexOf('/'));
+                AllInOneV2.get().getSession().get(NetDesc.BOARD, url);
+                return true;
+            }
+        });
     }
 
     @Override
     protected void retheme() {
         title.setTextSize(PX, titleTextSize * myScale);
-        tc.setTextSize(PX, tcTextSize * myScale);
+        tcOrBoard.setTextSize(PX, tcTextSize * myScale);
         msgLP.setTextSize(PX, msgLPTextSize * myScale);
-        lpLink.setTextSize(PX, lpLinkTextSize * myScale);
+        rightButton.setTextSize(PX, buttonTextSize * myScale);
+        leftButton.setTextSize(PX, buttonTextSize * myScale);
     }
 
     @Override
@@ -101,42 +125,77 @@ public class TopicRowView extends BaseRowView {
 
         myData = (TopicRowData) data;
 
+        TopicRowData.TopicFlavor myFlavor = myData.getFlavor();
+
+        TextView lastPostButton = (Theming.swapTopicViewButtons() ? leftButton : rightButton);
+        View lastPostSep = (Theming.swapTopicViewButtons() ? leftSep : rightSep);
+        lastPostButton.setOnClickListener(lastPostListener);
+
+        TextView untrackButton = (Theming.swapTopicViewButtons() ? rightButton : leftButton);
+        View untrackSep = (Theming.swapTopicViewButtons() ? rightSep : leftSep);
+        untrackButton.setOnClickListener(untrackListener);
+
+        setLongClickable(true);
+
+        switch (myFlavor) {
+            case BOARD:
+                setLongClickable(false);
+            case AMP:
+                untrackButton.setVisibility(GONE);
+                untrackSep.setVisibility(GONE);
+                break;
+
+            case TRACKED:
+                untrackButton.setVisibility(VISIBLE);
+                untrackSep.setVisibility(VISIBLE);
+                untrackButton.setText("X");
+                break;
+        }
+
+        lastPostButton.setVisibility(VISIBLE);
+        lastPostSep.setVisibility(VISIBLE);
+
         title.setText(myData.getTitle());
-        tc.setText(myData.getTC());
-        msgLP.setText(myData.getMCount() + " Msgs, Last: " + myData.getLastPost());
+        tcOrBoard.setText(myData.getTCOrBoard());
+        msgLP.setText(String.format("%s Msgs, Last: %s", myData.getMCount(), myData.getLastPost()));
 
         int hlColor = myData.getHLColor();
         if (myData.getStatus() == ReadStatus.READ) {
-            tc.setTextColor(Theming.colorReadTopic());
+            tcOrBoard.setTextColor(Theming.colorReadTopic());
             title.setTextColor(Theming.colorReadTopic());
             msgLP.setTextColor(Theming.colorReadTopic());
-            lpLink.setTextColor(Theming.colorReadTopic());
+            rightButton.setTextColor(Theming.colorReadTopic());
+            leftButton.setTextColor(Theming.colorReadTopic());
         } else if (hlColor != 0) {
-            tc.setTextColor(hlColor);
+            tcOrBoard.setTextColor(hlColor);
             title.setTextColor(hlColor);
             msgLP.setTextColor(hlColor);
-            lpLink.setTextColor(hlColor);
+            rightButton.setTextColor(hlColor);
+            leftButton.setTextColor(hlColor);
         } else {
-            tc.setTextColor(defaultTCColor);
+            tcOrBoard.setTextColor(defaultTCColor);
             title.setTextColor(defaultTitleColor);
             msgLP.setTextColor(defaultMsgLPColor);
-            lpLink.setTextColor(defaultLPLinkColor);
+            rightButton.setTextColor(defaultButtonColor);
+            leftButton.setTextColor(defaultButtonColor);
         }
 
         if (myData.getStatus() == ReadStatus.NEW_POST) {
-            tc.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
+            tcOrBoard.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
             title.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
             msgLP.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
-            lpLink.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
+            rightButton.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
+            leftButton.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
 
-            lpLink.setText(R.string.first_unread);
+            lastPostButton.setText(R.string.first_unread);
         } else {
-            tc.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+            tcOrBoard.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
             title.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
             msgLP.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
-            lpLink.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+            rightButton.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+            leftButton.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
 
-            lpLink.setText(R.string.last_post);
+            lastPostButton.setText(R.string.last_post);
         }
 
         switch (myData.getType()) {

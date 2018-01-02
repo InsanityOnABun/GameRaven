@@ -5,8 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.ioabsoftware.gameraven.AllInOneV2;
-import com.ioabsoftware.gameraven.views.rowview.AMPRowView;
 import com.ioabsoftware.gameraven.views.rowview.BoardRowView;
 import com.ioabsoftware.gameraven.views.rowview.GameSearchRowView;
 import com.ioabsoftware.gameraven.views.rowview.HeaderRowView;
@@ -17,11 +15,8 @@ import com.ioabsoftware.gameraven.views.rowview.NotifRowView;
 import com.ioabsoftware.gameraven.views.rowview.PMDetailRowView;
 import com.ioabsoftware.gameraven.views.rowview.PMRowView;
 import com.ioabsoftware.gameraven.views.rowview.TopicRowView;
-import com.ioabsoftware.gameraven.views.rowview.TrackedTopicRowView;
 import com.ioabsoftware.gameraven.views.rowview.UserDetailRowView;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class ViewAdapter extends BaseAdapter {
@@ -99,12 +94,6 @@ public class ViewAdapter extends BaseAdapter {
                     break;
                 case TOPIC:
                     view = new TopicRowView(context);
-                    break;
-                case AMP_TOPIC:
-                    view = new AMPRowView(context);
-                    break;
-                case TRACKED_TOPIC:
-                    view = new TrackedTopicRowView(context);
                     break;
                 case USER_DETAIL:
                     view = new UserDetailRowView(context);

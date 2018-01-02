@@ -71,7 +71,6 @@ import com.ioabsoftware.gameraven.views.BaseRowData;
 import com.ioabsoftware.gameraven.views.BaseRowData.ReadStatus;
 import com.ioabsoftware.gameraven.views.MarqueeToolbar;
 import com.ioabsoftware.gameraven.views.ViewAdapter;
-import com.ioabsoftware.gameraven.views.rowdata.AMPRowData;
 import com.ioabsoftware.gameraven.views.rowdata.BoardRowData;
 import com.ioabsoftware.gameraven.views.rowdata.BoardRowData.BoardType;
 import com.ioabsoftware.gameraven.views.rowdata.GameSearchRowData;
@@ -83,7 +82,6 @@ import com.ioabsoftware.gameraven.views.rowdata.PMDetailRowData;
 import com.ioabsoftware.gameraven.views.rowdata.PMRowData;
 import com.ioabsoftware.gameraven.views.rowdata.TopicRowData;
 import com.ioabsoftware.gameraven.views.rowdata.TopicRowData.TopicType;
-import com.ioabsoftware.gameraven.views.rowdata.TrackedTopicRowData;
 import com.ioabsoftware.gameraven.views.rowdata.UserDetailRowData;
 import com.ioabsoftware.gameraven.views.rowview.MessageRowView;
 import com.joanzapata.iconify.IconDrawable;
@@ -630,6 +628,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             lastPage.setTextSize(px, Theming.getScaledPJButtonTextSize());
             pageLabel.setTextSize(px, Theming.getScaledPJLabelTextSize());
         }
+
+        Theming.swapTopicViewButtons(settings.getBoolean("swapTopicViewButtons", false));
 
         MessageRowView.setUsingAvatars(settings.getBoolean("usingAvatars", false));
 
@@ -1568,8 +1568,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                             lPostLink = cells.get(1).child(0).attr("href");
                         }
 
-                        adapterRows.add(new AMPRowData(title, board, lPost, mCount, link,
-                                lPostLink, status));
+                        adapterRows.add(new TopicRowData(title, board, lPost, mCount, link,
+                                lPostLink, null, TopicType.NORMAL, status, 0,
+                                TopicRowData.TopicFlavor.AMP));
                     }
                 } else {
                     adapterRows.add(new HeaderRowData("You have no active messages at this time."));
@@ -1613,8 +1614,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                 status = ReadStatus.NEW_POST;
                         }
 
-                        adapterRows.add(new TrackedTopicRowData(board, topicText, lPostText,
-                                msgs, topicLink, removeLink, lPostLink, status));
+                        adapterRows.add(new TopicRowData(topicText, board, lPostText, msgs, topicLink,
+                                lPostLink, removeLink, TopicType.NORMAL, status, 0,
+                                TopicRowData.TopicFlavor.TRACKED));
                     }
                 } else {
                     adapterRows.add(new HeaderRowData("You have no tracked topics at this time."));
@@ -1775,7 +1777,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                 }
 
                                 adapterRows.add(new TopicRowData(title, tc, lastPost, mCount, tUrl,
-                                        lpUrl, type, status, hlColor));
+                                        lpUrl, null, type, status, hlColor, TopicRowData.TopicFlavor.BOARD));
                             } else
                                 skipFirst = false;
                         }

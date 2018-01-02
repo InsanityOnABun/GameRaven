@@ -10,8 +10,6 @@ public enum RowType {
     PM,
     PM_DETAIL,
     TOPIC,
-    AMP_TOPIC,
-    TRACKED_TOPIC,
     USER_DETAIL,
     HIGHLIGHTED_USER
 }

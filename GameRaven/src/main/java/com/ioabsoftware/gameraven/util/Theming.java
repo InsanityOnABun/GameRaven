@@ -83,6 +83,15 @@ public final class Theming {
         return textScale;
     }
 
+    private static boolean swapTopicViewButtons;
+
+    public static boolean swapTopicViewButtons() {
+        return swapTopicViewButtons;
+    }
+    public static void swapTopicViewButtons(boolean newVal) {
+        swapTopicViewButtons = newVal;
+    }
+
     private static Style croutonStyle;
 
     public static Style croutonStyle() {
@@ -143,6 +152,7 @@ public final class Theming {
     public static void init(Context c, SharedPreferences settings) {
         Resources resources = c.getResources();
         textScale = settings.getInt("textScale", 100) / 100f;
+        swapTopicViewButtons = settings.getBoolean("swapTopicViewButtons", false);
 
         // Obtain the styled attributes. 'themedContext' is a context with a
         // theme, typically the current Activity (i.e. 'this')
@@ -245,5 +255,4 @@ public final class Theming {
         // Convert the dps to pixels, based on density scale
         return ((int) (dp * scale + 0.5f));
     }
-
 }
