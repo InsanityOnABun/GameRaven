@@ -6,11 +6,20 @@ import com.ioabsoftware.gameraven.views.RowType;
 
 public class TopicRowData extends BaseRowData {
 
-    public static enum TopicType {
-        NORMAL, POLL, LOCKED, ARCHIVED, PINNED
+    public enum TopicType {
+        NORMAL(0), POLL(1), LOCKED(2), ARCHIVED(3), PINNED(4);
+
+        private final int value;
+        TopicType(int value) {
+            this.value = value;
+        }
+
+        public int getValue(){
+            return value;
+        }
     }
 
-    String title, tc, lastPost, mCount, url, lPostUrl;
+    private String title, tc, lastPost, mCount, url, lPostUrl;
 
     public String getTitle() {
         return title;
@@ -36,19 +45,19 @@ public class TopicRowData extends BaseRowData {
         return lPostUrl;
     }
 
-    TopicType type;
+    private TopicType type;
 
     public TopicType getType() {
         return type;
     }
 
-    ReadStatus status;
+    private ReadStatus status;
 
     public ReadStatus getStatus() {
         return status;
     }
 
-    int hlColor;
+    private int hlColor;
 
     public int getHLColor() {
         return hlColor;

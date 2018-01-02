@@ -139,27 +139,6 @@ public class TopicRowView extends BaseRowView {
             lpLink.setText(R.string.last_post);
         }
 
-        switch (myData.getType()) {
-            case NORMAL:
-                typeIndicator.setVisibility(View.GONE);
-                break;
-            case POLL:
-                setTypeIndicator(Theming.topicStatusIcons()[0]);
-                break;
-            case LOCKED:
-                setTypeIndicator(Theming.topicStatusIcons()[1]);
-                break;
-            case ARCHIVED:
-                setTypeIndicator(Theming.topicStatusIcons()[2]);
-                break;
-            case PINNED:
-                setTypeIndicator(Theming.topicStatusIcons()[3]);
-                break;
-        }
-    }
-
-    private void setTypeIndicator(Drawable icon) {
-        typeIndicator.setBackgroundDrawable(icon);
-        typeIndicator.setVisibility(View.VISIBLE);
+        typeIndicator.setBackground(Theming.topicStatusIcons()[myData.getType().getValue()]);
     }
 }

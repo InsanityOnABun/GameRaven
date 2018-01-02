@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tvRelativeWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,103 +10,105 @@
         android:id="@+id/tvTopSpacer"
         android:layout_width="0dp"
         android:layout_height="@dimen/item_padding_vertical"
-        android:layout_alignParentTop="true" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/tvBottomSpacer"
         android:layout_width="0dp"
         android:layout_height="@dimen/item_padding_vertical"
-        android:layout_below="@+id/tvTitle" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
     <TextView
         android:id="@+id/tvTC"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/tvTypeIndicator"
-        android:layout_below="@+id/tvTopSpacer"
         android:layout_alignWithParentIfMissing="true"
         android:layout_marginLeft="@dimen/item_padding_horizontal"
-        android:layout_toLeftOf="@+id/tvMsgCountLastPost"
-        android:layout_toRightOf="@+id/tvTypeIndicator"
         android:ellipsize="end"
         android:lines="1"
         android:text="Topic CreatorTC"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvTypeIndicator"
+        app:layout_constraintLeft_toRightOf="@+id/tvTypeIndicator"
+        app:layout_constraintRight_toLeftOf="@+id/tvMsgCountLastPost"
+        app:layout_constraintTop_toBottomOf="@+id/tvTopSpacer" />
 
     <TextView
         android:id="@+id/tvMsgCountLastPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/tvTC"
-        android:layout_toLeftOf="@+id/tvRightSep"
+        android:layout_marginRight="6dp"
         android:text="500 Msgs, Last: 12/12 12:12PM"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        app:layout_constraintRight_toLeftOf="@+id/tvRightSep"
+        app:layout_constraintTop_toTopOf="@+id/tvTC" />
 
     <TextView
         android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_below="@+id/tvTC"
-        android:layout_marginLeft="@dimen/item_padding_horizontal"
-        android:layout_toLeftOf="@+id/tvRightSep"
-        android:layout_toRightOf="@+id/tvLeftButton"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:lines="2"
         android:text="man fan died at the room shot up to 97 degrees asdf asdf asdf"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        app:layout_constraintLeft_toRightOf="@+id/tvLeftButton"
+        app:layout_constraintRight_toLeftOf="@+id/tvRightSep"
+        app:layout_constraintTop_toBottomOf="@+id/tvTC" />
 
     <View
         android:id="@+id/tvRightSep"
         android:layout_width="1dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tvBottomSpacer"
-        android:layout_alignTop="@id/tvTopSpacer"
+        android:layout_height="0dp"
         android:layout_marginBottom="6dp"
         android:layout_marginLeft="6dp"
         android:layout_marginTop="6dp"
-        android:layout_toLeftOf="@+id/tvRightButton"
-        android:background="#ff545454" />
+        android:background="#ff545454"
+        app:layout_constraintBottom_toBottomOf="@+id/tvBottomSpacer"
+        app:layout_constraintRight_toLeftOf="@+id/tvRightButton"
+        app:layout_constraintTop_toTopOf="@id/tvTopSpacer" />
 
     <TextView
         android:id="@+id/tvRightButton"
         android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tvBottomSpacer"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/tvTopSpacer"
         android:background="?attr/selectableItemBackground"
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingRight="2dp"
         android:paddingTop="10dp"
         android:text="@string/last_post"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvBottomSpacer"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvTopSpacer" />
 
     <View
         android:id="@+id/tvLeftSep"
         android:layout_width="1dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tvBottomSpacer"
-        android:layout_alignTop="@id/tvTopSpacer"
+        android:layout_height="0dp"
         android:layout_marginBottom="6dp"
+        android:layout_marginLeft="1dp"
         android:layout_marginRight="6dp"
         android:layout_marginTop="6dp"
-        android:layout_toRightOf="@+id/tvLeftButton"
         android:background="#ff545454"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tvBottomSpacer"
+        app:layout_constraintLeft_toRightOf="@+id/tvLeftButton"
+        app:layout_constraintTop_toTopOf="@id/tvTopSpacer" />
 
     <TextView
         android:id="@+id/tvLeftButton"
         android:layout_width="45dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tvBottomSpacer"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/tvTopSpacer"
         android:layout_marginRight="1dp"
         android:background="?attr/selectableItemBackground"
         android:gravity="center"
@@ -114,13 +117,17 @@
         android:paddingTop="10dp"
         android:text="X"
         android:textSize="12sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tvBottomSpacer"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvTopSpacer" />
 
     <com.joanzapata.iconify.widget.IconTextView
         android:id="@+id/tvTypeIndicator"
         android:layout_width="18dp"
         android:layout_height="18dp"
-        android:layout_alignLeft="@id/tvTitle"
         android:layout_alignWithParentIfMissing="true"
-        android:scaleType="fitStart" />
-</RelativeLayout>
+        android:scaleType="fitStart"
+        app:layout_constraintLeft_toLeftOf="@id/tvTitle"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

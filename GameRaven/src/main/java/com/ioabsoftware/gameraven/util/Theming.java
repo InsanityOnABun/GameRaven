@@ -89,7 +89,7 @@ public final class Theming {
         return croutonStyle;
     }
 
-    private static Drawable[] topicStatusIcons = new Drawable[4];
+    private static Drawable[] topicStatusIcons = new Drawable[5];
 
     public static Drawable[] topicStatusIcons() {
         return topicStatusIcons;
@@ -174,13 +174,24 @@ public final class Theming {
         // Finally, free the resources used by TypedArray
         ta.recycle();
 
+        // transparent icon for normal topics, to keep sizing
         topicStatusIcons[0] = new IconDrawable(c, MaterialCommunityIcons.mdi_poll)
+                .color(0x0000).sizeDp(18);
+
+        // poll icon
+        topicStatusIcons[1] = new IconDrawable(c, MaterialCommunityIcons.mdi_poll)
                 .color(topicStatusIconColor).sizeDp(18);
-        topicStatusIcons[1] = new IconDrawable(c, MaterialIcons.md_lock)
+
+        // locked topic icon
+        topicStatusIcons[2] = new IconDrawable(c, MaterialIcons.md_lock)
                 .color(topicStatusIconColor).sizeDp(18);
-        topicStatusIcons[2] = new IconDrawable(c, MaterialCommunityIcons.mdi_archive)
+
+        // archived icon
+        topicStatusIcons[3] = new IconDrawable(c, MaterialCommunityIcons.mdi_archive)
                 .color(topicStatusIconColor).sizeDp(18);
-        topicStatusIcons[3] = new IconDrawable(c, MaterialCommunityIcons.mdi_pin)
+
+        // stickied / pinned icon
+        topicStatusIcons[4] = new IconDrawable(c, MaterialCommunityIcons.mdi_pin)
                 .color(topicStatusIconColor).sizeDp(18);
 
         croutonStyle = new Style.Builder()
