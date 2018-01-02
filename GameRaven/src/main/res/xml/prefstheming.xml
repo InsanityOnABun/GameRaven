@@ -20,6 +20,13 @@
             android:summary="Select the theme for the app. (Requires restart)"
             android:title="Theme" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="swapTopicViewButtons"
+            android:persistent="true"
+            android:summary="Swap the position of the Last Post &amp; Untrack buttons on topic rows."
+            android:title="Swap Topic View Buttons" />
+
         <com.robobunny.SeekBarPreference xmlns:robobunny="http://robobunny.com"
             android:defaultValue="100"
             android:key="textScale"
