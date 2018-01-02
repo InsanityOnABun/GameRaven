@@ -6,18 +6,18 @@ import com.ioabsoftware.gameraven.views.RowType;
 
 public class TopicRowData extends BaseRowData {
 
-    public enum TopicType {
-        NORMAL, POLL, LOCKED, ARCHIVED, PINNED
-    }
+    public enum TopicFlavor {BOARD, AMP, TRACKED}
 
-    private String title, tc, lastPost, mCount, url, lPostUrl;
+    public enum TopicType {NORMAL, POLL, LOCKED, ARCHIVED, PINNED}
+
+    private String title, tcOrBoard, lastPost, mCount, url, lPostUrl, untrackUrl;
 
     public String getTitle() {
         return title;
     }
 
-    public String getTC() {
-        return tc;
+    public String getTCOrBoard() {
+        return tcOrBoard;
     }
 
     public String getLastPost() {
@@ -36,10 +36,20 @@ public class TopicRowData extends BaseRowData {
         return lPostUrl;
     }
 
+    public String getUntrackUrl() {
+        return untrackUrl;
+    }
+
     private TopicType type;
 
     public TopicType getType() {
         return type;
+    }
+
+    private TopicFlavor flavor;
+
+    public TopicFlavor getFlavor() {
+        return flavor;
     }
 
     private ReadStatus status;
@@ -59,32 +69,38 @@ public class TopicRowData extends BaseRowData {
         return RowType.TOPIC;
     }
 
-    public TopicRowData(String titleIn, String tcIn, String lastPostIn, String mCountIn,
-                        String urlIn, String lPostUrlIn, TopicType typeIn, ReadStatus statusIn, int hlColorIn) {
+    public TopicRowData(String titleIn, String tcOrBoardIn, String lastPostIn, String mCountIn,
+                        String urlIn, String lPostUrlIn, String untrackUrlIn, TopicType typeIn,
+                        ReadStatus statusIn, int hlColorIn, TopicFlavor flavorIn) {
         title = titleIn;
-        tc = tcIn;
+        tcOrBoard = tcOrBoardIn;
         lastPost = lastPostIn;
         mCount = mCountIn;
         url = urlIn;
         lPostUrl = lPostUrlIn;
+        untrackUrl = untrackUrlIn;
 
         type = typeIn;
 
         status = statusIn;
 
         hlColor = hlColorIn;
+
+        flavor = flavorIn;
     }
 
     @Override
     public String toString() {
         return "title: " + title +
-                "\ntc: " + tc +
+                "\ntcOrBoard: " + tcOrBoard +
                 "\nhlColor: " + hlColor +
                 "\nlastPost: " + lastPost +
                 "\nmCount: " + mCount +
                 "\nurl: " + url +
                 "\nlPostUrl: " + lPostUrl +
+                "\nuntrackUrl: " + untrackUrl +
                 "\ntype: " + type.name() +
+                "\nflavor: " + flavor.name() +
                 "\nstatus: " + status.name();
     }
 
