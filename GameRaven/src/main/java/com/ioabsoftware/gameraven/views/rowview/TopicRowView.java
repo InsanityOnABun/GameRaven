@@ -141,7 +141,7 @@ public class TopicRowView extends BaseRowView {
 
         switch (myData.getType()) {
             case NORMAL:
-                typeIndicator.setVisibility(View.INVISIBLE);
+                typeIndicator.setVisibility(View.GONE);
                 break;
             case POLL:
                 setTypeIndicator(Theming.topicStatusIcons()[0]);
@@ -159,7 +159,7 @@ public class TopicRowView extends BaseRowView {
     }
 
     private void setTypeIndicator(Drawable icon) {
-        typeIndicator.setBackgroundDrawable(icon);
+        typeIndicator.setBackground(icon);
         typeIndicator.setVisibility(View.VISIBLE);
     }
 }

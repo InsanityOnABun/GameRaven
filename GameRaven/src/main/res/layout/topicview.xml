@@ -31,7 +31,6 @@
         android:text="Topic CreatorTC"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tvTypeIndicator"
         app:layout_constraintLeft_toRightOf="@+id/tvTypeIndicator"
         app:layout_constraintRight_toLeftOf="@+id/tvMsgCountLastPost"
         app:layout_constraintTop_toBottomOf="@+id/tvTopSpacer" />
@@ -128,6 +127,6 @@
         android:layout_height="18dp"
         android:layout_alignWithParentIfMissing="true"
         android:scaleType="fitStart"
-        app:layout_constraintLeft_toLeftOf="@id/tvTitle"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvTC"
+        app:layout_constraintLeft_toLeftOf="@id/tvTitle" />
 </android.support.constraint.ConstraintLayout>
