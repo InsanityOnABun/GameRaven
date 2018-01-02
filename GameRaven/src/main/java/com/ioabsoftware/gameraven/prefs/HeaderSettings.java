@@ -102,6 +102,7 @@ public class HeaderSettings extends PreferenceActivity {
         ACCEPTED_KEYS.add("confirmPostSubmit");
         ACCEPTED_KEYS.add("textScale");
         ACCEPTED_KEYS.add("usingAvatars");
+        ACCEPTED_KEYS.add("swapTopicViewButtons");
     }
 
     @Override
@@ -185,7 +186,6 @@ public class HeaderSettings extends PreferenceActivity {
                     "gameraven_settings");
 
             try {
-
                 //noinspection ResultOfMethodCallIgnored
                 settingsFile.delete();
                 //noinspection ResultOfMethodCallIgnored
@@ -223,56 +223,24 @@ public class HeaderSettings extends PreferenceActivity {
 
                 buf.append("timezone=").append(AllInOneV2.getSettingsPref().getString("timezone", TimeZone.getDefault().getID())).append('\n');
 
-                if (AllInOneV2.getSettingsPref().getBoolean("notifsEnable", false))
-                    buf.append("notifsEnable=true\n");
-                else
-                    buf.append("notifsEnable=false\n");
+                buf.append(backupBoolean("notifsEnable", false));
 
                 buf.append("notifsFrequency=").append(AllInOneV2.getSettingsPref().getString("notifsFrequency", "60")).append('\n');
 
-                if (AllInOneV2.getSettingsPref().getBoolean("usingAvatars", false))
-                    buf.append("usingAvatars=true\n");
-                else
-                    buf.append("usingAvatars=false\n");
-
-                if (AllInOneV2.getSettingsPref().getBoolean("startAtAMP", false))
-                    buf.append("startAtAMP=true\n");
-                else
-                    buf.append("startAtAMP=false\n");
-
-                if (AllInOneV2.getSettingsPref().getBoolean("reloadOnBack", false))
-                    buf.append("reloadOnBack=true\n");
-                else
-                    buf.append("reloadOnBack=false\n");
-
-                if (AllInOneV2.getSettingsPref().getBoolean("reloadOnResume", false))
-                    buf.append("reloadOnResume=true\n");
-                else
-                    buf.append("reloadOnResume=false\n");
-
-                if (AllInOneV2.getSettingsPref().getBoolean("enablePTR", false))
-                    buf.append("enablePTR=true\n");
-                else
-                    buf.append("enablePTR=false\n");
-
-                if (AllInOneV2.getSettingsPref().getBoolean("enableFastScroll", true))
-                    buf.append("enableFastScroll=true\n");
-                else
-                    buf.append("enableFastScroll=false\n");
+                buf.append(backupBoolean("swapTopicViewButtons", false));
+                buf.append(backupBoolean("usingAvatars", false));
+                buf.append(backupBoolean("startAtAMP", false));
+                buf.append(backupBoolean("reloadOnBack", false));
+                buf.append(backupBoolean("reloadOnResume", false));
+                buf.append(backupBoolean("enablePTR", false));
+                buf.append(backupBoolean("enableFastScroll", true));
 
                 buf.append("textScale=").append(String.valueOf(AllInOneV2.getSettingsPref().getInt("textScale", 100))).append('\n');
 
                 buf.append("ampSortOption=").append(AllInOneV2.getSettingsPref().getString("ampSortOption", "-1")).append('\n');
 
-                if (AllInOneV2.getSettingsPref().getBoolean("confirmPostCancel", false))
-                    buf.append("confirmPostCancel=true\n");
-                else
-                    buf.append("confirmPostCancel=false\n");
-
-                if (AllInOneV2.getSettingsPref().getBoolean("confirmPostSubmit", false))
-                    buf.append("confirmPostSubmit=true\n");
-                else
-                    buf.append("confirmPostSubmit=false\n");
+                buf.append(backupBoolean("confirmPostCancel", false));
+                buf.append(backupBoolean("confirmPostSubmit", false));
 
                 buf.close();
                 Toast.makeText(this,"Backup done." ,Toast.LENGTH_SHORT).show();
@@ -286,6 +254,13 @@ public class HeaderSettings extends PreferenceActivity {
             Log.e("writeToLog", "error writing to log, external storage is not writable");
             Toast.makeText(this,"Backup failed. Storage is most likely not accessible." ,Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String backupBoolean(String name, boolean def) {
+        if (AllInOneV2.getSettingsPref().getBoolean(name, def))
+            return name + "=true\n";
+        else
+            return name + "=false\n";
     }
 
     private void restoreSettings() {

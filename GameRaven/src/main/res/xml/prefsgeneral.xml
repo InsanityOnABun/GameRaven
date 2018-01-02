@@ -8,6 +8,12 @@
         android:title="General Settings">
         <SwitchPreference
             android:defaultValue="false"
+            android:key="swapTopicViewButtons"
+            android:persistent="true"
+            android:summary="Swap the position of the Last Post button on topics."
+            android:title="Last Post Button on Left" />
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="usingAvatars"
             android:persistent="true"
             android:summary="Currently only supports displaying, no upload."
