@@ -292,8 +292,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         aBar.setDisplayHomeAsUpEnabled(true);
         aBar.setDisplayShowTitleEnabled(true);
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.aioDrawerLayout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.aioNavigationDrawer);
+        drawerLayout = findViewById(R.id.aioDrawerLayout);
+        NavigationView navigationView = findViewById(R.id.aioNavigationDrawer);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
 
         drawerLayout.addDrawerListener(drawerToggle);
@@ -314,6 +314,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 this, MaterialCommunityIcons.mdi_lightbulb).color(Theming.colorPrimary()));
         navMenu.findItem(R.id.dwrSettings).setIcon(new IconDrawable(
                 this, MaterialIcons.md_settings).color(Theming.colorPrimary()));
+        navMenu.findItem(R.id.dwrAbout).setIcon(new IconDrawable(
+                this, MaterialCommunityIcons.mdi_help_circle).color(Theming.colorPrimary()));
         navMenu.findItem(R.id.dwrExit).setIcon(new IconDrawable(
                 this, MaterialCommunityIcons.mdi_close_circle).color(Theming.colorPrimary()));
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -344,6 +346,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     case R.id.dwrSettings:
                         startActivity(new Intent(AllInOneV2.this, HeaderSettings.class));
                         break;
+                    case R.id.dwrAbout:
+                        startActivity(new Intent(AllInOneV2.this, About.class));
+                        break;
                     case R.id.dwrExit:
                         AllInOneV2.this.finish();
                         break;
@@ -356,8 +361,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
 
         View headerView = navigationView.getHeaderView(0);
-        accountsSpinner = (Spinner) headerView.findViewById(R.id.dwrHdrAccounts);
-        notifsSpinner = (Spinner) headerView.findViewById(R.id.dwrHdrNotifications);
+        accountsSpinner = headerView.findViewById(R.id.dwrHdrAccounts);
+        notifsSpinner = headerView.findViewById(R.id.dwrHdrNotifications);
         accountsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
         notifsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
         accountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -387,51 +392,51 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     .apply();
         }
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.ptr_layout);
+        swipeRefreshLayout = findViewById(R.id.ptr_layout);
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setEnabled(false);
             swipeRefreshLayout.setColorSchemeColors(Theming.colorPrimary(), Theming.colorPrimaryDark());
             swipeRefreshLayout.setOnRefreshListener(this);
         }
 
-        contentList = (ListView) findViewById(R.id.aioMainList);
+        contentList = findViewById(R.id.aioMainList);
 
-        titleWrapper = (LinearLayout) findViewById(R.id.aioPostTitleWrapper);
-        postTitle = (EditText) findViewById(R.id.aioPostTitle);
-        postBody = (EditText) findViewById(R.id.aioPostBody);
-        titleCounter = (TextView) findViewById(R.id.aioPostTitleCounter);
-        bodyCounter = (TextView) findViewById(R.id.aioPostBodyCounter);
+        titleWrapper = findViewById(R.id.aioPostTitleWrapper);
+        postTitle = findViewById(R.id.aioPostTitle);
+        postBody = findViewById(R.id.aioPostBody);
+        titleCounter = findViewById(R.id.aioPostTitleCounter);
+        bodyCounter = findViewById(R.id.aioPostBodyCounter);
 
         pageJumperWrapper = findViewById(R.id.aioHeader);
-        firstPage = (Button) findViewById(R.id.aioFirstPage);
+        firstPage = findViewById(R.id.aioFirstPage);
         firstPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 session.get(pageJumperDesc, firstPageUrl);
             }
         });
-        prevPage = (Button) findViewById(R.id.aioPreviousPage);
+        prevPage = findViewById(R.id.aioPreviousPage);
         prevPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 session.get(pageJumperDesc, prevPageUrl);
             }
         });
-        nextPage = (Button) findViewById(R.id.aioNextPage);
+        nextPage = findViewById(R.id.aioNextPage);
         nextPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 session.get(pageJumperDesc, nextPageUrl);
             }
         });
-        lastPage = (Button) findViewById(R.id.aioLastPage);
+        lastPage = findViewById(R.id.aioLastPage);
         lastPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 session.get(pageJumperDesc, lastPageUrl);
             }
         });
-        pageLabel = (Button) findViewById(R.id.aioPageLabel);
+        pageLabel = findViewById(R.id.aioPageLabel);
         pageLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -490,12 +495,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             }
         });
 
-        postSubmitButton = (Button) findViewById(R.id.aioPostDo);
-        postCancelButton = (Button) findViewById(R.id.aioPostCancel);
-        pollButton = (Button) findViewById(R.id.aioPollOptions);
+        postSubmitButton = findViewById(R.id.aioPostDo);
+        postCancelButton = findViewById(R.id.aioPostCancel);
+        pollButton = findViewById(R.id.aioPollOptions);
         pollSep = findViewById(R.id.aioPollSep);
 
-        postWrapper = (LinearLayout) findViewById(R.id.aioPostWrapper);
+        postWrapper = findViewById(R.id.aioPostWrapper);
 
         if (BuildConfig.DEBUG) wtl("creating default sig");
         defaultSig = "Posted with GameRaven *grver*";
@@ -519,7 +524,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         adapterRows.add(new HeaderRowData("Loading..."));
         contentList.setAdapter(viewAdapter);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setImageDrawable(new IconDrawable(this, MaterialIcons.md_add).colorRes(R.color.white).sizeDp(24));
         fab.setBackgroundTintList(new ColorStateList(
                 new int[][]{new int[]{}},
@@ -2614,19 +2619,19 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         final EditText[] options = new EditText[10];
 
         assert v != null : "v is null";
-        final CheckBox poUse = (CheckBox) v.findViewById(R.id.poUse);
-        final EditText poTitle = (EditText) v.findViewById(R.id.poTitle);
-        options[0] = (EditText) v.findViewById(R.id.po1);
-        options[1] = (EditText) v.findViewById(R.id.po2);
-        options[2] = (EditText) v.findViewById(R.id.po3);
-        options[3] = (EditText) v.findViewById(R.id.po4);
-        options[4] = (EditText) v.findViewById(R.id.po5);
-        options[5] = (EditText) v.findViewById(R.id.po6);
-        options[6] = (EditText) v.findViewById(R.id.po7);
-        options[7] = (EditText) v.findViewById(R.id.po8);
-        options[8] = (EditText) v.findViewById(R.id.po9);
-        options[9] = (EditText) v.findViewById(R.id.po10);
-        final Spinner minLevel = (Spinner) v.findViewById(R.id.poMinLevel);
+        final CheckBox poUse = v.findViewById(R.id.poUse);
+        final EditText poTitle = v.findViewById(R.id.poTitle);
+        options[0] = v.findViewById(R.id.po1);
+        options[1] = v.findViewById(R.id.po2);
+        options[2] = v.findViewById(R.id.po3);
+        options[3] = v.findViewById(R.id.po4);
+        options[4] = v.findViewById(R.id.po5);
+        options[5] = v.findViewById(R.id.po6);
+        options[6] = v.findViewById(R.id.po7);
+        options[7] = v.findViewById(R.id.po8);
+        options[8] = v.findViewById(R.id.po9);
+        options[9] = v.findViewById(R.id.po10);
+        final Spinner minLevel = v.findViewById(R.id.poMinLevel);
 
         poUse.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
@@ -2777,8 +2782,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         listBuilder.add("User Details");
 
         assert v != null : "v is null";
-        ListView lv = (ListView) v.findViewById(R.id.maList);
-        final LinearLayout wrapper = (LinearLayout) v.findViewById(R.id.maWrapper);
+        ListView lv = v.findViewById(R.id.maList);
+        final LinearLayout wrapper = v.findViewById(R.id.maWrapper);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         adapter.addAll(listBuilder);
@@ -2865,10 +2870,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         b.setCancelable(false);
 
         assert v != null : "v is null";
-        final EditText to = (EditText) v.findViewById(R.id.spTo);
-        final EditText subject = (EditText) v.findViewById(R.id.spSubject);
-        final EditText message = (EditText) v.findViewById(R.id.spMessage);
-        pmSending = (LinearLayout) v.findViewById(R.id.spFootWrapper);
+        final EditText to = v.findViewById(R.id.spTo);
+        final EditText subject = v.findViewById(R.id.spSubject);
+        final EditText message = v.findViewById(R.id.spMessage);
+        pmSending = v.findViewById(R.id.spFootWrapper);
 
         to.setText(savedTo);
         subject.setText(savedSubject);

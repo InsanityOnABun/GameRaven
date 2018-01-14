@@ -36,6 +36,9 @@
                 android:id="@+id/dwrSettings"
                 android:title="@string/settings"/>
             <item
+                android:id="@+id/dwrAbout"
+                android:title="@string/about"/>
+            <item
                 android:id="@+id/dwrExit"
                 android:title="@string/exit_gameraven"/>
         </menu>

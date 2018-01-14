@@ -728,13 +728,6 @@ public class HeaderSettings extends PreferenceActivity {
                         return true;
                     }
                 });
-
-                findPreference("aboutFeedback").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        startActivity(new Intent(getActivity(), About.class));
-                        return true;
-                    }
-                });
             }
         }
 

@@ -72,8 +72,5 @@
             android:key="restoreSettings"
             android:summary="This will remove any previously added accounts! Restore settings from sdcard/gameraven/gameraven_settings"
             android:title="Restore Settings" />
-        <Preference
-            android:key="aboutFeedback"
-            android:title="About &amp; Feedback" />
     </PreferenceCategory>
 </PreferenceScreen>
