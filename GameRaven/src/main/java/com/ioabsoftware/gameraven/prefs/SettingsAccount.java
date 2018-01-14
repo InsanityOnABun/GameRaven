@@ -56,9 +56,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
     private static final String ION_INSTANCE = "AccountVerifier";
     private Ion accountVerifier;
 
-    public static final int ADD_ACCOUNT_DIALOG = 300;
-    public static final int VERIFY_ACCOUNT_DIALOG = 301;
-    public static final int MODIFY_ACCOUNT_DIALOG = 302;
+    private Dialog addAccountDialog, verifyAccountDialog, modifyAccountDialog;
 
     String verifyUser;
     String verifyPass;
@@ -68,8 +66,6 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
     String clickedAccountName;
 
     SharedPreferences settings;
-
-    private Toolbar mActionBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,12 +86,16 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
 
         Theming.colorOverscroll(this);
 
+        addAccountDialog = createAddAccountDialog();
+        verifyAccountDialog = createVerifyAccountDialog();
+        modifyAccountDialog = createModifyAccountV2Dialog();
+
         accounts = (PreferenceCategory) findPreference("accounts");
         updateAccountList();
 
         findPreference("addAccount").setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                showDialog(ADD_ACCOUNT_DIALOG);
+                addAccountDialog.show();
                 return true;
             }
 
@@ -107,7 +107,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         ViewGroup contentView = (ViewGroup) LayoutInflater.from(this).inflate(
                 R.layout.settings_activity, new LinearLayout(this), false);
 
-        mActionBar = (Toolbar) contentView.findViewById(R.id.saToolbar);
+        Toolbar mActionBar = contentView.findViewById(R.id.saToolbar);
         mActionBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +117,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         mActionBar.setTitle(getTitle());
         mActionBar.setTitleTextColor(Color.WHITE);
 
-        ViewGroup contentWrapper = (ViewGroup) contentView.findViewById(R.id.saContentWrapper);
+        ViewGroup contentWrapper = contentView.findViewById(R.id.saContentWrapper);
         LayoutInflater.from(this).inflate(layoutResID, contentWrapper, true);
 
         getWindow().setContentView(contentView);
@@ -140,7 +140,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     clickedAccount = preference;
-                    showDialog(MODIFY_ACCOUNT_DIALOG);
+                    modifyAccountDialog.show();
                     return true;
                 }
             });
@@ -162,27 +162,6 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         }
     }
 
-    // creates dialogs
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog = null;
-        switch (id) {
-            case ADD_ACCOUNT_DIALOG:
-                dialog = createAddAccountDialog();
-                break;
-            case VERIFY_ACCOUNT_DIALOG:
-                ProgressDialog d = new ProgressDialog(this);
-                d.setTitle("Verifying Account...");
-                d.setCancelable(false);
-                dialog = d;
-                break;
-            case MODIFY_ACCOUNT_DIALOG:
-                dialog = createModifyAccountV2Dialog();
-                break;
-        }
-        return dialog;
-    }
-
     private LinearLayout addAccWrapper;
 
     private Dialog createAddAccountDialog() {
@@ -190,33 +169,32 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         LayoutInflater inflater = getLayoutInflater();
         final View v = inflater.inflate(R.layout.addaccount, null);
 
-        addAccWrapper = (LinearLayout) v.findViewById(R.id.addaccWrapper);
+        final TextView userView = v.findViewById(R.id.addaccUser);
+        final TextView passView = v.findViewById(R.id.addaccPassword);
+
+        addAccWrapper = v.findViewById(R.id.addaccWrapper);
 
         b.setView(v);
         b.setTitle("Add Account");
 
-        b.setNegativeButton("Cancel", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                removeDialog(ADD_ACCOUNT_DIALOG);
-            }
-        });
-
+        b.setNegativeButton("Cancel", null);
         b.setPositiveButton("OK", null);
 
         final AlertDialog d = b.create();
         d.setOnShowListener(new OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
+                userView.setText("");
+                passView.setText("");
                 d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
-                        verifyUser = ((TextView) v.findViewById(R.id.addaccUser)).getText().toString().trim();
-                        verifyPass = ((TextView) v.findViewById(R.id.addaccPassword)).getText().toString();
+                        verifyUser = userView.getText().toString().trim();
+                        verifyPass = passView.getText().toString();
 
                         if (verifyUser.indexOf('@') == -1) {
-							showDialog(VERIFY_ACCOUNT_DIALOG);
+                            verifyAccountDialog.show();
 
                             accountVerifier.getCookieMiddleware().clear();
                             currentDesc = NetDesc.VERIFY_ACCOUNT_S1;
@@ -236,53 +214,48 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
             }
         });
 
-        d.setOnDismissListener(new OnDismissListener() {
-
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                addAccWrapper = null;
-                removeDialog(ADD_ACCOUNT_DIALOG);
-            }
-        });
-
         return d;
     }
 
+    private Dialog createVerifyAccountDialog() {
+        ProgressDialog d = new ProgressDialog(this);
+        d.setTitle("Verifying Account...");
+        d.setCancelable(false);
+        return d;
+    }
+
+    private boolean modifyAccountInit = false;
+
     private Dialog createModifyAccountV2Dialog() {
-        clickedAccountName = clickedAccount.getTitle().toString();
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         final View v = inflater.inflate(R.layout.modifyaccountv2, null);
         b.setView(v);
-        b.setTitle("Modify " + clickedAccountName);
 
-        Button deleteAcc = (Button) v.findViewById(R.id.modaccDeleteAcc);
-        final CheckBox defaultAcc = (CheckBox) v.findViewById(R.id.modaccDefaultAccount);
-        final CheckBox useGFAQsSig = (CheckBox) v.findViewById(R.id.modaccUseGfaqsSig);
-        final EditText sigContent = (EditText) v.findViewById(R.id.modaccSigContent);
-        final TextView sigCounter = (TextView) v.findViewById(R.id.modaccSigCounter);
-
-        if (clickedAccountName.equals(settings.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT)))
-            defaultAcc.setChecked(true);
-        else
-            defaultAcc.setChecked(false);
+        Button deleteAcc = v.findViewById(R.id.modaccDeleteAcc);
+        final CheckBox defaultAcc = v.findViewById(R.id.modaccDefaultAccount);
+        final CheckBox useGFAQsSig = v.findViewById(R.id.modaccUseGfaqsSig);
+        final EditText sigContent = v.findViewById(R.id.modaccSigContent);
+        final TextView sigCounter = v.findViewById(R.id.modaccSigCounter);
 
         defaultAcc.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    settings.edit().putString("defaultAccount", clickedAccountName).apply();
-                    Crouton.showText(SettingsAccount.this,
-                            "Default account saved.",
-                            Theming.croutonStyle(),
-                            (ViewGroup) buttonView.getParent().getParent());
-                } else {
-                    settings.edit().putString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT).apply();
-                    settings.edit().putLong("notifsLastPost", 0).apply();
-                    Crouton.showText(SettingsAccount.this,
-                            "Default account removed.",
-                            Theming.croutonStyle(),
-                            (ViewGroup) buttonView.getParent().getParent());
+                if (!modifyAccountInit) {
+                    if (isChecked) {
+                        settings.edit().putString("defaultAccount", clickedAccountName).apply();
+                        Crouton.showText(SettingsAccount.this,
+                                "Default account saved.",
+                                Theming.croutonStyle(),
+                                (ViewGroup) buttonView.getParent().getParent());
+                    } else {
+                        settings.edit().putString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT).apply();
+                        settings.edit().putLong("notifsLastPost", 0).apply();
+                        Crouton.showText(SettingsAccount.this,
+                                "Default account removed.",
+                                Theming.croutonStyle(),
+                                (ViewGroup) buttonView.getParent().getParent());
+                    }
                 }
             }
         });
@@ -290,11 +263,12 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         useGFAQsSig.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                settings.edit().putBoolean("useGFAQsSig" + clickedAccountName, isChecked).apply();
-                sigContent.setEnabled(!isChecked);
+                if (!modifyAccountInit) {
+                    settings.edit().putBoolean("useGFAQsSig" + clickedAccountName, isChecked).apply();
+                    sigContent.setEnabled(!isChecked);
+                }
             }
         });
-        useGFAQsSig.setChecked(settings.getBoolean("useGFAQsSig" + clickedAccountName, false));
 
         sigContent.addTextChangedListener(new TextWatcher() {
             @Override
@@ -306,7 +280,8 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
                     if (escapedSig.charAt(i) == '\n') lines++;
                 }
 
-                sigCounter.setText((1 - lines) + " line break(s), " + (160 - length) + " characters available");
+                String sigCounterString = (1 - lines) + " line break(s), " + (160 - length) + " characters available";
+                sigCounter.setText(sigCounterString);
             }
 
             @Override
@@ -321,8 +296,6 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
             }
         });
 
-        sigContent.setText(settings.getString("customSig" + clickedAccountName, ""));
-
         deleteAcc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -333,7 +306,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
 
                 AccountManager.removeUser(SettingsAccount.this, clickedAccountName);
                 accounts.removePreference(clickedAccount);
-                dismissDialog(MODIFY_ACCOUNT_DIALOG);
+                modifyAccountDialog.dismiss();
                 Crouton.showText(SettingsAccount.this, "Account removed.", Theming.croutonStyle());
             }
         });
@@ -356,6 +329,20 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         d.setOnShowListener(new OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
+                clickedAccountName = clickedAccount.getTitle().toString();
+                d.setTitle("Modify " + clickedAccountName);
+
+                modifyAccountInit = true;
+
+                defaultAcc.setChecked(clickedAccountName.equals(
+                        settings.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT)));
+
+                useGFAQsSig.setChecked(settings.getBoolean("useGFAQsSig" + clickedAccountName, false));
+
+                modifyAccountInit = false;
+
+                sigContent.setText(settings.getString("customSig" + clickedAccountName, ""));
+
                 d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -394,7 +381,6 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
             @Override
             public void onDismiss(DialogInterface dialog) {
                 updateAccountList();
-                removeDialog(MODIFY_ACCOUNT_DIALOG);
             }
         });
 
@@ -402,6 +388,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
     }
 
     private NetDesc currentDesc;
+
     /**
      * onCompleted is called by the Future with the result or exception of the asynchronous operation.
      *
@@ -415,7 +402,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
 
             if (currentDesc == NetDesc.VERIFY_ACCOUNT_S1) {
                 String loginKey = doc.getElementsByAttributeValue("name", "key").attr("value");
-                HashMap<String, List<String>> loginData = new HashMap<String, List<String>>();
+                HashMap<String, List<String>> loginData = new HashMap<>();
                 // "EMAILADDR", user, "PASSWORD", password, "path", lastPath, "key", key
                 loginData.put("EMAILADDR", Collections.singletonList(verifyUser));
                 loginData.put("PASSWORD", Collections.singletonList(verifyPass));
@@ -429,25 +416,24 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
                         .as(new DocumentParser())
                         .withResponse()
                         .setCallback(SettingsAccount.this);
-            }
-            else if (currentDesc == NetDesc.VERIFY_ACCOUNT_S2) {
+            } else if (currentDesc == NetDesc.VERIFY_ACCOUNT_S2) {
                 if (!result.getRequest().getUri().toString().endsWith("/user/login")) {
-                    AccountManager.addUser(SettingsAccount.this, verifyUser, verifyPass);
-                    dismissDialog(VERIFY_ACCOUNT_DIALOG);
-                    removeDialog(ADD_ACCOUNT_DIALOG);
+                    String userProperCasing = result.getResult().doc.selectFirst("a.welcome").text().trim();
+                    AccountManager.addUser(SettingsAccount.this, userProperCasing, verifyPass);
+                    verifyAccountDialog.dismiss();
+                    addAccountDialog.dismiss();
                     Crouton.showText(this, "Verification succeeded.", Theming.croutonStyle());
                     updateAccountList();
                 } else {
-                    dismissDialog(VERIFY_ACCOUNT_DIALOG);
+                    verifyAccountDialog.dismiss();
                     Crouton.showText(this,
                             "Verification failed. Check your username and password and try again.",
                             Theming.croutonStyle(),
                             addAccWrapper);
                 }
             }
-        }
-        else {
-            dismissDialog(VERIFY_ACCOUNT_DIALOG);
+        } else {
+            verifyAccountDialog.dismiss();
             Crouton.showText(this, "Network connection failed. Check your network settings.", Theming.croutonStyle(), addAccWrapper);
         }
     }
