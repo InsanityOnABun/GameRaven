@@ -53,15 +53,6 @@
             android:layout_marginTop="20dp">
 
             <Button
-                android:id="@+id/abtFeatureRequest"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:onClick="featureRequest"
-                android:text="Send Feature Request" />
-
-            <Button
                 android:id="@+id/abtGenFeedback"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
@@ -69,6 +60,15 @@
                 android:layout_weight="1"
                 android:onClick="genFeedback"
                 android:text="Send Feedback" />
+
+            <Button
+                android:id="@+id/abtDonate"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="donate"
+                android:text="calculated at runtime" />
 
             <Button
                 android:id="@+id/abtPrivacyPolicy"

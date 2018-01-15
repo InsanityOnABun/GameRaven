@@ -10,9 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.util.Theming;
+import com.joanzapata.iconify.Iconify;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,6 +39,9 @@ public class About extends AppCompatActivity {
         setSupportActionBar((android.support.v7.widget.Toolbar) findViewById(R.id.abtToolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Button donate = findViewById(R.id.abtDonate);
+        donate.setText(Iconify.compute(this, "{mdi-coffee 120%}\nBuy Me A Coffee\n{mdi-coffee 120%}", donate));
+
         try {
             String ver = "Version " + this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName +
                     "\nBuild Number " + this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionCode;
@@ -58,12 +63,12 @@ public class About extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void featureRequest(View view) {
+    public void genFeedback(View view) {
         Intent send = new Intent(Intent.ACTION_SENDTO);
         String uriText;
 
-        uriText = "mailto:ioabsoftware@gmail.com" +
-                "?subject=GameRaven Feature Request";
+        uriText = "mailto:support@ioabsoftware.com" +
+                "?subject=GameRaven Feedback";
         uriText = uriText.replace(" ", "%20");
         Uri uri = Uri.parse(uriText);
 
@@ -71,17 +76,11 @@ public class About extends AppCompatActivity {
         startActivity(Intent.createChooser(send, "Send email..."));
     }
 
-    public void genFeedback(View view) {
-        Intent send = new Intent(Intent.ACTION_SENDTO);
-        String uriText;
-
-        uriText = "mailto:ioabsoftware@gmail.com" +
-                "?subject=GameRaven General Feedback";
-        uriText = uriText.replace(" ", "%20");
-        Uri uri = Uri.parse(uriText);
-
-        send.setData(uri);
-        startActivity(Intent.createChooser(send, "Send email..."));
+    public void donate(View view) {
+        Intent donate = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse("https://www.paypal.me/CharlesRosaaen");
+        donate.setData(uri);
+        startActivity(donate);
     }
 
     public void viewPrivacyPolicy(View view) {
