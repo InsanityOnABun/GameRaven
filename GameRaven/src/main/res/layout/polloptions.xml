@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/poGlobalWrapper"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <CheckBox
         android:id="@+id/poUse"
@@ -20,8 +20,8 @@
         android:ems="10"
         android:enabled="false"
         android:hint="Poll Title"
-        android:lines="1" >
-    </EditText>
+        android:inputType="textCapSentences"
+        android:lines="1" />
 
     <ScrollView
         android:id="@+id/poScroller"
@@ -29,13 +29,13 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/poMinLevel"
         android:layout_below="@+id/poTitle"
-        android:scrollbarAlwaysDrawVerticalTrack="true" >
+        android:scrollbarAlwaysDrawVerticalTrack="true">
 
         <LinearLayout
             android:id="@+id/poOptionsWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/po1"
@@ -44,6 +44,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 1"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -53,6 +54,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 2"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -62,6 +64,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 3"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -71,6 +74,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 4"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -80,6 +84,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 5"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -89,6 +94,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 6"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -98,6 +104,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 7"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -107,6 +114,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 8"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -116,6 +124,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 9"
+                android:inputType="textCapSentences"
                 android:lines="1" />
 
             <EditText
@@ -125,6 +134,7 @@
                 android:ems="10"
                 android:enabled="false"
                 android:hint="Option 10"
+                android:inputType="textCapSentences"
                 android:lines="1" />
         </LinearLayout>
     </ScrollView>

@@ -13,7 +13,8 @@
         android:hint="Username"
         android:inputType="text"
         android:singleLine="true" >
-        <requestFocus />
+
+        <requestFocus />
     </EditText>
 
     <EditText
@@ -22,7 +23,6 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
-        android:singleLine="true" >
-    </EditText>
+        android:singleLine="true" />
 
 </LinearLayout>

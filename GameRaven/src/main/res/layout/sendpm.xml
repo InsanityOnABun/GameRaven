@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Recipient"
-        android:maxLength="20" >
+        android:inputType="text"
+        android:maxLength="20">
 
         <requestFocus />
     </EditText>
@@ -22,8 +23,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Subject"
-        android:maxLength="100" >
-    </EditText>
+        android:inputType="textCapSentences"
+        android:maxLength="100" />
 
     <EditText
         android:id="@+id/spMessage"
@@ -32,7 +33,7 @@
         android:layout_weight=".75"
         android:ems="10"
         android:hint="Message"
-        android:inputType="textMultiLine"
+        android:inputType="textCapSentences|textMultiLine"
         android:lines="3"
         android:maxLength="1024" />
 
