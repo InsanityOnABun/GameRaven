@@ -70,6 +70,8 @@ public class HeaderSettings extends PreferenceActivity {
         return notifPendingIntent;
     }
 
+    private static SharedPreferences prefs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,8 @@ public class HeaderSettings extends PreferenceActivity {
         }
 
         super.onCreate(savedInstanceState);
+
+        prefs = AllInOneV2.getSettingsPref();
 
         notifPendingIntent = PendingIntent.getService(this, 0, new Intent(this, NotifierService.class), 0);
 
@@ -103,6 +107,7 @@ public class HeaderSettings extends PreferenceActivity {
         ACCEPTED_KEYS.add("textScale");
         ACCEPTED_KEYS.add("usingAvatars");
         ACCEPTED_KEYS.add("swapTopicViewButtons");
+        ACCEPTED_KEYS.add("gfTheme");
     }
 
     @Override
@@ -110,7 +115,7 @@ public class HeaderSettings extends PreferenceActivity {
         ViewGroup contentView = (ViewGroup) LayoutInflater.from(this).inflate(
                 R.layout.settings_activity, new LinearLayout(this), false);
 
-        Toolbar mActionBar = (Toolbar) contentView.findViewById(R.id.saToolbar);
+        Toolbar mActionBar = contentView.findViewById(R.id.saToolbar);
         mActionBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +125,7 @@ public class HeaderSettings extends PreferenceActivity {
         mActionBar.setTitle(getTitle());
         mActionBar.setTitleTextColor(Color.WHITE);
 
-        ViewGroup contentWrapper = (ViewGroup) contentView.findViewById(R.id.saContentWrapper);
+        ViewGroup contentWrapper = contentView.findViewById(R.id.saContentWrapper);
         LayoutInflater.from(this).inflate(layoutResID, contentWrapper, true);
 
         getWindow().setContentView(contentView);
@@ -171,7 +176,7 @@ public class HeaderSettings extends PreferenceActivity {
         long firstAlarm = SystemClock.elapsedRealtime() + 1000; // first notifier run should be in one second
         ((AlarmManager) this.getSystemService(Context.ALARM_SERVICE))
                 .setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstAlarm, millis, this.getNotifPendingIntent());
-        AllInOneV2.getSettingsPref().edit().putLong("notifsLastPost", 0).apply();
+        prefs.edit().putLong("notifsLastPost", 0).apply();
     }
 
     public void disableNotifs() {
@@ -199,16 +204,16 @@ public class HeaderSettings extends PreferenceActivity {
 
                     buf.append(s).append("\n");
                     buf.append(AccountManager.getPassword(this, s)).append("\n");
-                    buf.append(String.valueOf(AllInOneV2.getSettingsPref().getBoolean("useGFAQsSig" + s, false)));
+                    buf.append(String.valueOf(prefs.getBoolean("useGFAQsSig" + s, false)));
 
                     buf.append("[CUSTOM_SIG]\n");
-                    buf.append(AllInOneV2.getSettingsPref().getString("customSig" + s, "")).append('\n');
+                    buf.append(prefs.getString("customSig" + s, "")).append('\n');
                     buf.append("[END_CUSTOM_SIG]\n");
                 }
                 buf.append("[END_ACCOUNTS]\n");
 
                 buf.append("[GLOBAL_SIG]\n");
-                buf.append(AllInOneV2.getSettingsPref().getString("customSig", "")).append('\n');
+                buf.append(prefs.getString("customSig", "")).append('\n');
                 buf.append("[END_GLOBAL_SIG]\n");
 
                 buf.append("[HIGHLIGHT_LIST]\n");
@@ -219,13 +224,13 @@ public class HeaderSettings extends PreferenceActivity {
                 }
                 buf.append("[END_HIGHLIGHT_LIST]\n");
 
-                buf.append("defaultAccount=").append(AllInOneV2.getSettingsPref().getString("defaultAccount", NO_DEFAULT_ACCOUNT)).append('\n');
+                buf.append("defaultAccount=").append(prefs.getString("defaultAccount", NO_DEFAULT_ACCOUNT)).append('\n');
 
-                buf.append("timezone=").append(AllInOneV2.getSettingsPref().getString("timezone", TimeZone.getDefault().getID())).append('\n');
+                buf.append("timezone=").append(prefs.getString("timezone", TimeZone.getDefault().getID())).append('\n');
 
                 buf.append(backupBoolean("notifsEnable", false));
 
-                buf.append("notifsFrequency=").append(AllInOneV2.getSettingsPref().getString("notifsFrequency", "60")).append('\n');
+                buf.append("notifsFrequency=").append(prefs.getString("notifsFrequency", "60")).append('\n');
 
                 buf.append(backupBoolean("swapTopicViewButtons", false));
                 buf.append(backupBoolean("usingAvatars", false));
@@ -235,12 +240,14 @@ public class HeaderSettings extends PreferenceActivity {
                 buf.append(backupBoolean("enablePTR", false));
                 buf.append(backupBoolean("enableFastScroll", true));
 
-                buf.append("textScale=").append(String.valueOf(AllInOneV2.getSettingsPref().getInt("textScale", 100))).append('\n');
+                buf.append("textScale=").append(String.valueOf(prefs.getInt("textScale", 100))).append('\n');
 
-                buf.append("ampSortOption=").append(AllInOneV2.getSettingsPref().getString("ampSortOption", "-1")).append('\n');
+                buf.append("ampSortOption=").append(prefs.getString("ampSortOption", "-1")).append('\n');
 
                 buf.append(backupBoolean("confirmPostCancel", false));
                 buf.append(backupBoolean("confirmPostSubmit", false));
+
+                buf.append("gfTheme=").append(prefs.getString("gfTheme", "Light Blue")).append('\n');
 
                 buf.close();
                 Toast.makeText(this,"Backup done." ,Toast.LENGTH_SHORT).show();
@@ -257,7 +264,7 @@ public class HeaderSettings extends PreferenceActivity {
     }
 
     private String backupBoolean(String name, boolean def) {
-        if (AllInOneV2.getSettingsPref().getBoolean(name, def))
+        if (prefs.getBoolean(name, def))
             return name + "=true\n";
         else
             return name + "=false\n";
@@ -272,7 +279,7 @@ public class HeaderSettings extends PreferenceActivity {
 
             if (settingsFile.exists()) {
                 try {
-                    SharedPreferences.Editor editor = AllInOneV2.getSettingsPref().edit();
+                    SharedPreferences.Editor editor = prefs.edit();
                     BufferedReader br = new BufferedReader(new FileReader(settingsFile));
                     String line;
                     String[] splitLine;
@@ -372,8 +379,8 @@ public class HeaderSettings extends PreferenceActivity {
                     editor.apply();
 
                     disableNotifs();
-                    if (AllInOneV2.getSettingsPref().getBoolean("notifsEnable", false))
-                        enableNotifs(AllInOneV2.getSettingsPref().getString("notifsFrequency", "60"));
+                    if (prefs.getBoolean("notifsEnable", false))
+                        enableNotifs(prefs.getString("notifsFrequency", "60"));
 
                     Toast.makeText(this, "Restore done.", Toast.LENGTH_SHORT).show();
                     this.finish();
@@ -449,9 +456,9 @@ public class HeaderSettings extends PreferenceActivity {
                         b.setView(v);
                         b.setTitle("Modify Global Custom Signature");
 
-                        final EditText sigText = (EditText) v.findViewById(R.id.sigEditText);
-                        final TextView sigCounter = (TextView) v.findViewById(R.id.sigCounter);
-                        final LinearLayout sigWrapper = (LinearLayout) v.findViewById(R.id.sigWrapper);
+                        final EditText sigText = v.findViewById(R.id.sigEditText);
+                        final TextView sigCounter = v.findViewById(R.id.sigCounter);
+                        final LinearLayout sigWrapper = v.findViewById(R.id.sigWrapper);
 
                         sigText.setHint(AllInOneV2.defaultSig);
                         sigText.addTextChangedListener(new TextWatcher() {
@@ -478,13 +485,13 @@ public class HeaderSettings extends PreferenceActivity {
                                                       int count) {
                             }
                         });
-                        sigText.setText(AllInOneV2.getSettingsPref().getString("customSig", ""));
+                        sigText.setText(prefs.getString("customSig", ""));
 
                         b.setPositiveButton("Save Sig", null);
                         b.setNeutralButton("Clear Sig", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                AllInOneV2.getSettingsPref().edit().putString("customSig", "").apply();
+                                prefs.edit().putString("customSig", "").apply();
                                 Toast.makeText(getActivity(), "Signature cleared and saved.", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -508,7 +515,7 @@ public class HeaderSettings extends PreferenceActivity {
 
                                         if (length < 161) {
                                             if (lines < 2) {
-                                                AllInOneV2.getSettingsPref().edit().putString("customSig", sigText.getText().toString()).apply();
+                                                prefs.edit().putString("customSig", sigText.getText().toString()).apply();
                                                 Toast.makeText(getActivity(), "Signature saved.", Toast.LENGTH_SHORT).show();
                                                 d.dismiss();
                                             } else
@@ -535,12 +542,12 @@ public class HeaderSettings extends PreferenceActivity {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         if ((Boolean) newValue) {
                             // enabling notifications
-                            if (AllInOneV2.getSettingsPref().getString("defaultAccount", NO_DEFAULT_ACCOUNT).equals(NO_DEFAULT_ACCOUNT)) {
+                            if (prefs.getString("defaultAccount", NO_DEFAULT_ACCOUNT).equals(NO_DEFAULT_ACCOUNT)) {
                                 Crouton.showText(getActivity(), "You have no default account set!", Theming.croutonStyle(), (ViewGroup) getView());
                                 return false;
                             } else {
                                 ((HeaderSettings)getActivity()).enableNotifs(
-                                        AllInOneV2.getSettingsPref().getString("notifsFrequency", "60"));
+                                        prefs.getString("notifsFrequency", "60"));
                             }
                         } else {
                             // disabling notifications
@@ -596,80 +603,80 @@ public class HeaderSettings extends PreferenceActivity {
                         b.setView(v);
                         b.setTitle("Select Theme");
 
-                        final TextView current = (TextView) v.findViewById(R.id.tpSelected);
+                        final TextView current = v.findViewById(R.id.tpSelected);
 
                         v.findViewById(R.id.tpBlueLight).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Light Blue").apply();
+                                prefs.edit().putString("gfTheme", "Light Blue").apply();
                                 current.setText("Selected: Light Blue");
                             }
                         });
                         v.findViewById(R.id.tpBlueDark).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Dark Blue").apply();
+                                prefs.edit().putString("gfTheme", "Dark Blue").apply();
                                 current.setText("Selected: Dark Blue");
                             }
                         });
                         v.findViewById(R.id.tpRedLight).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Light Red").apply();
+                                prefs.edit().putString("gfTheme", "Light Red").apply();
                                 current.setText("Selected: Light Red");
                             }
                         });
                         v.findViewById(R.id.tpRedDark).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Dark Red").apply();
+                                prefs.edit().putString("gfTheme", "Dark Red").apply();
                                 current.setText("Selected: Dark Red");
                             }
                         });
                         v.findViewById(R.id.tpGreenLight).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Light Green").apply();
+                                prefs.edit().putString("gfTheme", "Light Green").apply();
                                 current.setText("Selected: Light Green");
                             }
                         });
                         v.findViewById(R.id.tpGreenDark).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Dark Green").apply();
+                                prefs.edit().putString("gfTheme", "Dark Green").apply();
                                 current.setText("Selected: Dark Green");
                             }
                         });
                         v.findViewById(R.id.tpOrangeLight).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Light Orange").apply();
+                                prefs.edit().putString("gfTheme", "Light Orange").apply();
                                 current.setText("Selected: Light Orange");
                             }
                         });
                         v.findViewById(R.id.tpOrangeDark).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Dark Orange").apply();
+                                prefs.edit().putString("gfTheme", "Dark Orange").apply();
                                 current.setText("Selected: Dark Orange");
                             }
                         });
                         v.findViewById(R.id.tpPurpleLight).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Light Purple").apply();
+                                prefs.edit().putString("gfTheme", "Light Purple").apply();
                                 current.setText("Selected: Light Purple");
                             }
                         });
                         v.findViewById(R.id.tpPurpleDark).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                AllInOneV2.getSettingsPref().edit().putString("gfTheme", "Dark Purple").apply();
+                                prefs.edit().putString("gfTheme", "Dark Purple").apply();
                                 current.setText("Selected: Dark Purple");
                             }
                         });
 
-                        current.setText("Selected: " + AllInOneV2.getSettingsPref().getString("gfTheme", "Light Blue"));
+                        current.setText("Selected: " + prefs.getString("gfTheme", "Light Blue"));
 
                         b.setPositiveButton("OK", null);
 
