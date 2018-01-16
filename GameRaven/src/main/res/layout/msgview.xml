@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mvGlobalWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,8 +11,8 @@
         android:id="@+id/mvTopWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:paddingRight="@dimen/item_padding_horizontal">
+        android:paddingRight="@dimen/item_padding_horizontal"
+        tools:background="@color/gf_blue_dark">
 
         <ImageView
             android:id="@+id/mvAvatar"
@@ -38,19 +39,19 @@
                 android:id="@+id/mvUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="User"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:text="User" />
 
             <TextView
                 android:id="@+id/mvPostNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="#500, Posted 1/1/2014 12:00 AM"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:text="#500, Posted 1/1/2014 12:00 AM" />
         </LinearLayout>
 
         <com.joanzapata.iconify.widget.IconTextView
@@ -60,7 +61,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="{md-more-horiz 36dp}" />
+            android:text="{md-more-horiz 36dp}"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
 
     <LinearLayout
@@ -77,9 +79,9 @@
         android:layout_marginBottom="@dimen/item_padding_vertical"
         android:layout_marginLeft="@dimen/item_padding_horizontal"
         android:layout_marginRight="@dimen/item_padding_horizontal"
-        android:text="post"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        tools:text="post" />
 
     <RelativeLayout
         android:id="@+id/mvDeletedMessageWrapper"
@@ -105,7 +107,7 @@
             android:layout_below="@+id/mvDMSep"
             android:layout_marginBottom="@dimen/item_padding_vertical"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
-            android:text="(message deleted)"
+            android:text="@string/message_deleted"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textSize="12sp" />
 
@@ -117,10 +119,10 @@
             android:layout_below="@+id/mvDMSep"
             android:layout_marginBottom="@dimen/item_padding_vertical"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="#500"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            tools:text="#500" />
 
     </RelativeLayout>
 

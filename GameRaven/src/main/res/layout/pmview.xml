@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pmMainWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,9 +16,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="Topic CreatorTC"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        tools:text="Topic CreatorTC" />
 
     <TextView
         android:id="@+id/pmTime"
@@ -25,9 +26,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="12/12 12:12PM"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        tools:text="12/12 12:12PM" />
 
     <TextView
         android:id="@+id/pmSubject"
@@ -37,7 +38,7 @@
         android:layout_below="@+id/pmSender"
         android:gravity="center_vertical"
         android:lines="2"
-        android:text="man fan died at the room shot up to 97 degrees"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        tools:text="man fan died at the room shot up to 97 degrees" />
 </RelativeLayout>

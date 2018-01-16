@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="Use Poll" />
+        android:text="@string/use_poll" />
 
     <EditText
         android:id="@+id/poTitle"
@@ -19,7 +19,7 @@
         android:layout_below="@+id/poUse"
         android:ems="10"
         android:enabled="false"
-        android:hint="Poll Title"
+        android:hint="@string/poll_title"
         android:inputType="textCapSentences"
         android:lines="1" />
 
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 1"
+                android:hint="@string/option_1"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 2"
+                android:hint="@string/option_2"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 3"
+                android:hint="@string/option_3"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 4"
+                android:hint="@string/option_4"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 5"
+                android:hint="@string/option_5"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 6"
+                android:hint="@string/option_6"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 7"
+                android:hint="@string/option_7"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 8"
+                android:hint="@string/option_8"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 9"
+                android:hint="@string/option_9"
                 android:inputType="textCapSentences"
                 android:lines="1" />
 
@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="Option 10"
+                android:hint="@string/option_10"
                 android:inputType="textCapSentences"
                 android:lines="1" />
         </LinearLayout>

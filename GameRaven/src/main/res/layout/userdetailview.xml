@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/udGlobalWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -20,7 +21,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="User Tag"
+            android:text="@string/user_tag"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -32,9 +33,9 @@
             android:layout_below="@+id/udTagLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Pretty Cool Guy"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="Pretty Cool Guy" />
 
         <View
             android:id="@+id/udTagSep"
@@ -60,7 +61,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="User ID"
+            android:text="@string/user_id"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -72,9 +73,9 @@
             android:layout_below="@+id/udIDLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="3705639"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="3705639" />
 
         <View
             android:id="@+id/udIDSep"
@@ -100,7 +101,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="User Level"
+            android:text="@string/user_level"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -112,9 +113,9 @@
             android:layout_below="@+id/udLevelLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="35: Idol"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="35: Idol" />
 
         <View
             android:id="@+id/udLevelSep"
@@ -140,7 +141,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Account Created"
+            android:text="@string/account_created"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -152,9 +153,9 @@
             android:layout_below="@+id/udCreationLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Friday, August 11, 2006 8:03 AM"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="Friday, August 11, 2006 8:03 AM" />
 
         <View
             android:id="@+id/udCreationSep"
@@ -180,7 +181,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Last Visit"
+            android:text="@string/last_visit"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -192,9 +193,9 @@
             android:layout_below="@+id/udLVisitLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Thursday, March 14, 2013 9:11 PM"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="Thursday, March 14, 2013 9:11 PM" />
 
         <View
             android:id="@+id/udLVisitSep"
@@ -220,7 +221,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Signature"
+            android:text="@string/signature"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -232,9 +233,9 @@
             android:layout_below="@+id/udSigLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="http://www.last.fm/user/InsanityOnABun"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="http://www.last.fm/user/InsanityOnABun" />
 
         <View
             android:id="@+id/udSigSep"
@@ -260,7 +261,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Karma"
+            android:text="@string/karma"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -272,9 +273,9 @@
             android:layout_below="@+id/udKarmaLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="1557"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="1557" />
 
         <View
             android:id="@+id/udKarmaSep"
@@ -300,7 +301,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="Active Messages Posted"
+            android:text="@string/active_messages_posted"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="15sp" />
 
@@ -312,9 +313,9 @@
             android:layout_below="@+id/udAMPLabel"
             android:layout_marginLeft="@dimen/item_padding_horizontal"
             android:layout_marginRight="@dimen/item_padding_horizontal"
-            android:text="252"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="252" />
 
         <View
             android:id="@+id/udAMPSep"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pmMainWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,9 +17,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="3 hours ago"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        tools:text="3 hours ago" />
 
     <TextView
         android:id="@+id/notifTitle"
@@ -29,7 +30,7 @@
         android:layout_below="@+id/notifTime"
         android:gravity="center_vertical"
         android:lines="2"
-        android:text="There is 1 new message in topics on the board you are tracking, &quot;GameRaven Development &amp; Discussion&quot;"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        tools:text="There is 1 new message in topics on the board you are tracking, &quot;GameRaven Development &amp; Discussion&quot;" />
 </RelativeLayout>

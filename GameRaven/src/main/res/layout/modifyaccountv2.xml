@@ -3,12 +3,12 @@
     android:id="@+id/modaccGlobalWrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/modaccTopWrapper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <CheckBox
             android:id="@+id/modaccDefaultAccount"
@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
             android:layout_weight="1"
-            android:text="Default Account" />
+            android:text="@string/default_account" />
 
         <CheckBox
             android:id="@+id/modaccUseGfaqsSig"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
             android:layout_weight="1"
-            android:text="Use GFAQs Sig" />
+            android:text="@string/use_gfaqs_sig" />
     </LinearLayout>
 
     <EditText
@@ -51,8 +51,9 @@
 
     <Button
         android:id="@+id/modaccDeleteAcc"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Remove Account" />
+        android:text="@string/remove_account" />
 
 </LinearLayout>

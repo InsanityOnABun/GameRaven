@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pmMainWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,9 +17,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="Corrupt_Power"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        tools:text="Corrupt_Power" />
 
     <TextView
         android:id="@+id/mentionSep"
@@ -29,7 +30,8 @@
         android:layout_toRightOf="@+id/mentionUser"
         android:text=" : "
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/mentionBoard"
@@ -38,9 +40,9 @@
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/mentionSep"
         android:layout_toRightOf="@+id/mentionSep"
-        android:text="GameRaven Development &amp; Discussion"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        tools:text="GameRaven Development &amp; Discussion" />
 
     <TextView
         android:id="@+id/mentionTime"
@@ -49,9 +51,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="3 hours ago"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        tools:text="3 hours ago" />
 
     <TextView
         android:id="@+id/mentionTopic"
@@ -62,7 +64,7 @@
         android:layout_below="@+id/mentionTime"
         android:gravity="center_vertical"
         android:lines="2"
-        android:text="beep bep"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        tools:text="beep bep" />
 </RelativeLayout>

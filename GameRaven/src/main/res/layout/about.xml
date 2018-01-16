@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/abtGlobalWrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,7 +25,7 @@
             android:id="@+id/abtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GameRaven"
+            android:text="@string/gameraven"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
@@ -33,15 +34,15 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:paddingBottom="20dp"
-            android:text="**BUILD_VER_NOT_SET**"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Version 1.2.3\nBuild Number 10203987" />
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="Copyright \u00a9 Insanity On A Bun Software"
+            android:text="@string/ioab_copyright"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <LinearLayout
@@ -59,7 +60,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="genFeedback"
-                android:text="Send Feedback" />
+                android:text="@string/send_feedback" />
 
             <Button
                 android:id="@+id/abtDonate"
@@ -68,7 +69,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="donate"
-                android:text="calculated at runtime" />
+                tools:text="[coffee]\nBuy Me A Coffee\n[coffee]" />
 
             <Button
                 android:id="@+id/abtPrivacyPolicy"
@@ -77,7 +78,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="viewPrivacyPolicy"
-                android:text="View Privacy Policy" />
+                android:text="@string/view_privacy_policy" />
         </LinearLayout>
     </LinearLayout>
 

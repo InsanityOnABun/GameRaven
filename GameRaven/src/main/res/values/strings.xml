@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- TODO: organize strings -->
     <!-- Start Color Picker Strings -->
     <string name="dialog_color_picker">Color Picker</string>
     <string name="press_color_to_apply">Press on Color to apply</string>
@@ -8,6 +9,7 @@
 
     <string name="app_name">GameRaven</string>
     <string name="gameraven">GameRaven</string>
+    <string name="ioab_copyright">Copyright \u00a9 Insanity On A Bun Software</string>
     <string name="drawer_open">open drawer</string>
     <string name="drawer_close">close drawer</string>
     <string name="title">Title</string>
@@ -52,4 +54,40 @@
     <string name="first_unread">First\nUnread</string>
     <string name="click_to_change"> (Click to Change)</string>
     <string name="view_results">View Results</string>
+    <string name="send_feedback">Send Feedback</string>
+    <string name="view_privacy_policy">View Privacy Policy</string>
+    <string name="hex">HEX</string>
+    <string name="username">Username</string>
+    <string name="label">Label</string>
+    <string name="set_color">Set Color</string>
+    <string name="delete_qmark">Delete?</string>
+    <string name="default_account">Default Account</string>
+    <string name="use_gfaqs_sig">Use GFAQs Sig</string>
+    <string name="remove_account">Remove Account</string>
+    <string name="message_deleted">(message deleted)</string>
+    <string name="use_poll">Use Poll</string>
+    <string name="poll_title">Poll Title</string>
+    <string name="option_1">Option 1</string>
+    <string name="option_2">Option 2</string>
+    <string name="option_3">Option 3</string>
+    <string name="option_4">Option 4</string>
+    <string name="option_5">Option 5</string>
+    <string name="option_6">Option 6</string>
+    <string name="option_7">Option 7</string>
+    <string name="option_8">Option 8</string>
+    <string name="option_9">Option 9</string>
+    <string name="option_10">Option 10</string>
+    <string name="sending">Sending...</string>
+    <string name="user_tag">User Tag</string>
+    <string name="user_id">User ID</string>
+    <string name="user_level">User Level</string>
+    <string name="account_created">Account Created</string>
+    <string name="last_visit">Last Visit</string>
+    <string name="signature">Signature</string>
+    <string name="karma">Karma</string>
+    <string name="active_messages_posted">Active Messages Posted</string>
+    <string name="password">Password</string>
+    <string name="recipient">Recipient</string>
+    <string name="subject">Subject</string>
+    <string name="message">Message</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pmdGlobalWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,8 +15,8 @@
         android:layout_marginRight="@dimen/item_padding_horizontal"
         android:layout_marginTop="@dimen/item_padding_vertical"
         android:gravity="center_vertical"
-        android:text="man fan died at the room shot up to 97 degrees"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        tools:text="man fan died at the room shot up to 97 degrees" />
 
 </LinearLayout>

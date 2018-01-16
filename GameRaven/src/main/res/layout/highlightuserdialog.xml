@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/huWrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <CheckedTextView
         android:id="@+id/huDelete"
@@ -15,15 +16,16 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:text="Delete?"
-        android:visibility="gone" />
+        android:text="@string/delete_qmark"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <EditText
         android:id="@+id/huName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Username"
+        android:hint="@string/username"
         android:inputType="text">
 
         <requestFocus />
@@ -34,14 +36,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Label"
+        android:hint="@string/label"
         android:inputType="textCapWords" />
 
     <LinearLayout
         android:id="@+id/huColorWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp" >
+        android:layout_marginBottom="2dp">
 
         <View
             android:id="@+id/huColorSepL"
@@ -54,13 +56,13 @@
 
         <Button
             android:id="@+id/huSetColor"
-            style="@android:style/Widget.Holo.ActionButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
             android:layout_weight="1"
-            android:text="Set Color" />
+            android:text="@string/set_color" />
 
         <View
             android:id="@+id/huColorSepR"
@@ -76,7 +78,7 @@
         android:id="@+id/huColorVal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="-16777216"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:text="-16777216" />
 
 </LinearLayout>

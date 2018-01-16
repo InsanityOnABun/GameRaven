@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bvTopWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,11 +15,11 @@
         android:id="@+id/bvTpcMsgDetails"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Tpcs: 58456426 // Msgs: 65445665"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/bvLastPost" />
+        app:layout_constraintRight_toLeftOf="@+id/bvLastPost"
+        tools:text="Tpcs: 58456426 // Msgs: 65445665" />
 
     <TextView
         android:id="@+id/bvDesc"
@@ -26,28 +27,28 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:minLines="1"
-        android:text="Description"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
-        app:layout_constraintTop_toBottomOf="@+id/bvName" />
+        app:layout_constraintTop_toBottomOf="@+id/bvName"
+        tools:text="Description" />
 
     <TextView
         android:id="@+id/bvName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:maxLines="2"
-        android:text="Android"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@+id/bvTpcMsgDetails" />
+        app:layout_constraintTop_toBottomOf="@+id/bvTpcMsgDetails"
+        tools:text="Android" />
 
     <TextView
         android:id="@+id/bvLastPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Last Post: 12/12 12:12PM"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="Last Post: 12/12 12:12PM" />
 
 </android.support.constraint.ConstraintLayout>

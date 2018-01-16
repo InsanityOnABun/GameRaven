@@ -10,7 +10,7 @@
         android:id="@+id/addaccUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
+        android:hint="@string/username"
         android:inputType="text"
         android:singleLine="true" >
 
@@ -21,7 +21,7 @@
         android:id="@+id/addaccPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         android:singleLine="true" />
 
