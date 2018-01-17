@@ -117,8 +117,6 @@
                 android:layout_height="match_parent"
                 android:dividerHeight="1dp"
                 android:fastScrollEnabled="true"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
                 android:smoothScrollbar="true" />
         </android.support.v4.widget.SwipeRefreshLayout>
 
