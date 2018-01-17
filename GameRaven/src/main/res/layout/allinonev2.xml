@@ -109,7 +109,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/aioPostWrapper"
             android:layout_below="@+id/aioHeader"
-            android:scrollbarStyle="outsideOverlay">
+            android:scrollbarStyle="insideOverlay">
 
             <ListView
                 android:id="@+id/aioMainList"
