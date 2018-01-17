@@ -1,50 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/gsWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:paddingBottom="@dimen/item_padding_vertical"
+    android:paddingEnd="@dimen/item_padding_horizontal"
+    android:paddingStart="@dimen/item_padding_horizontal"
+    android:paddingTop="@dimen/item_padding_vertical">
 
     <TextView
         android:id="@+id/gsPlatform"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/item_padding_horizontal"
-        android:layout_marginRight="@dimen/item_padding_horizontal"
-        android:layout_marginTop="@dimen/item_padding_vertical"
-        android:layout_toLeftOf="@+id/gsYear"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gsYear"
         tools:text="Platform: AND" />
 
     <TextView
         android:id="@+id/gsYear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/item_padding_horizontal"
-        android:layout_marginRight="@dimen/item_padding_horizontal"
-        android:layout_marginTop="@dimen/item_padding_vertical"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="1991" />
 
     <TextView
         android:id="@+id/gsName"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/gsPlatform"
-        android:layout_marginBottom="@dimen/item_padding_vertical"
-        android:layout_marginLeft="@dimen/item_padding_horizontal"
-        android:layout_marginRight="@dimen/item_padding_horizontal"
         android:gravity="center_vertical"
-        android:maxLines="2"
+        android:lines="2"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gsPlatform"
         tools:text="Android" />
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

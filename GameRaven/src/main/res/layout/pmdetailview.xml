@@ -4,16 +4,16 @@
     android:id="@+id/pmdGlobalWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/item_padding_vertical"
+    android:paddingEnd="@dimen/item_padding_horizontal"
+    android:paddingStart="@dimen/item_padding_horizontal"
+    android:paddingTop="@dimen/item_padding_vertical">
 
     <com.ioabsoftware.gameraven.views.ClickableLinksTextView
         android:id="@+id/pmdMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/item_padding_vertical"
-        android:layout_marginLeft="@dimen/item_padding_horizontal"
-        android:layout_marginRight="@dimen/item_padding_horizontal"
-        android:layout_marginTop="@dimen/item_padding_vertical"
         android:gravity="center_vertical"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="15sp"

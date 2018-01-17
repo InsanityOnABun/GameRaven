@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pmMainWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:paddingBottom="@dimen/item_padding_vertical"
-    android:paddingLeft="@dimen/item_padding_horizontal"
-    android:paddingRight="@dimen/item_padding_horizontal"
+    android:paddingEnd="@dimen/item_padding_horizontal"
+    android:paddingStart="@dimen/item_padding_horizontal"
     android:paddingTop="@dimen/item_padding_vertical">
 
     <TextView
         android:id="@+id/pmSender"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
+        app:layout_constraintEnd_toStartOf="@+id/pmTime"
+        app:layout_constraintStart_toStartOf="parent"
         tools:text="Topic CreatorTC" />
 
     <TextView
         android:id="@+id/pmTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="12/12 12:12PM" />
 
     <TextView
         android:id="@+id/pmSubject"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/pmSender"
         android:gravity="center_vertical"
         android:lines="2"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pmSender"
         tools:text="man fan died at the room shot up to 97 degrees" />
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

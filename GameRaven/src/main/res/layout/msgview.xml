@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/mvTopWrapper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:paddingRight="@dimen/item_padding_horizontal"
         tools:background="@color/gf_blue_dark">
 

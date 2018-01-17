@@ -5,11 +5,11 @@
     android:id="@+id/bvTopWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/item_padding_vertical"
-    android:layout_marginEnd="@dimen/item_padding_horizontal"
-    android:layout_marginStart="@dimen/item_padding_horizontal"
-    android:layout_marginTop="@dimen/item_padding_vertical"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:paddingBottom="@dimen/item_padding_vertical"
+    android:paddingEnd="@dimen/item_padding_horizontal"
+    android:paddingStart="@dimen/item_padding_horizontal"
+    android:paddingTop="@dimen/item_padding_vertical">
 
     <TextView
         android:id="@+id/bvTpcMsgDetails"
@@ -22,15 +22,13 @@
         tools:text="Tpcs: 58456426 // Msgs: 65445665" />
 
     <TextView
-        android:id="@+id/bvDesc"
-        android:layout_width="0dp"
+        android:id="@+id/bvLastPost"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:minLines="1"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
-        app:layout_constraintTop_toBottomOf="@+id/bvName"
-        tools:text="Description" />
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="Last Post: 12/12 12:12PM" />
 
     <TextView
         android:id="@+id/bvName"
@@ -43,12 +41,14 @@
         tools:text="Android" />
 
     <TextView
-        android:id="@+id/bvLastPost"
-        android:layout_width="wrap_content"
+        android:id="@+id/bvDesc"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minLines="1"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="Last Post: 12/12 12:12PM" />
+        app:layout_constraintTop_toBottomOf="@+id/bvName"
+        tools:text="Description" />
 
 </android.support.constraint.ConstraintLayout>
