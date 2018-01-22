@@ -2,11 +2,13 @@ package com.ioabsoftware.gameraven;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -29,6 +31,9 @@ public class NotifierService extends IntentService {
 
     public static final String NOTIF_TAG = "GR_NOTIF";
     public static final int NOTIF_ID = 1;
+
+    private static NotificationManager notifManager;
+    private static Notification.Builder notifBuilder;
 
 
     public NotifierService() {
@@ -94,8 +99,6 @@ public class NotifierService extends IntentService {
                 // fourth connection finished (pm page)
 
                 if (notifResponse.statusCode() != 401 && pmResponse.statusCode() != 401) {
-                    NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
                     boolean triggerNotif = false;
                     String notifMsg = "";
                     long lastCheck = prefs.getLong("notifsLastCheck", 0);
@@ -156,8 +159,8 @@ public class NotifierService extends IntentService {
                     }
 
                     if (triggerNotif) {
-                        Notification.Builder notifBuilder = new Notification.Builder(this)
-                                .setSmallIcon(R.drawable.ic_notif_small)
+                        initNotifManagerAndBuilder();
+                        notifBuilder.setSmallIcon(R.drawable.ic_notif_small)
                                 .setContentTitle("GameRaven")
                                 .setContentText(notifMsg);
                         Intent notifIntent = new Intent(this, AllInOneV2.class);
@@ -166,7 +169,7 @@ public class NotifierService extends IntentService {
                         notifBuilder.setAutoCancel(true);
                         notifBuilder.setDefaults(Notification.DEFAULT_ALL);
 
-                        notifManager.notify(NOTIF_TAG, NOTIF_ID, notifBuilder.getNotification());
+                        notifManager.notify(NOTIF_TAG, NOTIF_ID, notifBuilder.build());
                     }
 
                     prefs.edit().putLong("notifsLastCheck", rightNow).apply();
@@ -179,7 +182,36 @@ public class NotifierService extends IntentService {
         }
     }
 
-    public static void notifDismiss(Context c) {
-        ((NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(NOTIF_TAG, NOTIF_ID);
+    private void initNotifManagerAndBuilder() {
+        if (notifManager == null)
+            notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // create notif notifBuilder depending on API level
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String id = getString(R.string.app_name);
+            CharSequence name = getString(R.string.app_name);
+            String description = getString(R.string.app_name);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+
+            // configure channel
+            mChannel.setBypassDnd(false);
+            mChannel.setDescription(description);
+            mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            mChannel.setShowBadge(false);
+            mChannel.enableLights(false);
+            mChannel.enableVibration(false);
+            notifManager.createNotificationChannel(mChannel);
+            notifBuilder = new Notification.Builder(this, getString(R.string.app_name));
+        } else {
+            notifBuilder = new Notification.Builder(this);
+        }
+    }
+
+    public void notifDismiss() {
+        if (notifManager == null)
+            initNotifManagerAndBuilder();
+
+        notifManager.cancel(NOTIF_TAG, NOTIF_ID);
     }
 }
