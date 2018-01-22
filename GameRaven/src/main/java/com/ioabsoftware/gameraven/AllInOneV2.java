@@ -3202,7 +3202,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setMessage("You found a notification that is currently unsupported. Good job! " +
                     "The details of the notification are below. Press OK to copy the details " +
-                    "to the clipboard and be taken to correct topic to report this.\n" +
+                    "to the clipboard and be taken to correct board to report this.\n" +
                     "\n" +
                     deets);
             b.setPositiveButton("OK", new OnClickListener() {
@@ -3211,7 +3211,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     android.content.ClipboardManager clipboard =
                             (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", deets));
-                    session.get(NetDesc.TOPIC, "/boards/1177-gameraven-development-and-discussion/75010049");
+                    session.get(NetDesc.TOPIC, "/boards/1177-gameraven-development-and-discussion");
                 }
             });
             b.setNegativeButton("Dismiss", null);
