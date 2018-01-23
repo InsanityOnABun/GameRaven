@@ -124,6 +124,6 @@
         android:layout_height="18dp"
         android:layout_alignWithParentIfMissing="true"
         android:scaleType="fitStart"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tvTC"
+        app:layout_constraintTop_toBottomOf="@+id/tvTopSpacer"
         app:layout_constraintLeft_toLeftOf="@id/tvTitle" />
 </android.support.constraint.ConstraintLayout>
