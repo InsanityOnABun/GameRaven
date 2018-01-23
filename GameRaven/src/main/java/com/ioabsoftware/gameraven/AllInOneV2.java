@@ -2611,8 +2611,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         b.setTitle("Poll Options");
         LayoutInflater inflater = getLayoutInflater();
 
-        @SuppressLint("InflateParams")
-        final View v = inflater.inflate(R.layout.polloptions, null);
+        @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.polloptions, null);
         b.setView(v);
         b.setCancelable(false);
 
@@ -2753,8 +2752,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         LayoutInflater inflater = getLayoutInflater();
 
-        @SuppressLint("InflateParams")
-        final View v = inflater.inflate(R.layout.msgaction, null);
+        @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.msgaction, null);
 
         msgActionBuilder.setView(v);
 
@@ -2862,8 +2860,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
 
-        @SuppressLint("InflateParams")
-        final View v = inflater.inflate(R.layout.sendpm, null);
+        @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.sendpm, null);
 
         b.setView(v);
         b.setTitle("Send Private Message");
@@ -3192,11 +3189,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             b.setMessage("Congrats on the new user level!");
             b.setPositiveButton("Thanks!", null);
             b.show();
-        }
-        else if (url.equals(NOTIFS_CLEAR_LINK)) {
+        } else if (url.equals(NOTIFS_CLEAR_LINK)) {
             session.get(NetDesc.NOTIFS_CLEAR, url);
-        }
-        else if (Session.determineNetDesc(url) == NetDesc.UNSPECIFIED) {
+        } else if (Session.determineNetDesc(url) == NetDesc.UNSPECIFIED) {
             final String deets = "Notif Text: " + text + "\n" +
                     "Notif Link: " + url;
             AlertDialog.Builder b = new AlertDialog.Builder(this);
