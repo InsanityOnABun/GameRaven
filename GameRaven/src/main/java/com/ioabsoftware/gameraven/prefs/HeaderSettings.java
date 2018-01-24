@@ -288,32 +288,32 @@ public class HeaderSettings extends PreferenceActivity {
                                         values.add(br.readLine());
 
                                         br.readLine();
-                                        String sig = "";
+                                        StringBuilder sig = new StringBuilder();
                                         boolean isFirstLine = true;
                                         while (!(line = br.readLine()).equals("[END_CUSTOM_SIG]")) {
                                             if (!isFirstLine)
-                                                sig += '\n';
+                                                sig.append('\n');
 
-                                            sig += line;
+                                            sig.append(line);
                                             isFirstLine = false;
                                         }
 
                                         keys.add("customSig" + user);
-                                        values.add(sig);
+                                        values.add(sig.toString());
 
                                     }
                                 } else if (line.equals("[GLOBAL_SIG]")) {
-                                    String globalSig = "";
+                                    StringBuilder globalSig = new StringBuilder();
                                     boolean isFirstLine = true;
                                     while (!(line = br.readLine()).equals("[END_GLOBAL_SIG]")) {
                                         if (!isFirstLine)
-                                            globalSig += '\n';
+                                            globalSig.append('\n');
 
-                                        globalSig += line;
+                                        globalSig.append(line);
                                         isFirstLine = false;
                                     }
                                     keys.add("customSig");
-                                    values.add(globalSig);
+                                    values.add(globalSig.toString());
                                 } else if (line.equals("[HIGHLIGHT_LIST]")) {
                                     while (!(line = br.readLine()).equals("[END_HIGHLIGHT_LIST]")) {
                                         String label = br.readLine();
@@ -417,8 +417,8 @@ public class HeaderSettings extends PreferenceActivity {
             super.onCreate(savedInstanceState);
 
             String settings = getArguments().getString("settings");
-            /**
-             * ACCOUNT & NOTIFS SETTINGS
+            /*
+              ACCOUNT & NOTIFS SETTINGS
              */
             if ("accountsnotifs".equals(settings)) {
                 addPreferencesFromResource(R.xml.prefsaccountsnotifs);
@@ -434,7 +434,7 @@ public class HeaderSettings extends PreferenceActivity {
                     public boolean onPreferenceClick(Preference preference) {
                         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
                         LayoutInflater inflater = getActivity().getLayoutInflater();
-                        final View v = inflater.inflate(R.layout.modifysig, null);
+                        @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.modifysig, null);
                         b.setView(v);
                         b.setTitle("Modify Global Custom Signature");
 
@@ -453,7 +453,9 @@ public class HeaderSettings extends PreferenceActivity {
                                     if (escapedSig.charAt(i) == '\n') lines++;
                                 }
 
-                                sigCounter.setText((1 - lines) + " line break(s), " + (160 - length) + " characters available");
+                                String sigCounterText = (1 - lines) + " line break(s), " +
+                                        (160 - length) + " characters available";
+                                sigCounter.setText(sigCounterText);
                             }
 
                             @Override
@@ -562,7 +564,11 @@ public class HeaderSettings extends PreferenceActivity {
                     p.setEntries(entries);
                     p.setEntryValues(vals);
                 }
-            } else if ("theming".equals(settings)) {
+            }
+            /*
+              THEMING SETTINGS
+             */
+            else if ("theming".equals(settings)) {
                 addPreferencesFromResource(R.xml.prefstheming);
                 findPreference("manageHighlightedUsers").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     public boolean onPreferenceClick(Preference preference) {
@@ -576,7 +582,7 @@ public class HeaderSettings extends PreferenceActivity {
                     public boolean onPreferenceClick(Preference preference) {
                         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
                         LayoutInflater inflater = getActivity().getLayoutInflater();
-                        final View v = inflater.inflate(R.layout.themepicker, null);
+                        @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.themepicker, null);
                         b.setView(v);
                         b.setTitle("Select Theme");
 
@@ -662,8 +668,8 @@ public class HeaderSettings extends PreferenceActivity {
                     }
                 });
             }
-            /**
-             * GENERAL SETTINGS
+            /*
+              GENERAL SETTINGS
              */
             else if ("general".equals(settings)) {
                 addPreferencesFromResource(R.xml.prefsgeneral);
