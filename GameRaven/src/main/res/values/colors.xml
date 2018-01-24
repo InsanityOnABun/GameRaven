@@ -50,18 +50,12 @@
 
     <color name="dark_topic_status_icon">#757575</color>
 
-    <color name="holo_blue">#33B5E5</color>
-    <color name="holo_blue_dark">#0099CC</color>
-
     <color name="white">#ffffff</color>
     <color name="gray">#808080</color>
     <color name="black">#000000</color>
 
     <color name="transparent">#00000000</color>
     <color name="nearly_transparent">#01000000</color>
-
-    <color name="drawer_header">#999999</color>
-    <color name="drawer_header_light">#555555</color>
 
     <color name="read_topic">#666666</color>
     <color name="read_topic_light">#aaaaaa</color>

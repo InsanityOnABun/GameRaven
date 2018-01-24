@@ -6,18 +6,17 @@
         <menu>
             <item
                 android:id="@+id/dwrBoardJumper"
-                android:title="@string/board_jumper"/>
-            <group
-                android:id="@+id/dwrLoggedInNav">
+                android:title="@string/board_jumper" />
+            <group android:id="@+id/dwrLoggedInNav">
                 <item
                     android:id="@+id/dwrAMPList"
-                    android:title="@string/amp_list"/>
+                    android:title="@string/amp_list" />
                 <item
                     android:id="@+id/dwrTrackedTopics"
-                    android:title="@string/tracked_topics"/>
+                    android:title="@string/tracked_topics" />
                 <item
                     android:id="@+id/dwrPMInbox"
-                    android:title="@string/pm_inbox"/>
+                    android:title="@string/pm_inbox" />
             </group>
         </menu>
     </item>
@@ -28,19 +27,19 @@
         <menu>
             <item
                 android:id="@+id/dwrCopyCurrURL"
-                android:title="@string/copy_curr_page"/>
+                android:title="@string/copy_curr_page" />
             <item
                 android:id="@+id/dwrHighlightList"
-                android:title="@string/manage_highlight_list"/>
+                android:title="@string/manage_highlight_list" />
             <item
                 android:id="@+id/dwrSettings"
-                android:title="@string/settings"/>
+                android:title="@string/settings" />
             <item
                 android:id="@+id/dwrAbout"
-                android:title="@string/about"/>
+                android:title="@string/about" />
             <item
                 android:id="@+id/dwrExit"
-                android:title="@string/exit_gameraven"/>
+                android:title="@string/exit_gameraven" />
         </menu>
     </item>
 </menu>

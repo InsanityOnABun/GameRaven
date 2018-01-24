@@ -4,7 +4,6 @@
     <declare-styleable name="customAttrs">
         <attr name="colorBackground" format="color" />
         <attr name="colorBackgroundInverse" format="reference" />
-        <attr name="colorDrawerHeader" format="color" />
 
         <attr name="readTopic" format="color" />
         <attr name="hiddenSpoilerColor" format="color" />
