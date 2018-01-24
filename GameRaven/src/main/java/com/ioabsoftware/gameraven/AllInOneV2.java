@@ -268,6 +268,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         // Will they get GC'd? I have no idea. Better safe than sorry.
         themingInstance = new Theming();
 
+        // Init notification job if it isn't running and should be
+        if (settings.getBoolean("notifsEnable", false)) {
+            int seconds = 60 * Integer.parseInt(settings.getString("notifsFrequency", "60"));
+            NotifierJobService.dispatchJob(this, seconds, false);
+        }
+
         Theming.preInit(settings);
         setTheme(Theming.theme());
         Theming.init(this, settings);

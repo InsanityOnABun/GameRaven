@@ -100,15 +100,14 @@
         <activity android:name=".About" />
 
         <service
-            android:name=".NotifierService"
+            android:name=".NotifierJobService"
             android:exported="false"
-            android:label="Notifier Service" />
-
-        <receiver android:name=".NotifierStartupReceiver">
+            android:label="Notifier Service">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
-        </receiver>
+        </service>
+
     </application>
 
 </manifest>

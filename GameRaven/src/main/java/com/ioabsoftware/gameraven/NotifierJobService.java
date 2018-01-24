@@ -1,6 +1,5 @@
 package com.ioabsoftware.gameraven;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,6 +11,16 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.SimpleJobService;
+import com.firebase.jobdispatcher.Trigger;
 import com.ioabsoftware.gameraven.networking.Session;
 import com.ioabsoftware.gameraven.prefs.HeaderSettings;
 import com.ioabsoftware.gameraven.util.AccountManager;
@@ -27,21 +36,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class NotifierService extends IntentService {
+public class NotifierJobService extends SimpleJobService {
 
-    public static final String NOTIF_TAG = "GR_NOTIF";
+    public static final String JOB_TAG = "GR_NOTIF_CHECK";
     public static final int NOTIF_ID = 1;
 
     private static NotificationManager notifManager;
     private static Notification.Builder notifBuilder;
 
-
-    public NotifierService() {
-        super("GameRavenNotifierWorker");
-    }
-
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public int onRunJob(JobParameters job) {
         Log.d("notif", "notif service starting");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -53,7 +57,7 @@ public class NotifierService extends IntentService {
             try {
                 long rightNow = System.currentTimeMillis();
 
-                HashMap<String, String> cookies = new HashMap<String, String>();
+                HashMap<String, String> cookies = new HashMap<>();
                 String password = AccountManager.getPassword(getApplicationContext(), username);
 
                 String notifPath = Session.ROOT + "/user/notifications";
@@ -71,7 +75,7 @@ public class NotifierService extends IntentService {
                 String loginKey = pRes.getElementsByAttributeValue("name",
                         "key").attr("value");
 
-                HashMap<String, String> loginData = new HashMap<String, String>();
+                HashMap<String, String> loginData = new HashMap<>();
                 // "EMAILADDR", user, "PASSWORD", password, "path", lastPath, "key", key
                 loginData.put("EMAILADDR", username);
                 loginData.put("PASSWORD", password);
@@ -108,7 +112,7 @@ public class NotifierService extends IntentService {
                     if (notifTbody != null) {
                         Element latest = notifTbody.getElementsByTag("tr").first();
                         if (!latest.child(2).text().equals("Read")) {
-                            long millis = 0;
+                            long millis;
                             int multiplier = 1000;
                             String fuzzyTimestamp = latest.child(1).text();
                             if (fuzzyTimestamp.contains("second")) {
@@ -169,7 +173,7 @@ public class NotifierService extends IntentService {
                         notifBuilder.setAutoCancel(true);
                         notifBuilder.setDefaults(Notification.DEFAULT_ALL);
 
-                        notifManager.notify(NOTIF_TAG, NOTIF_ID, notifBuilder.build());
+                        notifManager.notify(null, NOTIF_ID, notifBuilder.build());
                     }
 
                     prefs.edit().putLong("notifsLastCheck", rightNow).apply();
@@ -180,6 +184,7 @@ public class NotifierService extends IntentService {
                 e.printStackTrace();
             }
         }
+        return JobService.RESULT_SUCCESS;
     }
 
     private void initNotifManagerAndBuilder() {
@@ -208,10 +213,23 @@ public class NotifierService extends IntentService {
         }
     }
 
-    public void notifDismiss() {
-        if (notifManager == null)
-            initNotifManagerAndBuilder();
+    public static void dispatchJob(Context c, int notifFreqInSeconds, boolean shouldReplace) {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(c));
+        Job notifJob = dispatcher.newJobBuilder()
+                .setService(NotifierJobService.class)
+                .setTag(JOB_TAG)
+                .setRecurring(true)
+                .setLifetime(Lifetime.FOREVER)
+                .setReplaceCurrent(shouldReplace)
+                .addConstraint(Constraint.ON_ANY_NETWORK)
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setTrigger(Trigger.executionWindow(notifFreqInSeconds - 150, notifFreqInSeconds + 150))
+                .build();
 
-        notifManager.cancel(NOTIF_TAG, NOTIF_ID);
+        dispatcher.mustSchedule(notifJob);
+    }
+
+    public static void cancelJob(Context c) {
+        new FirebaseJobDispatcher(new GooglePlayDriver(c)).cancel(JOB_TAG);
     }
 }

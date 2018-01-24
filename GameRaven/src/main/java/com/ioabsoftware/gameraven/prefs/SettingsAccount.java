@@ -250,7 +250,6 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
                                 (ViewGroup) buttonView.getParent().getParent());
                     } else {
                         settings.edit().putString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT).apply();
-                        settings.edit().putLong("notifsLastPost", 0).apply();
                         Crouton.showText(SettingsAccount.this,
                                 "Default account removed.",
                                 Theming.croutonStyle(),

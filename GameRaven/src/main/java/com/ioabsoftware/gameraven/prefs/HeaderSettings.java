@@ -3,10 +3,7 @@ package com.ioabsoftware.gameraven.prefs;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +12,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.SystemClock;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -36,10 +32,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ioabsoftware.gameraven.About;
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.BuildConfig;
-import com.ioabsoftware.gameraven.NotifierService;
+import com.ioabsoftware.gameraven.NotifierJobService;
 import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.db.HighlightedUser;
 import com.ioabsoftware.gameraven.util.AccountManager;
@@ -65,11 +60,6 @@ public class HeaderSettings extends PreferenceActivity {
 
     public static final ArrayList<String> ACCEPTED_KEYS = new ArrayList<>();
 
-    private PendingIntent notifPendingIntent;
-    public PendingIntent getNotifPendingIntent() {
-        return notifPendingIntent;
-    }
-
     private static SharedPreferences prefs;
 
 
@@ -86,13 +76,11 @@ public class HeaderSettings extends PreferenceActivity {
 
         prefs = AllInOneV2.getSettingsPref();
 
-        notifPendingIntent = PendingIntent.getService(this, 0, new Intent(this, NotifierService.class), 0);
-
         ACCEPTED_KEYS.add("timezone");
         ACCEPTED_KEYS.add("notifsEnable");
         ACCEPTED_KEYS.add("notifsAMPEnable"); // for backwards compatibility, no effect now
-        ACCEPTED_KEYS.add("notifsTTEnable"); // for backwards compatibility, no effect now
-        ACCEPTED_KEYS.add("notifsPMEnable"); // for backwards compatibility, no effect now
+        ACCEPTED_KEYS.add("notifsTTEnable");  // for backwards compatibility, no effect now
+        ACCEPTED_KEYS.add("notifsPMEnable");  // for backwards compatibility, no effect now
         ACCEPTED_KEYS.add("notifsFrequency");
         ACCEPTED_KEYS.add("reloadOnBack");
         ACCEPTED_KEYS.add("reloadOnResume");
@@ -172,15 +160,12 @@ public class HeaderSettings extends PreferenceActivity {
     }
 
     public void enableNotifs(String freq) {
-        long millis = 60000 * Integer.parseInt(freq);
-        long firstAlarm = SystemClock.elapsedRealtime() + 1000; // first notifier run should be in one second
-        ((AlarmManager) this.getSystemService(Context.ALARM_SERVICE))
-                .setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstAlarm, millis, this.getNotifPendingIntent());
-        prefs.edit().putLong("notifsLastPost", 0).apply();
+        int seconds = 60 * Integer.parseInt(freq);
+        NotifierJobService.dispatchJob(this, seconds, true);
     }
 
     public void disableNotifs() {
-        ((AlarmManager) this.getSystemService(Context.ALARM_SERVICE)).cancel(this.getNotifPendingIntent());
+        NotifierJobService.cancelJob(this);
     }
 
     private void backupSettings() {
@@ -250,7 +235,7 @@ public class HeaderSettings extends PreferenceActivity {
                 buf.append("gfTheme=").append(prefs.getString("gfTheme", "Light Blue")).append('\n');
 
                 buf.close();
-                Toast.makeText(this,"Backup done." ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Backup done.", Toast.LENGTH_SHORT).show();
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -259,7 +244,7 @@ public class HeaderSettings extends PreferenceActivity {
             // Something else is wrong. It may be one of many other states, but all we need
             //  to know is we can neither read nor write
             Log.e("writeToLog", "error writing to log, external storage is not writable");
-            Toast.makeText(this,"Backup failed. Storage is most likely not accessible." ,Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Backup failed. Storage is most likely not accessible.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -338,14 +323,14 @@ public class HeaderSettings extends PreferenceActivity {
 
                                         AllInOneV2.getHLDB().addUser(line, label, Integer.parseInt(color));
                                     }
-                                } else
-                                if (BuildConfig.DEBUG) AllInOneV2.wtl("line unhandled in restore: " + line);
+                                } else if (BuildConfig.DEBUG)
+                                    AllInOneV2.wtl("line unhandled in restore: " + line);
                             } else if (line.contains("=")) {
                                 splitLine = line.split("=", 2);
                                 keys.add(splitLine[0]);
                                 values.add(splitLine[1]);
-                            } else
-                            if (BuildConfig.DEBUG) AllInOneV2.wtl("line unhandled in restore: " + line);
+                            } else if (BuildConfig.DEBUG)
+                                AllInOneV2.wtl("line unhandled in restore: " + line);
                         }
                     }
 
@@ -372,8 +357,8 @@ public class HeaderSettings extends PreferenceActivity {
                                     editor.putInt(key, Integer.parseInt(val));
                             } else
                                 editor.putString(key, val);
-                        } else
-                        if (BuildConfig.DEBUG) AllInOneV2.wtl("Key, Val pair not recognized in restore: " + key + ", " + val);
+                        } else if (BuildConfig.DEBUG)
+                            AllInOneV2.wtl("Key, Val pair not recognized in restore: " + key + ", " + val);
                     }
 
                     editor.apply();
@@ -424,9 +409,6 @@ public class HeaderSettings extends PreferenceActivity {
         }
         return true;
     }
-
-
-
 
 
     public static class SettingsFragment extends PreferenceFragment {
@@ -546,12 +528,12 @@ public class HeaderSettings extends PreferenceActivity {
                                 Crouton.showText(getActivity(), "You have no default account set!", Theming.croutonStyle(), (ViewGroup) getView());
                                 return false;
                             } else {
-                                ((HeaderSettings)getActivity()).enableNotifs(
+                                ((HeaderSettings) getActivity()).enableNotifs(
                                         prefs.getString("notifsFrequency", "60"));
                             }
                         } else {
                             // disabling notifications
-                            ((HeaderSettings)getActivity()).disableNotifs();
+                            ((HeaderSettings) getActivity()).disableNotifs();
                         }
                         return true;
                     }
@@ -560,8 +542,7 @@ public class HeaderSettings extends PreferenceActivity {
                 findPreference("notifsFrequency").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        ((HeaderSettings)getActivity()).disableNotifs();
-                        ((HeaderSettings)getActivity()).enableNotifs((String) newValue);
+                        ((HeaderSettings) getActivity()).enableNotifs((String) newValue);
                         return true;
                     }
                 });
@@ -581,11 +562,7 @@ public class HeaderSettings extends PreferenceActivity {
                     p.setEntries(entries);
                     p.setEntryValues(vals);
                 }
-            }
-            /**
-             * THEMING SETTINGS
-             */
-            else if ("theming".equals(settings)) {
+            } else if ("theming".equals(settings)) {
                 addPreferencesFromResource(R.xml.prefstheming);
                 findPreference("manageHighlightedUsers").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     public boolean onPreferenceClick(Preference preference) {
@@ -702,7 +679,7 @@ public class HeaderSettings extends PreferenceActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                                    ((HeaderSettings)getActivity()).backupSettings();
+                                    ((HeaderSettings) getActivity()).backupSettings();
                                 else
                                     checkForWritePermissions();
                             }
@@ -725,7 +702,7 @@ public class HeaderSettings extends PreferenceActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                                    ((HeaderSettings)getActivity()).restoreSettings();
+                                    ((HeaderSettings) getActivity()).restoreSettings();
                                 else
                                     checkForReadPermissions();
                             }
@@ -748,7 +725,7 @@ public class HeaderSettings extends PreferenceActivity {
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         PERMISSION_READ_EXTERNAL);
             } else
-                ((HeaderSettings)getActivity()).restoreSettings();
+                ((HeaderSettings) getActivity()).restoreSettings();
         }
 
         @TargetApi(Build.VERSION_CODES.M)
@@ -761,7 +738,7 @@ public class HeaderSettings extends PreferenceActivity {
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         PERMISSION_WRITE_EXTERNAL);
             } else
-                ((HeaderSettings)getActivity()).backupSettings();
+                ((HeaderSettings) getActivity()).backupSettings();
         }
     }
 }
