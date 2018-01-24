@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorAccent"
     android:orientation="vertical"
     android:paddingBottom="@dimen/item_padding_vertical"
     android:paddingTop="@dimen/item_padding_vertical">
@@ -9,10 +10,14 @@
     <Spinner
         android:id="@+id/dwrHdrAccounts"
         android:layout_width="match_parent"
-        android:layout_height="48dp" />
+        android:layout_height="48dp"
+        android:paddingBottom="@dimen/item_padding_vertical"
+        android:paddingTop="@dimen/item_padding_vertical" />
 
     <Spinner
         android:id="@+id/dwrHdrNotifications"
         android:layout_width="match_parent"
-        android:layout_height="48dp" />
+        android:layout_height="48dp"
+        android:paddingBottom="@dimen/item_padding_vertical"
+        android:paddingTop="@dimen/item_padding_vertical" />
 </LinearLayout>
