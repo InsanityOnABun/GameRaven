@@ -1746,6 +1746,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         if (BuildConfig.DEBUG) wtl("board row parsing start");
                         boolean skipFirst = true;
                         Set<String> hlUsers = hlDB.getHighlightedUsers().keySet();
+                        table.select("div.ad").remove();
                         for (Element row : table.getElementsByTag("tr")) {
                             if (!skipFirst) {
                                 Elements cells = row.getElementsByTag("td");
