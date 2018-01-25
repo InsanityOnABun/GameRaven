@@ -21,6 +21,7 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.SimpleJobService;
 import com.firebase.jobdispatcher.Trigger;
+import com.ioabsoftware.gameraven.networking.GF_URLS;
 import com.ioabsoftware.gameraven.networking.Session;
 import com.ioabsoftware.gameraven.prefs.HeaderSettings;
 import com.ioabsoftware.gameraven.util.AccountManager;
@@ -60,9 +61,9 @@ public class NotifierJobService extends SimpleJobService {
                 HashMap<String, String> cookies = new HashMap<>();
                 String password = AccountManager.getPassword(getApplicationContext(), username);
 
-                String notifPath = Session.ROOT + "/user/notifications";
-                String pmPath = Session.ROOT + "/pm";
-                String loginPath = Session.ROOT + "/user/login";
+                String notifPath = GF_URLS.ROOT + "/user/notifications";
+                String pmPath = GF_URLS.ROOT + "/pm";
+                String loginPath = GF_URLS.ROOT + "/user/login";
 
                 Response notifResponse = Jsoup.connect(loginPath).method(Method.GET)
                         .cookies(cookies).timeout(10000).execute();

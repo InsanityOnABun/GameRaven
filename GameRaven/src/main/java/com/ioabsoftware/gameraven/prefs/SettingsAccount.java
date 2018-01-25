@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.R;
+import com.ioabsoftware.gameraven.networking.GF_URLS;
 import com.ioabsoftware.gameraven.networking.NetDesc;
 import com.ioabsoftware.gameraven.networking.Session;
 import com.ioabsoftware.gameraven.util.AccountManager;
@@ -199,7 +200,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
                             accountVerifier.getCookieMiddleware().clear();
                             currentDesc = NetDesc.VERIFY_ACCOUNT_S1;
                             accountVerifier.build(SettingsAccount.this)
-                                    .load("GET", Session.ROOT)
+                                    .load("GET", GF_URLS.ROOT)
                                     .as(new DocumentParser())
                                     .withResponse()
                                     .setCallback(SettingsAccount.this);
@@ -405,12 +406,12 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
                 // "EMAILADDR", user, "PASSWORD", password, "path", lastPath, "key", key
                 loginData.put("EMAILADDR", Collections.singletonList(verifyUser));
                 loginData.put("PASSWORD", Collections.singletonList(verifyPass));
-                loginData.put("path", Collections.singletonList(Session.ROOT));
+                loginData.put("path", Collections.singletonList(GF_URLS.ROOT));
                 loginData.put("key", Collections.singletonList(loginKey));
 
                 currentDesc = NetDesc.VERIFY_ACCOUNT_S2;
                 accountVerifier.build(this)
-                        .load("POST", Session.ROOT + "/user/login")
+                        .load("POST", GF_URLS.ROOT + "/user/login")
                         .setBodyParameters(loginData)
                         .as(new DocumentParser())
                         .withResponse()

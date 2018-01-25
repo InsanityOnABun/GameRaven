@@ -92,23 +92,23 @@ public class HistoryDBAdapter {
 
     public void insertHistory(String pathIn, String descIn, byte[] srcIn, int vLocFirstVisIn, int vLocOffsetIn) {
         if (!lastAddedPath.equals(pathIn)) {
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("starting insert history method");
+            AllInOneV2.wtl("starting insert history method");
             lastAddedPath = pathIn;
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("creating content vals obj");
+            AllInOneV2.wtl("creating content vals obj");
             ContentValues vals = new ContentValues();
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("putting content vals");
+            AllInOneV2.wtl("putting content vals");
             vals.put(COLUMN_HIST_PATH, pathIn);
             vals.put(COLUMN_HIST_DESC, descIn);
             vals.put(COLUMN_HIST_SRC, compress(srcIn));
             vals.put(COLUMN_HIST_VLOC_FIRSTVIS, vLocFirstVisIn);
             vals.put(COLUMN_HIST_VLOC_OFFSET, vLocOffsetIn);
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("inserting row");
+            AllInOneV2.wtl("inserting row");
             dbHelper.getWritableDatabase().insert(TABLE_HISTORY, null, vals);
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("trimming history");
+            AllInOneV2.wtl("trimming history");
             trimHistory();
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("updating hasHistory");
+            AllInOneV2.wtl("updating hasHistory");
             updateHasHistory();
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("insert history method completing");
+            AllInOneV2.wtl("insert history method completing");
         }
     }
 
@@ -155,7 +155,7 @@ public class HistoryDBAdapter {
     }
 
     public static byte[] compress(byte[] data) {
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("starting history compression");
+        AllInOneV2.wtl("starting history compression");
         try {
             Deflater deflater = new Deflater(Deflater.BEST_SPEED);
             deflater.setInput(data);
@@ -173,8 +173,8 @@ public class HistoryDBAdapter {
             outputStream.close();
             byte[] output = outputStream.toByteArray();
 
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("CMPRSSN - Original: " + data.length / 1024 + " Kb");
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("CMPRSSN - Compressed: " + output.length / 1024 + " Kb");
+            AllInOneV2.wtl("CMPRSSN - Original: " + data.length / 1024 + " Kb");
+            AllInOneV2.wtl("CMPRSSN - Compressed: " + output.length / 1024 + " Kb");
             return output;
         } catch (IOException e) {
             e.printStackTrace();
@@ -183,7 +183,7 @@ public class HistoryDBAdapter {
     }
 
     public static byte[] decompress(byte[] data) {
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("starting history decompression");
+        AllInOneV2.wtl("starting history decompression");
         try {
             Inflater inflater = new Inflater();
             inflater.setInput(data);
@@ -198,8 +198,8 @@ public class HistoryDBAdapter {
             outputStream.close();
             byte[] output = outputStream.toByteArray();
 
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("CMPRSSN - Original: " + data.length / 1024 + " Kb");
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("CMPRSSN - Decompressed: " + output.length / 1024 + " Kb");
+            AllInOneV2.wtl("CMPRSSN - Original: " + data.length / 1024 + " Kb");
+            AllInOneV2.wtl("CMPRSSN - Decompressed: " + output.length / 1024 + " Kb");
             return output;
         } catch (Exception e) {
             e.printStackTrace();

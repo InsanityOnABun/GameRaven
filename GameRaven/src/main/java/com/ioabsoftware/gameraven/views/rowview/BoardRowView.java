@@ -65,11 +65,7 @@ public class BoardRowView extends BaseRowView {
                     b.setPositiveButton("Ok", null);
                     b.create().show();
                 } else {
-                    if (myData.getBoardType() == BoardType.LIST) {
-                        AllInOneV2.get().getSession().get(NetDesc.BOARD_LIST, myData.getUrl());
-                    } else {
-                        AllInOneV2.get().getSession().get(NetDesc.BOARD, myData.getUrl());
-                    }
+                    AllInOneV2.get().getSession().get(NetDesc.BOARD, myData.getUrl());
                 }
             }
         });
@@ -107,10 +103,6 @@ public class BoardRowView extends BaseRowView {
                 break;
             case SPLIT:
                 lastPost.setText("--Split List--");
-                tpcMsgDetails.setVisibility(View.INVISIBLE);
-                break;
-            case LIST:
-                lastPost.setText("--Board List--");
                 tpcMsgDetails.setVisibility(View.INVISIBLE);
                 break;
         }

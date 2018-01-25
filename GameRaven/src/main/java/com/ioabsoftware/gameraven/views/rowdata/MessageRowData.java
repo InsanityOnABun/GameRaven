@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.BuildConfig;
 import com.ioabsoftware.gameraven.R;
+import com.ioabsoftware.gameraven.networking.GF_URLS;
 import com.ioabsoftware.gameraven.networking.NetDesc;
 import com.ioabsoftware.gameraven.networking.Session;
 import com.ioabsoftware.gameraven.util.MyLinkifier;
@@ -164,11 +165,11 @@ public class MessageRowData extends BaseRowData {
     }
 
     public String getMessageDetailLink() {
-        return Session.ROOT + "/boards/" + boardID + "/" + topicID + "/" + messageID;
+        return GF_URLS.ROOT + "/boards/" + boardID + "/" + topicID + "/" + messageID;
     }
 
     public String getUserDetailLink() {
-        return Session.ROOT + "/community/" + username.replace(' ', '+') + "/boards";
+        return GF_URLS.ROOT + "/community/" + username.replace(' ', '+') + "/boards";
     }
 
     private static AllInOneV2 aio = null;
@@ -191,7 +192,7 @@ public class MessageRowData extends BaseRowData {
         if (aio == null || aio != AllInOneV2.get())
             aio = AllInOneV2.get();
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("setting values");
+        AllInOneV2.wtl("setting values");
         username = userIn;
         userTitles = userTitlesIn;
         avatarUrl = avatarUrlIn;
@@ -217,9 +218,9 @@ public class MessageRowData extends BaseRowData {
         if (!Session.isLoggedIn())
             messageIn.select("div.message_mpu").remove();
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("checking for poll");
+        AllInOneV2.wtl("checking for poll");
         if (!messageIn.getElementsByClass("board_poll").isEmpty()) {
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("there is a poll");
+            AllInOneV2.wtl("there is a poll");
 
             Element pollElem = messageIn.getElementsByClass("board_poll").first();
 
@@ -342,41 +343,41 @@ public class MessageRowData extends BaseRowData {
 
         unprocessedMessageText = messageIn.html() + sigHtml;
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("creating ssb");
+        AllInOneV2.wtl("creating ssb");
         SpannableStringBuilder ssb = new SpannableStringBuilder(processContent(false, true));
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("adding bold spans");
+        AllInOneV2.wtl("adding bold spans");
         addGenericSpans(ssb, "<b>", "</b>", new StyleSpan(Typeface.BOLD));
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("adding italic spans");
+        AllInOneV2.wtl("adding italic spans");
         addGenericSpans(ssb, "<i>", "</i>", new StyleSpan(Typeface.ITALIC));
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("adding code spans");
+        AllInOneV2.wtl("adding code spans");
         addGenericSpans(ssb, "<code>", "</code>", new TypefaceSpan("monospace"));
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("adding cite spans");
+        AllInOneV2.wtl("adding cite spans");
         addGenericSpans(ssb, "<cite>", "</cite>", new UnderlineSpan(), new StyleSpan(Typeface.ITALIC));
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("adding quote spans");
+        AllInOneV2.wtl("adding quote spans");
         addQuoteSpans(ssb);
 
         ssb.append('\n');
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("linkifying");
+        AllInOneV2.wtl("linkifying");
         MyLinkifier.addLinks(ssb, Linkify.WEB_URLS);
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("adding spoiler spans");
+        AllInOneV2.wtl("adding spoiler spans");
         addSpoilerSpans(ssb);
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("replacing &lt; with <");
+        AllInOneV2.wtl("replacing &lt; with <");
         while (ssb.toString().contains("&lt;")) {
             int start = ssb.toString().indexOf("&lt;");
             ssb.replace(start, start + "&lt;".length(), "<");
         }
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("replacing &gt; with >");
+        AllInOneV2.wtl("replacing &gt; with >");
         while (ssb.toString().contains("&gt;")) {
             int start = ssb.toString().indexOf("&gt;");
             ssb.replace(start, start + "&gt;".length(), ">");
         }
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("setting spannedMessage");
+        AllInOneV2.wtl("setting spannedMessage");
         spannedMessage = ssb;
     }
 
@@ -509,7 +510,7 @@ public class MessageRowData extends BaseRowData {
     private String processContent(boolean removeSig, boolean ignoreLtGt) {
         String finalBody = unprocessedMessageText;
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("beginning opening anchor tag removal");
+        AllInOneV2.wtl("beginning opening anchor tag removal");
         while (finalBody.contains("<a ")) {
             int start = finalBody.indexOf("<a ");
             int end = finalBody.indexOf(">", start) + 1;
@@ -517,7 +518,7 @@ public class MessageRowData extends BaseRowData {
                     "");
         }
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("removing vid container divs");
+        AllInOneV2.wtl("removing vid container divs");
         while (finalBody.contains("<div class=\"vid_container\">")) {
             int start = finalBody.indexOf("<div class=\"vid_container\">");
             int end = finalBody.indexOf(">", start) + 1;
@@ -530,37 +531,36 @@ public class MessageRowData extends BaseRowData {
                     "");
         }
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("removing closing anchor tags");
+        AllInOneV2.wtl("removing closing anchor tags");
         finalBody = finalBody.replace("</a>", "");
 
-        if (BuildConfig.DEBUG)
-            AllInOneV2.wtl("removing existing \\n, replacing linebreak tags with \\n");
+        AllInOneV2.wtl("removing existing \\n, replacing linebreak tags with \\n");
         if (finalBody.endsWith("<br />"))
             finalBody = finalBody.substring(0, finalBody.length() - 6);
         finalBody = finalBody.replace("\n", "");
         finalBody = finalBody.replace("<br />", "\n");
 
         if (removeSig) {
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("removing sig");
+            AllInOneV2.wtl("removing sig");
             int sigStart = finalBody.lastIndexOf("\n---\n");
             if (sigStart != -1)
                 finalBody = finalBody.substring(0, sigStart);
         }
 
         if (ignoreLtGt) {
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("ignoring &lt; / &gt;, pre-unescape");
+            AllInOneV2.wtl("ignoring &lt; / &gt;, pre-unescape");
             finalBody = finalBody.replace("&lt;", "&gameravenlt;").replace("&gt;", "&gameravengt;");
         }
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("unescaping finalbody html");
+        AllInOneV2.wtl("unescaping finalbody html");
         finalBody = StringEscapeUtils.unescapeHtml4(finalBody);
 
         if (ignoreLtGt) {
-            if (BuildConfig.DEBUG) AllInOneV2.wtl("ignoring &lt; / &gt;, post-unescape");
+            AllInOneV2.wtl("ignoring &lt; / &gt;, post-unescape");
             finalBody = finalBody.replace("&gameravenlt;", "&lt;").replace("&gameravengt;", "&gt;");
         }
 
-        if (BuildConfig.DEBUG) AllInOneV2.wtl("returning finalbody");
+        AllInOneV2.wtl("returning finalbody");
         return finalBody;
     }
 

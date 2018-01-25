@@ -5,9 +5,12 @@
         android:title="@string/navigation">
         <menu>
             <item
-                android:id="@+id/dwrBoardJumper"
-                android:title="@string/board_jumper" />
+                android:id="@+id/dwrBoardsExplore"
+                android:title="@string/boards_explore" />
             <group android:id="@+id/dwrLoggedInNav">
+                <item
+                    android:id="@+id/dwrBoardsFavorites"
+                    android:title="@string/boards_favorites" />
                 <item
                     android:id="@+id/dwrAMPList"
                     android:title="@string/amp_list" />

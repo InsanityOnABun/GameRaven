@@ -5,8 +5,8 @@ import com.ioabsoftware.gameraven.views.RowType;
 
 public class BoardRowData extends BaseRowData {
 
-    public static enum BoardType {
-        NORMAL, SPLIT, LIST
+    public enum BoardType {
+        NORMAL, SPLIT
     }
 
     private String name, desc, lastPost, tCount, mCount, url;
