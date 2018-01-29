@@ -7,7 +7,6 @@
     <string name="user_tag_hint">User Tag</string>
     <!-- End Color Picker Strings -->
 
-    <string name="app_name">GameRaven</string>
     <string name="gameraven">GameRaven</string>
     <string name="ioab_copyright">Copyright \u00a9 Insanity On A Bun Software</string>
     <string name="drawer_open">open drawer</string>
