@@ -69,15 +69,15 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
 
         topWrapper = findViewById(R.id.mvTopWrapper);
 
-        avatar = (ImageView) findViewById(R.id.mvAvatar);
-        overflowIcon = (TextView) findViewById(R.id.mvMessageMenuIcon);
+        avatar = findViewById(R.id.mvAvatar);
+        overflowIcon = findViewById(R.id.mvMessageMenuIcon);
 
-        user = (TextView) findViewById(R.id.mvUser);
-        post = (TextView) findViewById(R.id.mvPostNumber);
+        user = findViewById(R.id.mvUser);
+        post = findViewById(R.id.mvPostNumber);
 
-        pollWrapper = (LinearLayout) findViewById(R.id.mvPollWrapper);
+        pollWrapper = findViewById(R.id.mvPollWrapper);
 
-        message = (ClickableLinksTextView) findViewById(R.id.mvMessage);
+        message = findViewById(R.id.mvMessage);
 
         if (userTextSize == 0) {
             userTextSize = user.getTextSize();

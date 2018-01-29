@@ -88,7 +88,8 @@ public class HeaderSettings extends PreferenceActivity {
         ACCEPTED_KEYS.add("enableFastScroll");
         ACCEPTED_KEYS.add("defaultAccount");
         ACCEPTED_KEYS.add("grBackupVer");
-        ACCEPTED_KEYS.add("startAtAMP");
+        ACCEPTED_KEYS.add("startAtAMP");      // for backwards compatibility, no effect now
+        ACCEPTED_KEYS.add("loggedInStartLocation");
         ACCEPTED_KEYS.add("ampSortOption");
         ACCEPTED_KEYS.add("confirmPostCancel");
         ACCEPTED_KEYS.add("confirmPostSubmit");
@@ -219,11 +220,13 @@ public class HeaderSettings extends PreferenceActivity {
 
                 buf.append(backupBoolean("swapTopicViewButtons", false));
                 buf.append(backupBoolean("usingAvatars", false));
-                buf.append(backupBoolean("startAtAMP", false));
                 buf.append(backupBoolean("reloadOnBack", false));
                 buf.append(backupBoolean("reloadOnResume", false));
                 buf.append(backupBoolean("enablePTR", false));
                 buf.append(backupBoolean("enableFastScroll", true));
+
+                buf.append("loggedInStartLocation=").append(prefs.getString(
+                        "loggedInStartLocation", getString(R.string.boards_explore))).append('\n');
 
                 buf.append("textScale=").append(String.valueOf(prefs.getInt("textScale", 100))).append('\n');
 
@@ -355,7 +358,8 @@ public class HeaderSettings extends PreferenceActivity {
                                     editor.putInt(key, Integer.parseInt(val));
                             } else
                                 editor.putString(key, val);
-                        } else AllInOneV2.wtl("Key, Val pair not recognized in restore: " + key + ", " + val);
+                        } else
+                            AllInOneV2.wtl("Key, Val pair not recognized in restore: " + key + ", " + val);
                     }
 
                     editor.apply();

@@ -14,7 +14,6 @@ import com.ioabsoftware.gameraven.views.BaseRowData;
 import com.ioabsoftware.gameraven.views.BaseRowView;
 import com.ioabsoftware.gameraven.views.RowType;
 import com.ioabsoftware.gameraven.views.rowdata.BoardRowData;
-import com.ioabsoftware.gameraven.views.rowdata.BoardRowData.BoardType;
 
 public class BoardRowView extends BaseRowView {
 
@@ -42,10 +41,10 @@ public class BoardRowView extends BaseRowView {
         myType = RowType.BOARD;
         LayoutInflater.from(context).inflate(R.layout.boardview, this, true);
 
-        desc = (TextView) findViewById(R.id.bvDesc);
-        lastPost = (TextView) findViewById(R.id.bvLastPost);
-        tpcMsgDetails = (TextView) findViewById(R.id.bvTpcMsgDetails);
-        name = (TextView) findViewById(R.id.bvName);
+        desc = findViewById(R.id.bvDesc);
+        lastPost = findViewById(R.id.bvLastPost);
+        tpcMsgDetails = findViewById(R.id.bvTpcMsgDetails);
+        name = findViewById(R.id.bvName);
 
         if (nameTextSize == 0) {
             nameTextSize = name.getTextSize();
@@ -65,7 +64,11 @@ public class BoardRowView extends BaseRowView {
                     b.setPositiveButton("Ok", null);
                     b.create().show();
                 } else {
-                    AllInOneV2.get().getSession().get(NetDesc.BOARD, myData.getUrl());
+                    if (myData.getBoardType() == BoardRowData.BoardType.NORMAL) {
+                        AllInOneV2.get().getSession().get(NetDesc.BOARD, myData.getUrl());
+                    } else {
+                        AllInOneV2.get().getSession().get(NetDesc.BOARDS_EXPLORE, myData.getUrl());
+                    }
                 }
             }
         });
@@ -98,13 +101,21 @@ public class BoardRowView extends BaseRowView {
         switch (myData.getBoardType()) {
             case NORMAL:
                 tpcMsgDetails.setVisibility(View.VISIBLE);
-                lastPost.setText("Last Post: " + myData.getLastPost());
+                lastPost.setVisibility(View.VISIBLE);
+
                 tpcMsgDetails.setText("Tpcs: " + myData.getTCount() + "; Msgs: " + myData.getMCount());
+                lastPost.setText("Last Post: " + myData.getLastPost());
                 break;
             case SPLIT:
-                lastPost.setText("--Split List--");
                 tpcMsgDetails.setVisibility(View.INVISIBLE);
+                lastPost.setVisibility(View.VISIBLE);
+
+                lastPost.setText("--Split List--");
                 break;
+            case EXPLORER_LINK:
+                tpcMsgDetails.setVisibility(View.INVISIBLE);
+                lastPost.setVisibility(View.INVISIBLE);
+
         }
     }
 

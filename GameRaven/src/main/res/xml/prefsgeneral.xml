@@ -12,12 +12,16 @@
             android:persistent="true"
             android:summary="Currently only supports displaying, no upload."
             android:title="Avatars" />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="startAtAMP"
+
+        <ListPreference
+            android:defaultValue="@string/boards_explore"
+            android:entries="@array/loggedInStartOptions"
+            android:entryValues="@array/loggedInStartOptions"
+            android:key="loggedInStartLocation"
             android:persistent="true"
-            android:summary="Start new sessions on the AMP List."
-            android:title="Start on AMP List" />
+            android:summary="Select where to start when starting a new logged in session."
+            android:title="Start Logged In At..." />
+
         <SwitchPreference
             android:defaultValue="false"
             android:key="reloadOnBack"

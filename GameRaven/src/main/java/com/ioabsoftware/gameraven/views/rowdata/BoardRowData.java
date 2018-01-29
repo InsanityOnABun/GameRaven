@@ -6,7 +6,7 @@ import com.ioabsoftware.gameraven.views.RowType;
 public class BoardRowData extends BaseRowData {
 
     public enum BoardType {
-        NORMAL, SPLIT
+        NORMAL, SPLIT, EXPLORER_LINK
     }
 
     private String name, desc, lastPost, tCount, mCount, url;

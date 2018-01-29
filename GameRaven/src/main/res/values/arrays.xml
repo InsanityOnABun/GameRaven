@@ -7,12 +7,14 @@
         <item>Your Last Post, New to Old</item>
         <item>Your Last Post, Old to New</item>
     </string-array>
+
     <string-array name="ampOptionValues">
         <item>-1</item>
         <item>1</item>
         <item>0</item>
         <item>2</item>
     </string-array>
+
     <string-array name="msgReportReasons">
         <item>Offensive: Sexually explicit, racism, threats, pornography</item>
         <item>Advertising: Spam, "Make Money Fast", referrer codes</item>
@@ -24,6 +26,7 @@
         <item>Flaming: Insulting other board users</item>
         <item>Disruptive Posting: ALL CAPS, large blank posts, hard-to-read posts, mass bumping</item>
     </string-array>
+
     <string-array name="msgReportReasonsWithOffTopic">
         <item>Offensive: Sexually explicit, racism, threats, pornography</item>
         <item>Advertising: Spam, "Make Money Fast", referrer codes</item>
@@ -36,6 +39,7 @@
         <item>Disruptive Posting: ALL CAPS, large blank posts, hard-to-read posts, mass bumping</item>
         <item>Off-Topic Posting: Topics outside of the board description</item>
     </string-array>
+
     <string-array name="msgReportCodes">
         <item>1</item>
         <item>5</item>
@@ -48,11 +52,19 @@
         <item>20</item>
         <item>7</item>
     </string-array>
+
+    <string-array name="loggedInStartOptions">
+        <item>@string/boards_explore</item>
+        <item>@string/boards_favorites</item>
+        <item>@string/amp_list</item>
+    </string-array>
+
     <string-array name="pollMinLevel">
         <item>Anybody, registered or not</item>
         <item>Only registered users</item>
         <item>Only registered users, only 1 vote per IP</item>
     </string-array>
+
     <string-array name="notifsFrequencyNames">
         <item>1 Minute (dev setting)</item>
         <item>15 Minutes</item>
@@ -65,6 +77,7 @@
         <item>12 Hours</item>
         <item>24 Hours</item>
     </string-array>
+
     <string-array name="notifsFrequencyMinutes">
         <item>1</item>
         <item>15</item>
@@ -77,6 +90,7 @@
         <item>720</item>
         <item>1440</item>
     </string-array>
+
     <string-array name="timezones">
         <item>Africa/Abidjan</item>
         <item>Africa/Accra</item>

@@ -269,6 +269,14 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         // Will they get GC'd? I have no idea. Better safe than sorry.
         themingInstance = new Theming();
 
+        // convert old startAtAMP setting to new loggedInStartLocation
+        if (settings.contains("startAtAMP")) {
+            String loc = settings.getBoolean("startAtAMP", false) ?
+                    getString(R.string.amp_list) : getString(R.string.boards_explore);
+
+            settings.edit().remove("startAtAMP").putString("loggedInStartLocation", loc).apply();
+        }
+
         // Init notification job if it isn't running and should be
         if (settings.getBoolean("notifsEnable", false)) {
             int seconds = 60 * Integer.parseInt(settings.getString("notifsFrequency", "60"));
@@ -335,7 +343,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         session.get(NetDesc.BOARDS_EXPLORE, GF_URLS.BOARDS_EXPLORE);
                         break;
                     case R.id.dwrBoardsFavorites:
-                        showBoardQuickList();
+                        showBoardFavoritesQuickList();
                         break;
                     case R.id.dwrAMPList:
                         session.get(NetDesc.AMP_LIST, buildAMPLink());
@@ -1323,13 +1331,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             if (dItems.last().parent().hasClass("list_foot")) {
                 dItems.remove(dItems.size() - 1);
             }
-            boardQuickListOptions = new String[dItems.size() + 1];
-            boardQuickListLinks = new String[dItems.size() + 1];
-            boardQuickListOptions[0] = "Go to Boards Page...";
+            boardFavoritesQuickListOptions = new String[dItems.size() + 1];
+            boardFavoritesQuickListLinks = new String[dItems.size() + 1];
+            boardFavoritesQuickListOptions[0] = "Go to Boards Page...";
             int x = 1;
             for (Element e : dItems) {
-                boardQuickListOptions[x] = e.text();
-                boardQuickListLinks[x] = e.attr("href");
+                boardFavoritesQuickListOptions[x] = e.text();
+                boardFavoritesQuickListLinks[x] = e.attr("href");
                 x++;
             }
         }
@@ -1340,27 +1348,27 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             case BOARDS_EXPLORE:
             case LOGIN_S2:
                 updateHeaderNoJumper("Explore Boards", NetDesc.BOARDS_EXPLORE);
-
                 setMenuItemVisibility(searchIcon, true);
+                processBoardWraps(doc.select("div.board_wrap"), "popular", true);
+                processBoardWraps(doc.select("div.board_wrap"), "all", true);
 
-                for (Element boardWrap : doc.select("div.board_wrap")){
-                    Element header = boardWrap.previousElementSibling();
-                    if (header.text().toLowerCase().startsWith("popular")) {
-                        adapterRows.add(new HeaderRowData(header.text()));
-                        processBoardTableRows(boardWrap.selectFirst("tbody").select("tr"));
-                    }
+                Elements menuLinks = doc.select("a.menu_link");
+                String menuLinkHeader = menuLinks.first().parent().parent().parent().parent().
+                        previousElementSibling().text();
+                adapterRows.add(new HeaderRowData(menuLinkHeader));
+                for (Element linkElem : menuLinks) {
+                    String menuUrl = linkElem.attr("href");
+                    String menuTitle = linkElem.selectFirst("div.menu_title").text();
+                    String menuDesc = linkElem.selectFirst("p.menu_desc").text();
+
+                    adapterRows.add(new BoardRowData(
+                            menuTitle, menuDesc, null, null, null, menuUrl, BoardType.EXPLORER_LINK));
                 }
                 break;
 
             case BOARDS_FAVORITE:
                 updateHeaderNoJumper("Your Favorite Boards", NetDesc.BOARDS_FAVORITE);
-
-                for (Element boardWrap : doc.select("div.board_wrap")){
-                    Element header = boardWrap.previousElementSibling();
-                    if (header.text().toLowerCase().startsWith("your favorite")) {
-                        processBoardTableRows(boardWrap.selectFirst("tbody").select("tr"));
-                    }
-                }
+                processBoardWraps(doc.select("div.board_wrap"), "your favorite", false);
                 break;
 
 //            case GFAQS_SETTINGS:
@@ -1662,7 +1670,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                         updateHeaderNoJumper(doc.select("h1.page-title").first().text(), NetDesc.BOARD);
 
-                        processBoardTableRows(doc.selectFirst("tbody").select("tr"));
+                        processBoardTbodyRows(doc.selectFirst("tbody").select("tr"));
 
                         isSplitList = true;
                     }
@@ -2155,7 +2163,32 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 wtl("game search response block finished");
                 break;
 
-            default:
+            case FRIENDS:
+            case FOLLOWERS:
+            case FOLLOWING:
+            case MODHIST:
+                //TODO: implement me
+                break;
+
+            case EDIT_MSG:
+            case LOGIN_S1:
+            case MSG_MARK:
+            case MSG_DELETE:
+            case PM_SEND_S1:
+            case PM_SEND_S2:
+            case MSG_POST_S1:
+            case MSG_POST_S3:
+            case TOPIC_CLOSE:
+            case NOTIFS_CLEAR:
+            case TOPIC_POST_S1:
+            case TOPIC_POST_S3:
+            case VERIFY_ACCOUNT_S1:
+            case VERIFY_ACCOUNT_S2:
+                Log.e(AllInOneV2.class.getName(), desc.name() + " reached AIO HNR, this shouldn't happen");
+                getSupportActionBar().setTitle(desc.name() + " Unhandled");
+                break;
+
+            case UNSPECIFIED:
                 wtl("GRAIO hNR determined response type is unhandled");
                 getSupportActionBar().setTitle("Page unhandled - " + resUrl);
                 break;
@@ -2238,7 +2271,21 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
      * ********************************
      */
 
-    private void processBoardTableRows(Elements rows) {
+    private void processBoardWraps(Elements boardWraps,
+                                   String boardWrapHeaderPrefix,
+                                   boolean includeBoardWrapHeader) {
+        for (Element boardWrap : boardWraps){
+            Element header = boardWrap.previousElementSibling();
+            if (header.text().toLowerCase().startsWith(boardWrapHeaderPrefix)) {
+                if (includeBoardWrapHeader) {
+                    adapterRows.add(new HeaderRowData(header.text()));
+                }
+                processBoardTbodyRows(boardWrap.selectFirst("tbody").select("tr"));
+            }
+        }
+    }
+
+    private void processBoardTbodyRows(Elements rows) {
         for (Element row : rows) {
             wtl(row.outerHtml());
             if (row.hasClass("head")) {
@@ -2951,21 +2998,21 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         return d;
     }
 
-    private String[] boardQuickListOptions;
-    private String[] boardQuickListLinks;
+    private String[] boardFavoritesQuickListOptions;
+    private String[] boardFavoritesQuickListLinks;
 
-    private void showBoardQuickList() {
-        if (boardQuickListOptions != null && boardQuickListOptions.length > 1) {
+    private void showBoardFavoritesQuickList() {
+        if (boardFavoritesQuickListOptions != null && boardFavoritesQuickListOptions.length > 1) {
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setTitle("My Boards");
             b.setNegativeButton("Cancel", null);
-            b.setItems(boardQuickListOptions, new OnClickListener() {
+            b.setItems(boardFavoritesQuickListOptions, new OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
                         session.get(NetDesc.BOARDS_FAVORITE, GF_URLS.BOARDS_FAVORITES);
                     } else {
-                        session.get(NetDesc.BOARD, boardQuickListLinks[which]);
+                        session.get(NetDesc.BOARD, boardFavoritesQuickListLinks[which]);
                     }
                 }
             });

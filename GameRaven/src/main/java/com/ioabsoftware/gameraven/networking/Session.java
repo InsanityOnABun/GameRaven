@@ -151,7 +151,10 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
     private String password = null;
 
     private String sessionKey;
-    public String getSessionKey() {return sessionKey;}
+
+    public String getSessionKey() {
+        return sessionKey;
+    }
 
     /**
      * The current activity.
@@ -170,8 +173,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
     public static String RESUME_INIT_URL = "RESUME-SESSION";
     private String initUrl = null;
     private NetDesc initDesc = null;
-
-
 
 
     /**
@@ -295,6 +296,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
 
     private Future currentNetworkTask;
+
     /**
      * Sends a GET request to a specified page.
      *
@@ -400,6 +402,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case NOTIFS_PAGE:
             case NOTIFS_CLEAR:
             case MENTIONS_PAGE:
+            case FRIENDS:
+            case FOLLOWERS:
+            case FOLLOWING:
             case UNSPECIFIED:
                 aio.preExecuteSetup(desc);
                 break;
@@ -611,6 +616,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case VERIFY_ACCOUNT_S2:
                     case NOTIFS_PAGE:
                     case MENTIONS_PAGE:
+                    case FRIENDS:
+                    case FOLLOWERS:
+                    case FOLLOWING:
                         AllInOneV2.wtl("addToHistory unchanged: " + addToHistory);
                         break;
 
@@ -657,6 +665,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case VERIFY_ACCOUNT_S2:
                     case NOTIFS_PAGE:
                     case MENTIONS_PAGE:
+                    case FRIENDS:
+                    case FOLLOWERS:
+                    case FOLLOWING:
                         AllInOneV2.wtl("beginning lastDesc, lastRes, etc. setting");
 
                         lastDesc = desc;
@@ -669,7 +680,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                         AllInOneV2.wtl("finishing lastDesc, lastRes, etc. setting");
                         break;
-
 
                     case USER_TAG:
                     case MSG_MARK:
@@ -715,8 +725,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                                 aio.dismissLoginDialog();
                                 goBack(true);
                                 aio.setNavDrawerVisibility(isLoggedIn());
-                            }
-                            else
+                            } else
                                 get(initDesc, initUrl);
                         } else if (userCanViewAMP() && AllInOneV2.getSettingsPref().getBoolean("startAtAMP", false)) {
                             AllInOneV2.wtl("loading AMP");
@@ -904,6 +913,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case VERIFY_ACCOUNT_S2:
                     case NOTIFS_PAGE:
                     case MENTIONS_PAGE:
+                    case FRIENDS:
+                    case FOLLOWERS:
+                    case FOLLOWING:
                         AllInOneV2.wtl("session hNR determined this should be handled by AIO");
                         aio.processContent(desc, doc, resUrl);
                         break;
@@ -952,6 +964,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case MSG_DELETE:
                 case NOTIFS_PAGE:
                 case MENTIONS_PAGE:
+                case FRIENDS:
+                case FOLLOWERS:
+                case FOLLOWING:
                 case UNSPECIFIED:
                     AllInOneV2.wtl("beginning history addition");
                     int[] vLoc = aio.getScrollerVertLoc();
@@ -1035,6 +1050,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case GAME_SEARCH:
             case NOTIFS_PAGE:
             case MENTIONS_PAGE:
+            case FRIENDS:
+            case FOLLOWERS:
+            case FOLLOWING:
             case UNSPECIFIED:
                 if (!skipAIOCleanup)
                     aio.postExecuteCleanup(desc);
@@ -1184,9 +1202,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 } else {
                     return NetDesc.PM_INBOX;
                 }
-            }
-
-            else if (url.contains("/user/")) {
+            } else if (url.contains("/user/")) {
                 if (url.contains("/messages")) {
                     return NetDesc.AMP_LIST;
                 } else if (url.contains("/notifications")) {
@@ -1204,14 +1220,12 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 } else if (url.contains("/followers")) {
                     return NetDesc.FOLLOWERS;
                 }
-            }
-
-            else if (url.contains("/boards")) {
-                if (url.contains("/users/")) {
-                    return NetDesc.USER_DETAIL;
-                } else {
-                    String boardUrl = url.substring(url.indexOf("boards"));
-                    if (boardUrl.contains("/")) {
+            } else if (url.contains("/boards")) {
+                String boardUrl = url.substring(url.indexOf("boards"));
+                if (boardUrl.contains("/")) {
+                    if (boardUrl.contains("/explore") || boardUrl.contains("/browse")) {
+                        return NetDesc.BOARDS_EXPLORE;
+                    } else {
                         String checkForTopicSep = boardUrl.substring(boardUrl.indexOf("/") + 1);
                         if (checkForTopicSep.contains("/")) {
                             String checkForMsgSep = checkForTopicSep.substring(checkForTopicSep.indexOf("/") + 1);
@@ -1226,10 +1240,10 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             // should be a board
                             return NetDesc.BOARD;
                         }
-                    } else {
-                        // should be board explorer
-                        return NetDesc.BOARDS_EXPLORE;
                     }
+                } else {
+                    // should be board explorer
+                    return NetDesc.BOARDS_EXPLORE;
                 }
             }
         }
