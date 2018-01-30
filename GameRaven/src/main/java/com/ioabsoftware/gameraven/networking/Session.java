@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.BuildConfig;
+import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.db.History;
 import com.ioabsoftware.gameraven.db.HistoryDBAdapter;
 import com.ioabsoftware.gameraven.util.DocumentParser;
@@ -160,6 +162,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
      * The current activity.
      */
     private AllInOneV2 aio;
+    private SharedPreferences getPrefObj() {
+        return AllInOneV2.getSettingsPref();
+    }
 
     private boolean addToHistory = true;
 
@@ -236,8 +241,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
         password = passwordIn;
 
         // reset the Session unread PM and TT counters
-        AllInOneV2.getSettingsPref().edit().putInt("unreadPMCount", 0).apply();
-        AllInOneV2.getSettingsPref().edit().putInt("unreadTTCount", 0).apply();
+        getPrefObj().edit().putInt("unreadPMCount", 0).apply();
+        getPrefObj().edit().putInt("unreadTTCount", 0).apply();
 
         // clear out cookies
         Ion.getDefault(aio).getCookieMiddleware().clear();
@@ -719,6 +724,11 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         AllInOneV2.wtl("session hNR determined this is login step 2");
                         aio.setAMPLinkVisible(userCanViewAMP());
 
+                        String ampStart = aio.getString(R.string.amp_list);
+                        String favsStart = aio.getString(R.string.boards_favorites);
+                        String loggedInStartLocation = getPrefObj().getString(
+                                "loggedInStartLocation", aio.getString(R.string.boards_explore));
+
                         if (initUrl != null) {
                             AllInOneV2.wtl("loading previous page");
                             if (initUrl.equals(RESUME_INIT_URL) && canGoBack()) {
@@ -727,11 +737,14 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                                 aio.setNavDrawerVisibility(isLoggedIn());
                             } else
                                 get(initDesc, initUrl);
-                        } else if (userCanViewAMP() && AllInOneV2.getSettingsPref().getBoolean("startAtAMP", false)) {
+                        } else if (userCanViewAMP() && loggedInStartLocation.equals(ampStart)) {
                             AllInOneV2.wtl("loading AMP");
                             get(NetDesc.AMP_LIST, AllInOneV2.buildAMPLink());
+                        } else if (loggedInStartLocation.equals(favsStart)) {
+                            AllInOneV2.wtl("loading favorite boards");
+                            get(NetDesc.BOARDS_FAVORITE, GF_URLS.BOARDS_FAVORITES);
                         } else {
-                            AllInOneV2.wtl("loading board jumper");
+                            AllInOneV2.wtl("loading board explorer");
                             get(NetDesc.BOARDS_EXPLORE, GF_URLS.BOARDS_EXPLORE);
                         }
 
@@ -745,7 +758,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         msg1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
                         msg1Data.put("key", Collections.singletonList(sessionKey));
                         msg1Data.put("post", Collections.singletonList("Post Message"));
-                        if (!AllInOneV2.getSettingsPref().getBoolean("useGFAQsSig" + user, false))
+                        if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
                             msg1Data.put("custom_sig", Collections.singletonList(aio.getSig()));
 
                         post(NetDesc.MSG_POST_S3, lastPath, msg1Data);
@@ -769,7 +782,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             msg3Data.put("post", Collections.singletonList("Post Message"));
                             msg3Data.put("key", Collections.singletonList(sessionKey));
                             msg3Data.put("override", Collections.singletonList("checked"));
-                            if (!AllInOneV2.getSettingsPref().getBoolean("useGFAQsSig" + user, false))
+                            if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
                                 msg3Data.put("custom_sig", Collections.singletonList(aio.getSig()));
 
                             showAutoFlagWarning(lastPath, msg3Data, NetDesc.MSG_POST_S3, msg);
@@ -791,7 +804,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         tpc1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
                         tpc1Data.put("key", Collections.singletonList(sessionKey));
                         tpc1Data.put("post", Collections.singletonList("Post Message"));
-                        if (!AllInOneV2.getSettingsPref().getBoolean("useGFAQsSig" + user, false))
+                        if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
                             tpc1Data.put("custom_sig", Collections.singletonList(aio.getSig()));
 
                         if (aio.isUsingPoll()) {
@@ -827,7 +840,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             tpc3Data.put("post", Collections.singletonList("Post Message"));
                             tpc3Data.put("key", Collections.singletonList(sessionKey));
                             tpc3Data.put("override", Collections.singletonList("checked"));
-                            if (!AllInOneV2.getSettingsPref().getBoolean("useGFAQsSig" + user, false))
+                            if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
                                 tpc3Data.put("custom_sig", Collections.singletonList(aio.getSig()));
 
                             showAutoFlagWarning(lastPath, tpc3Data, NetDesc.TOPIC_POST_S3, msg);
@@ -1098,7 +1111,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
         applySavedScroll = true;
         savedScrollVal = h.getVertPos();
 
-        if (forceReload || AllInOneV2.getSettingsPref().getBoolean("reloadOnBack", false)) {
+        if (forceReload || getPrefObj().getBoolean("reloadOnBack", false)) {
             forceNoHistoryAddition();
             AllInOneV2.wtl("going back in history, refreshing: " + h.getDesc().name() + " " + h.getPath());
             get(h.getDesc(), h.getPath());
