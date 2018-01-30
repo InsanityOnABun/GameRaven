@@ -1353,16 +1353,18 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 processBoardWraps(doc.select("div.board_wrap"), "all", true);
 
                 Elements menuLinks = doc.select("a.menu_link");
-                String menuLinkHeader = menuLinks.first().parent().parent().parent().parent().
-                        previousElementSibling().text();
-                adapterRows.add(new HeaderRowData(menuLinkHeader));
-                for (Element linkElem : menuLinks) {
-                    String menuUrl = linkElem.attr("href");
-                    String menuTitle = linkElem.selectFirst("div.menu_title").text();
-                    String menuDesc = linkElem.selectFirst("p.menu_desc").text();
+                if (!menuLinks.isEmpty()) {
+                    String menuLinkHeader = menuLinks.first().parent().parent().parent().parent().
+                            previousElementSibling().text();
+                    adapterRows.add(new HeaderRowData(menuLinkHeader));
+                    for (Element linkElem : menuLinks) {
+                        String menuUrl = linkElem.attr("href");
+                        String menuTitle = linkElem.selectFirst("div.menu_title").text();
+                        String menuDesc = linkElem.selectFirst("p.menu_desc").text();
 
-                    adapterRows.add(new BoardRowData(
-                            menuTitle, menuDesc, null, null, null, menuUrl, BoardType.EXPLORER_LINK));
+                        adapterRows.add(new BoardRowData(
+                                menuTitle, menuDesc, null, null, null, menuUrl, BoardType.EXPLORER_LINK));
+                    }
                 }
                 break;
 
