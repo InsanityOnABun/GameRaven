@@ -19,7 +19,7 @@ import java.util.zip.Inflater;
 public class HistoryDBAdapter {
 
     private static final String DATABASE_NAME = "history.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public static final String TABLE_HISTORY = "history";
     public static final String COLUMN_HIST_ID = "_id";
@@ -58,6 +58,7 @@ public class HistoryDBAdapter {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            // just nuke and recreate table when upgrade is needed, since history is non-critical
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_HISTORY);
             onCreate(db);
         }
