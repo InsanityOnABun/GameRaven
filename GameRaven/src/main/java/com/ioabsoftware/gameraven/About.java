@@ -40,14 +40,17 @@ public class About extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Button donate = findViewById(R.id.abtDonate);
-        donate.setText(Iconify.compute(this, "{mdi-coffee 120%}\nBuy Me A Coffee\n{mdi-coffee 120%}", donate));
+        donate.setText(Iconify.compute(this, getString(R.string.buyMeACoffee), donate));
 
         try {
-            String ver = "Version " + this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName +
-                    "\nBuild Number " + this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionCode;
-            ((TextView) findViewById(R.id.abtBuildVer)).setText(ver);
+            String versionLabel = getString(R.string.version);
+            String verName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+            String buildNumLabel = getString(R.string.buildNumber);
+            int verCode = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionCode;
+            String verString = versionLabel + " " + verName + "\n" + buildNumLabel + " " + String.valueOf(verCode);
+            ((TextView) findViewById(R.id.abtBuildVer)).setText(verString);
         } catch (NameNotFoundException e) {
-            ((TextView) findViewById(R.id.abtBuildVer)).setText("Build version not set. Stupid developer.");
+            ((TextView) findViewById(R.id.abtBuildVer)).setText(R.string.versionNotSet);
         }
     }
 
@@ -65,15 +68,8 @@ public class About extends AppCompatActivity {
 
     public void genFeedback(View view) {
         Intent send = new Intent(Intent.ACTION_SENDTO);
-        String uriText;
-
-        uriText = "mailto:support@ioabsoftware.com" +
-                "?subject=GameRaven Feedback";
-        uriText = uriText.replace(" ", "%20");
-        Uri uri = Uri.parse(uriText);
-
-        send.setData(uri);
-        startActivity(Intent.createChooser(send, "Send email..."));
+        send.setData(Uri.parse("mailto:support@ioabsoftware.com?subject=GameRaven%20Feedback"));
+        startActivity(Intent.createChooser(send, getString(R.string.sendEmail)));
     }
 
     public void donate(View view) {
@@ -95,9 +91,9 @@ public class About extends AppCompatActivity {
             br.close();
 
             AlertDialog.Builder b = new AlertDialog.Builder(this);
-            b.setTitle("Privacy Policy");
+            b.setTitle(R.string.view_privacy_policy);
             b.setMessage(text.toString());
-            b.setPositiveButton("OK", null);
+            b.setPositiveButton(R.string.ok, null);
             b.show();
         } catch (IOException e) {
             e.printStackTrace();

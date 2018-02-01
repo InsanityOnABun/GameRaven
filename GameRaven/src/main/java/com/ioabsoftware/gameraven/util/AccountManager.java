@@ -7,8 +7,7 @@ import android.preference.PreferenceManager;
 import java.util.UUID;
 
 public final class AccountManager {
-    protected static final String ACCOUNTS_PREFNAME = "com.ioabsoftware.DroidFAQs.Accounts";
-    protected static String secureSalt;
+    private static final String ACCOUNTS_PREFNAME = "com.ioabsoftware.DroidFAQs.Accounts";
 
     /**
      * list of accounts (username, password)
@@ -18,6 +17,7 @@ public final class AccountManager {
     public static void init(Context c) {
         if (accounts == null) {
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+            String secureSalt;
             if (settings.contains("secureSalt"))
                 secureSalt = settings.getString("secureSalt", null);
             else {
