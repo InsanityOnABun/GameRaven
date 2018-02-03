@@ -114,7 +114,6 @@ import java.util.TimeZone;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
-@SuppressLint("RtlHardcoded")
 public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final int SEND_PM_DIALOG = 102;
@@ -796,10 +795,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void toggleMenu() {
-        if (drawerLayout.isDrawerOpen(Gravity.LEFT))
+        if (drawerLayout.isDrawerOpen(Gravity.START))
             drawerLayout.closeDrawers();
         else
-            drawerLayout.openDrawer(Gravity.LEFT);
+            drawerLayout.openDrawer(Gravity.START);
     }
 
     @Override
@@ -3194,7 +3193,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     public void onBackPressed() {
         if (searchIcon != null && searchIcon.isActionViewExpanded()) {
             searchIcon.collapseActionView();
-        } else if (drawerLayout.isDrawerOpen(Gravity.LEFT)) {
+        } else if (drawerLayout.isDrawerOpen(Gravity.START)) {
             drawerLayout.closeDrawers();
         } else if (postWrapper.getVisibility() == View.VISIBLE) {
             postCancel(postCancelButton);
