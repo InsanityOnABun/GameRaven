@@ -121,20 +121,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
     private static int userLevel = 0;
 
-    public static boolean userCanDeleteClose() {
-        return userLevel > 13;
-    }
-
-    public static boolean userCanViewAMP() {
+    private static boolean userCanViewAMP() {
         return userLevel > 14;
-    }
-
-    public static boolean userCanMarkMsgs() {
-        return userLevel > 19;
-    }
-
-    public static boolean userCanEditMsgs() {
-        return userLevel > 19;
     }
 
     /**
@@ -310,7 +298,11 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
      */
     public void get(NetDesc desc, String path) {
         if (hasNetworkConnection()) {
-            if (desc != NetDesc.MODHIST && desc != NetDesc.FRIENDS && desc != NetDesc.FOLLOWERS && desc != NetDesc.FOLLOWING) {
+            if (desc == NetDesc.MODHIST) {
+                aio.genError("Page Unsupported", "The moderation history page is currently unsupported in-app. Sorry.", "Ok");
+            } else if (desc == NetDesc.FRIENDS || desc == NetDesc.FOLLOWERS || desc == NetDesc.FOLLOWING) {
+                aio.genError("Page Unsupported", "The friends and followers system is currently unsupported in-app. Sorry.", "Ok");
+            } else {
                 if (currentNetworkTask != null && !currentNetworkTask.isDone())
                     currentNetworkTask.cancel(true);
 
@@ -325,11 +317,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         .withResponse()
                         .setCallback(this);
 
-            } else if (desc == NetDesc.MODHIST) {
-                aio.genError("Page Unsupported", "The moderation history page is currently unsupported in-app. Sorry.", "Ok");
-            } else if (desc == NetDesc.FRIENDS || desc == NetDesc.FOLLOWERS || desc == NetDesc.FOLLOWING)
-                aio.genError("Page Unsupported", "The friends and followers system is currently unsupported in-app. Sorry.", "Ok");
-
+            }
         } else
             aio.noNetworkConnection();
     }
