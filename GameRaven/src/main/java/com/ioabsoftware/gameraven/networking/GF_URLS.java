@@ -2,7 +2,7 @@ package com.ioabsoftware.gameraven.networking;
 
 
 public final class GF_URLS {
-    public static final String ROOT = "https://www.gamefaqs.com";
+    public static final String ROOT = "https://gamefaqs.gamespot.com";
 
     public static final String BOARDS_EXPLORE = "/boards/explore";
 
