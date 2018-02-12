@@ -693,6 +693,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 session = new Session(this, null, null, initUrl, initDesc);
             }
         } else {
+            setLoginName(Session.getUser());
             if (settings.getBoolean("reloadOnResume", false)) {
                 wtl("session exists, reload on resume is true, refreshing page");
                 isRoR = true;
@@ -3284,28 +3285,26 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     private AdapterView.OnItemSelectedListener accountsListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            final String currUser = Session.getUser();
+            String logoutTag = getString(R.string.log_out);
+            String currUser = (Session.getUser() == null ? logoutTag : Session.getUser());
             String selUser = accountsAdapter.getItem(position);
-            if (selUser.equals(getString(R.string.log_out)) && currUser != null)
-                if (session.hasNetworkConnection())
-                    session = new Session(AllInOneV2.this);
-                else {
-                    noNetworkConnection();
-                    setLoginName(currUser);
-                }
+            assert selUser != null;
 
-            else {
-                if (!selUser.equals(currUser) && !selUser.equals(getString(R.string.log_out)))
-                    if (session.hasNetworkConnection())
+            if (!currUser.equals(selUser)) {
+                if (session.hasNetworkConnection()) {
+                    if (selUser.equals(logoutTag)) {
+                        session = new Session(AllInOneV2.this);
+                    } else {
                         session = new Session(AllInOneV2.this,
                                 selUser,
                                 AccountManager.getPassword(AllInOneV2.this, selUser),
                                 session.getLastPath(),
                                 session.getLastDesc());
-                    else {
-                        noNetworkConnection();
-                        setLoginName(currUser);
                     }
+                } else {
+                    noNetworkConnection();
+                    setLoginName(currUser);
+                }
             }
 
             drawerLayout.closeDrawers();
