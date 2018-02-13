@@ -1,0 +1,2 @@
+Template has both white and blue arrow
+Transparency gradient goes 20px from edges to edge
