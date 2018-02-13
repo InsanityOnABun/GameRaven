@@ -2419,7 +2419,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         getSupportActionBar().setTitle(titleIn);
 
         if (currPage == -1) {
-            pageLabel.setText("~ 1 / 1 ~");
+            pageLabel.setText("1 / 1");
+            firstPage.setEnabled(false);
+            prevPage.setEnabled(false);
+            nextPage.setEnabled(false);
+            lastPage.setEnabled(false);
+            pageLabel.setEnabled(false);
         } else {
             pageJumperDesc = desc;
 
