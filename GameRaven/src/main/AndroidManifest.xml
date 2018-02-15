@@ -34,6 +34,34 @@
             <intent-filter>
                 <!-- non-https links-->
                 <data
+                    android:host="gamefaqs.gamespot.com"
+                    android:pathPrefix="/boards"
+                    android:scheme="http" />
+                <data
+                    android:host="gamefaqs.gamespot.com"
+                    android:pathPattern="/users/.*/boards"
+                    android:scheme="http" />
+                <data
+                    android:host="gamefaqs.gamespot.com"
+                    android:pathPrefix="/pm"
+                    android:scheme="http" />
+
+                <!--https links-->
+                <data
+                    android:host="gamefaqs.gamespot.com"
+                    android:pathPrefix="/boards"
+                    android:scheme="https" />
+                <data
+                    android:host="gamefaqs.gamespot.com"
+                    android:pathPattern="/users/.*/boards"
+                    android:scheme="https" />
+                <data
+                    android:host="gamefaqs.gamespot.com"
+                    android:pathPrefix="/pm"
+                    android:scheme="https" />
+
+                <!-- old domain, non-https links-->
+                <data
                     android:host="gamefaqs.com"
                     android:pathPrefix="/boards"
                     android:scheme="http" />
@@ -58,7 +86,7 @@
                     android:pathPrefix="/pm"
                     android:scheme="http" />
 
-                <!--https links-->
+                <!--old domain, https links-->
                 <data
                     android:host="gamefaqs.com"
                     android:pathPrefix="/boards"
