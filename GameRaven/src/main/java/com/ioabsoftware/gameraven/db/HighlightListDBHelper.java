@@ -187,7 +187,7 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
                     public void onColorChanged(int color) {
                         dSetColor.setBackgroundColor(color);
                         dSetColor.setTextColor(~color | 0xFF000000); //without alpha
-                        dColorVal.setText(Integer.toString(color));
+                        dColorVal.setText(String.valueOf(color));
                     }
                 });
                 picker.setHexValueEnabled(true);
