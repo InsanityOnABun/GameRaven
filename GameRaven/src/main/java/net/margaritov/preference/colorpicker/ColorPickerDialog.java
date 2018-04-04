@@ -37,9 +37,9 @@ import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.R;
 
-public class ColorPickerDialog 
-	extends 
-		Dialog 
+public class ColorPickerDialog
+	extends
+		Dialog
 	implements
 		ColorPickerView.OnColorChangedListener,
 		View.OnClickListener {
@@ -48,7 +48,7 @@ public class ColorPickerDialog
 
 	private ColorPickerPanelView mOldColor;
 	private ColorPickerPanelView mNewColor;
-	
+
 	private EditText mHexVal;
 	private boolean mHexValueEnabled = false;
 	private ColorStateList mHexDefaultTextColor;
@@ -56,9 +56,9 @@ public class ColorPickerDialog
 	private OnColorChangedListener mListener;
 
 	public interface OnColorChangedListener {
-		public void onColorChanged(int color);
+		void onColorChanged(int color);
 	}
-	
+
 	public ColorPickerDialog(Context context, int initialColor) {
 		super(context);
 
@@ -74,23 +74,23 @@ public class ColorPickerDialog
 	}
 
 	private void setUp(int color) {
-		
+
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
+
 		View layout = inflater.inflate(R.layout.dialog_color_picker, null);
 
 		setContentView(layout);
 
 		setTitle(R.string.dialog_color_picker);
-		
-		mColorPicker = (ColorPickerView) layout.findViewById(R.id.color_picker_view);
-		mOldColor = (ColorPickerPanelView) layout.findViewById(R.id.old_color_panel);
-		mNewColor = (ColorPickerPanelView) layout.findViewById(R.id.new_color_panel);
-		
-		mHexVal = (EditText) layout.findViewById(R.id.hex_val);
+
+		mColorPicker = layout.findViewById(R.id.color_picker_view);
+		mOldColor = layout.findViewById(R.id.old_color_panel);
+		mNewColor = layout.findViewById(R.id.new_color_panel);
+
+		mHexVal = layout.findViewById(R.id.hex_val);
 		mHexVal.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		mHexDefaultTextColor = mHexVal.getTextColors();
-		
+
 		mHexVal.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
 			@Override
@@ -115,14 +115,14 @@ public class ColorPickerDialog
 				return false;
 			}
 		});
-		
+
 		((LinearLayout) mOldColor.getParent()).setPadding(
-			Math.round(mColorPicker.getDrawingOffset()), 
-			0, 
-			Math.round(mColorPicker.getDrawingOffset()), 
+			Math.round(mColorPicker.getDrawingOffset()),
+			0,
+			Math.round(mColorPicker.getDrawingOffset()),
 			0
-		);	
-		
+		);
+
 		mOldColor.setOnClickListener(this);
 		mNewColor.setOnClickListener(this);
 		mColorPicker.setOnColorChangedListener(this);
@@ -135,7 +135,7 @@ public class ColorPickerDialog
 	public void onColorChanged(int color) {
 
 		mNewColor.setColor(color);
-		
+
 		if (mHexValueEnabled)
 			updateHexValue(color);
 
@@ -146,7 +146,7 @@ public class ColorPickerDialog
 		*/
 
 	}
-	
+
 	public void setHexValueEnabled(boolean enable) {
 		mHexValueEnabled = enable;
 		if (enable) {
@@ -157,11 +157,11 @@ public class ColorPickerDialog
 		else
 			mHexVal.setVisibility(View.GONE);
 	}
-	
+
 	public boolean getHexValueEnabled() {
 		return mHexValueEnabled;
 	}
-	
+
 	private void updateHexLengthFilter() {
 		if (getAlphaSliderVisible())
 			mHexVal.setFilters(new InputFilter[] {new InputFilter.LengthFilter(9)});
@@ -185,11 +185,11 @@ public class ColorPickerDialog
 			updateHexValue(getColor());
 		}
 	}
-	
+
 	public boolean getAlphaSliderVisible() {
 		return mColorPicker.getAlphaSliderVisible();
 	}
-	
+
 	/**
 	 * Set a OnColorChangedListener to get notified when the color
 	 * selected by the user has changed.
@@ -212,7 +212,7 @@ public class ColorPickerDialog
 		}
 		dismiss();
 	}
-	
+
 	@Override
 	public Bundle onSaveInstanceState() {
 		Bundle state = super.onSaveInstanceState();
@@ -220,7 +220,7 @@ public class ColorPickerDialog
 		state.putInt("new_color", mNewColor.getColor());
 		return state;
 	}
-	
+
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);

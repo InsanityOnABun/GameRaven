@@ -28,13 +28,13 @@ public class SettingsHighlightedUsers extends AppCompatActivity implements HlUDD
 
         setContentView(R.layout.settings_highlightedusers);
 
-        Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.hluToolbar);
+        Toolbar toolbar = findViewById(R.id.hluToolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         wrapper = new LinearLayout(this);
-        LinearLayout outerWrapper = (LinearLayout) findViewById(R.id.hluOuterWrapper);
+        LinearLayout outerWrapper = findViewById(R.id.hluOuterWrapper);
 
         scroller = new ScrollView(this);
         scroller.setVerticalFadingEdgeEnabled(true);

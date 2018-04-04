@@ -172,13 +172,13 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
         dialogBuilder.setView(dialogView);
         dialogBuilder.setTitle("Add Highlighted User");
 
-        final EditText dName = (EditText) dialogView.findViewById(R.id.huName);
-        final EditText dLabel = (EditText) dialogView.findViewById(R.id.huLabel);
+        final EditText dName = dialogView.findViewById(R.id.huName);
+        final EditText dLabel = dialogView.findViewById(R.id.huLabel);
 
-        final Button dSetColor = (Button) dialogView.findViewById(R.id.huSetColor);
-        final TextView dColorVal = (TextView) dialogView.findViewById(R.id.huColorVal);
+        final Button dSetColor = dialogView.findViewById(R.id.huSetColor);
+        final TextView dColorVal = dialogView.findViewById(R.id.huColorVal);
 
-        final CheckedTextView dDelete = (CheckedTextView) dialogView.findViewById(R.id.huDelete);
+        final CheckedTextView dDelete = dialogView.findViewById(R.id.huDelete);
 
         dSetColor.setOnClickListener(new OnClickListener() {
             @Override

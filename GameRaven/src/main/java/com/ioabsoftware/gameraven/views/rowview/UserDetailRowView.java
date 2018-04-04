@@ -38,14 +38,14 @@ public class UserDetailRowView extends BaseRowView {
         myType = RowType.USER_DETAIL;
         LayoutInflater.from(context).inflate(R.layout.userdetailview, this, true);
 
-        tag = (TextView) findViewById(R.id.udTag);
-        ID = (TextView) findViewById(R.id.udID);
-        level = (TextView) findViewById(R.id.udLevel);
-        creation = (TextView) findViewById(R.id.udCreation);
-        lVisit = (TextView) findViewById(R.id.udLVisit);
-        karma = (TextView) findViewById(R.id.udKarma);
-        amp = (TextView) findViewById(R.id.udAMP);
-        sig = (TextView) findViewById(R.id.udSig);
+        tag = findViewById(R.id.udTag);
+        ID = findViewById(R.id.udID);
+        level = findViewById(R.id.udLevel);
+        creation = findViewById(R.id.udCreation);
+        lVisit = findViewById(R.id.udLVisit);
+        karma = findViewById(R.id.udKarma);
+        amp = findViewById(R.id.udAMP);
+        sig = findViewById(R.id.udSig);
 
         if (textSize == 0)
             textSize = ID.getTextSize();

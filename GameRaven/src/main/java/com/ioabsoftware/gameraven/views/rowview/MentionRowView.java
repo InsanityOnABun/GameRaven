@@ -39,10 +39,10 @@ public class MentionRowView extends BaseRowView {
         myType = RowType.MENTION;
         LayoutInflater.from(context).inflate(R.layout.mentionview, this, true);
 
-        topic = (TextView) findViewById(R.id.mentionTopic);
-        board = (TextView) findViewById(R.id.mentionBoard);
-        user = (TextView) findViewById(R.id.mentionUser);
-        time = (TextView) findViewById(R.id.mentionTime);
+        topic = findViewById(R.id.mentionTopic);
+        board = findViewById(R.id.mentionBoard);
+        user = findViewById(R.id.mentionUser);
+        time = findViewById(R.id.mentionTime);
 
         if (topicTextSize == 0) {
             topicTextSize = topic.getTextSize();

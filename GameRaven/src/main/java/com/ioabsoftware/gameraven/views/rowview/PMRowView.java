@@ -43,9 +43,9 @@ public class PMRowView extends BaseRowView {
         myType = RowType.PM;
         LayoutInflater.from(context).inflate(R.layout.pmview, this, true);
 
-        subject = (TextView) findViewById(R.id.pmSubject);
-        sender = (TextView) findViewById(R.id.pmSender);
-        time = (TextView) findViewById(R.id.pmTime);
+        subject = findViewById(R.id.pmSubject);
+        sender = findViewById(R.id.pmSender);
+        time = findViewById(R.id.pmTime);
 
         defaultSubjectColor = subject.getCurrentTextColor();
         defaultSenderColor = sender.getCurrentTextColor();

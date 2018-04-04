@@ -92,7 +92,7 @@ public class ColorPickerPreference
 	private void setPreviewColor() {
 		if (mView == null) return;
 		ImageView iView = new ImageView(getContext());
-		LinearLayout widgetFrameView = ((LinearLayout)mView.findViewById(android.R.id.widget_frame));
+		LinearLayout widgetFrameView = mView.findViewById(android.R.id.widget_frame);
 		if (widgetFrameView == null) return;
 		widgetFrameView.setVisibility(View.VISIBLE);
 		widgetFrameView.setPadding(
@@ -150,7 +150,7 @@ public class ColorPickerPreference
 		showDialog(null);
 		return false;
 	}
-	
+
 	protected void showDialog(Bundle state) {
 		mDialog = new ColorPickerDialog(getContext(), mValue);
 		mDialog.setOnColorChangedListener(this);
@@ -211,7 +211,7 @@ public class ColorPickerPreference
 
         return "#" + alpha + red + green + blue;
     }
-    
+
     /**
 	 * For custom purposes. Not used by ColorPickerPreference
 	 * @param color
@@ -253,7 +253,7 @@ public class ColorPickerPreference
 
 		return Color.parseColor(argb);
 	}
-    
+
     @Override
     protected Parcelable onSaveInstanceState() {
         final Parcelable superState = super.onSaveInstanceState();
@@ -281,7 +281,7 @@ public class ColorPickerPreference
 
     private static class SavedState extends BaseSavedState {
         Bundle dialogBundle;
-        
+
         public SavedState(Parcel source) {
             super(source);
             dialogBundle = source.readBundle();
@@ -296,7 +296,7 @@ public class ColorPickerPreference
         public SavedState(Parcelable superState) {
             super(superState);
         }
-        
+
         @SuppressWarnings("unused")
         public static final Creator<SavedState> CREATOR =
                 new Creator<SavedState>() {

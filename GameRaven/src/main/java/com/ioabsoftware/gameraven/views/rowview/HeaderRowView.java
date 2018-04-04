@@ -33,7 +33,7 @@ public class HeaderRowView extends BaseRowView {
     public void init(Context context) {
         myType = RowType.HEADER;
         LayoutInflater.from(context).inflate(R.layout.headerview, this, true);
-        tView = (TextView) findViewById(R.id.hdrText);
+        tView = findViewById(R.id.hdrText);
 
         if (tSize == 0)
             tSize = tView.getTextSize();

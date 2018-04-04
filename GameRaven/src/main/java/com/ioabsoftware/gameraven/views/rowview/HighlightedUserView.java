@@ -47,9 +47,9 @@ public class HighlightedUserView extends BaseRowView implements OnClickListener 
 
         user = userIn;
 
-        nameView = (TextView) findViewById(R.id.hvName);
-        labelView = (TextView) findViewById(R.id.hvLabel);
-        colorFrame = (LinearLayout) findViewById(R.id.hvColorFrame);
+        nameView = findViewById(R.id.hvName);
+        labelView = findViewById(R.id.hvLabel);
+        colorFrame = findViewById(R.id.hvColorFrame);
         findViewById(R.id.hvSep).setBackgroundColor(Theming.colorPrimary());
 
         nameView.setText(user.getName());

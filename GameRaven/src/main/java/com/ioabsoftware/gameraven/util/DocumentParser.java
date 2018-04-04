@@ -24,7 +24,7 @@ public class DocumentParser implements AsyncParser<FinalDoc> {
         return new ByteBufferListParser().parse(emitter)
                 .then(new TransformFuture<FinalDoc, ByteBufferList>() {
                     @Override
-                    protected void transform(ByteBufferList result) throws Exception {
+                    protected void transform(ByteBufferList result) {
                         byte[] bytes = result.getAllByteArray();
                         setComplete(new FinalDoc(bytes, Jsoup.parse(new String(bytes, CHARSET))));
                     }

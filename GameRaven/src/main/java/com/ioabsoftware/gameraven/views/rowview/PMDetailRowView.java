@@ -36,7 +36,7 @@ public class PMDetailRowView extends BaseRowView {
         myType = RowType.PM_DETAIL;
         LayoutInflater.from(context).inflate(R.layout.pmdetailview, this, true);
 
-        messageView = (TextView) findViewById(R.id.pmdMessage);
+        messageView = findViewById(R.id.pmdMessage);
 
         if (messageTextSize == 0)
             messageTextSize = messageView.getTextSize();

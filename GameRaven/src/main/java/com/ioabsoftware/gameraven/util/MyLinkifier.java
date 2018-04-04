@@ -95,11 +95,7 @@ public class MyLinkifier {
                 return true;
             }
 
-            if (s.charAt(start - 1) == '@') {
-                return false;
-            }
-
-            return true;
+            return s.charAt(start - 1) != '@';
         }
     };
 

@@ -135,7 +135,7 @@ public class ColorPickerView extends View {
 	private Point	mStartTouchPoint = null;
 
 	public interface OnColorChangedListener {
-		public void onColorChanged(int color);
+		void onColorChanged(int color);
 	}
 
 	public ColorPickerView(Context context){
@@ -652,18 +652,18 @@ public class ColorPickerView extends View {
 
 		int width = 0;
 		int height = 0;
-		
+
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-		
+
 		int widthAllowed = MeasureSpec.getSize(widthMeasureSpec);
 		int heightAllowed = MeasureSpec.getSize(heightMeasureSpec);
-		
+
 		widthAllowed = chooseWidth(widthMode, widthAllowed);
 		heightAllowed = chooseHeight(heightMode, heightAllowed);
-		
+
 		if(!mShowAlphaPanel){
-			
+
 			height = (int) (widthAllowed - PANEL_SPACING - HUE_PANEL_WIDTH);
 
 			//If calculated height (based on the width) is more than the allowed height.
@@ -688,7 +688,7 @@ public class ColorPickerView extends View {
 			}
 
 		}
-		
+
 		setMeasuredDimension(width, height);
 	}
 
@@ -792,9 +792,9 @@ public class ColorPickerView extends View {
 
 		mAlphaPattern = new AlphaPatternDrawable((int) (5 * mDensity));
 		mAlphaPattern.setBounds(
-			Math.round(mAlphaRect.left), 
-			Math.round(mAlphaRect.top), 
-			Math.round(mAlphaRect.right), 
+			Math.round(mAlphaRect.left),
+			Math.round(mAlphaRect.top),
+			Math.round(mAlphaRect.right),
 			Math.round(mAlphaRect.bottom)
 		);
 
@@ -898,13 +898,13 @@ public class ColorPickerView extends View {
 			mValShader = null;
 			mSatShader = null;
 			mHueShader = null;
-			mAlphaShader = null;;
+			mAlphaShader = null;
 
-			requestLayout();
+            requestLayout();
 		}
 
 	}
-	
+
 	public boolean getAlphaSliderVisible() {
 		return mShowAlphaPanel;
 	}

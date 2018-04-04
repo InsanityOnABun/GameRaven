@@ -40,9 +40,9 @@ public class GameSearchRowView extends BaseRowView {
         myType = RowType.GAME_SEARCH;
         LayoutInflater.from(context).inflate(R.layout.gamesearchview, this, true);
 
-        platform = (TextView) findViewById(R.id.gsPlatform);
-        year = (TextView) findViewById(R.id.gsYear);
-        name = (TextView) findViewById(R.id.gsName);
+        platform = findViewById(R.id.gsPlatform);
+        year = findViewById(R.id.gsYear);
+        name = findViewById(R.id.gsName);
 
         if (nameTextSize == 0) {
             nameTextSize = name.getTextSize();

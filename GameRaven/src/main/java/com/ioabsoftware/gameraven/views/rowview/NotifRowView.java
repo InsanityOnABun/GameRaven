@@ -43,8 +43,8 @@ public class NotifRowView extends BaseRowView {
         myType = RowType.NOTIF;
         LayoutInflater.from(context).inflate(R.layout.notifview, this, true);
 
-        title = (TextView) findViewById(R.id.notifTitle);
-        time = (TextView) findViewById(R.id.notifTime);
+        title = findViewById(R.id.notifTitle);
+        time = findViewById(R.id.notifTime);
 
         defaultTitleColor = title.getCurrentTextColor();
         defaultTimeColor = time.getCurrentTextColor();
