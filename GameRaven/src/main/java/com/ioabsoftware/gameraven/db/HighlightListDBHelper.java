@@ -24,6 +24,8 @@ import com.ioabsoftware.gameraven.R;
 import net.margaritov.preference.colorpicker.ColorPickerDialog;
 import net.margaritov.preference.colorpicker.ColorPickerDialog.OnColorChangedListener;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -181,7 +183,7 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
         dSetColor.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                int startColor = Integer.parseInt(dColorVal.getText().toString());
+                int startColor = NumberUtils.toInt(dColorVal.getText().toString());
 
                 ColorPickerDialog picker = new ColorPickerDialog(c, startColor);
                 picker.setOnColorChangedListener(new OnColorChangedListener() {
