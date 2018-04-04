@@ -19,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
-import com.ioabsoftware.gameraven.BuildConfig;
 import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
 import com.ioabsoftware.gameraven.networking.NetDesc;

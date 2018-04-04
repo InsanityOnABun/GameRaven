@@ -160,11 +160,7 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
     @SuppressWarnings("ConstantConditions")
     public static void showHighlightUserDialog(final Activity c, final HighlightedUser user,
                                                String username, final HlUDDismissListener listener) {
-        boolean isNewCheck = false;
-        if (user == null || user.getID() == -1)
-            isNewCheck = true;
-
-        final boolean isAddNew = isNewCheck;
+        final boolean isAddNew = (user == null || user.getID() == -1);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(c);
         LayoutInflater inflater = c.getLayoutInflater();
@@ -238,12 +234,12 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
                                     AllInOneV2.getHLDB().addUser(
                                             dName.getText().toString(),
                                             dLabel.getText().toString(),
-                                            Integer.parseInt(dColorVal
+                                            NumberUtils.toInt(dColorVal
                                                     .getText().toString()));
                                 } else {
                                     user.setName(dName.getText().toString());
                                     user.setLabel(dLabel.getText().toString());
-                                    user.setColor(Integer.parseInt(dColorVal
+                                    user.setColor(NumberUtils.toInt(dColorVal
                                             .getText().toString()));
                                     AllInOneV2.getHLDB().updateUser(user);
                                 }

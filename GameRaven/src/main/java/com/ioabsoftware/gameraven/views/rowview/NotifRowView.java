@@ -9,13 +9,11 @@ import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
-import com.ioabsoftware.gameraven.networking.NetDesc;
 import com.ioabsoftware.gameraven.util.Theming;
 import com.ioabsoftware.gameraven.views.BaseRowData;
 import com.ioabsoftware.gameraven.views.BaseRowView;
 import com.ioabsoftware.gameraven.views.RowType;
 import com.ioabsoftware.gameraven.views.rowdata.NotifRowData;
-import com.ioabsoftware.gameraven.views.rowdata.PMRowData;
 
 public class NotifRowView extends BaseRowView {
 

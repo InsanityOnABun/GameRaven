@@ -41,6 +41,7 @@ import com.ioabsoftware.gameraven.util.AccountManager;
 import com.ioabsoftware.gameraven.util.Theming;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -161,7 +162,7 @@ public class HeaderSettings extends PreferenceActivity {
     }
 
     public void enableNotifs(String freq) {
-        int seconds = 60 * Integer.parseInt(freq);
+        int seconds = 60 * NumberUtils.toInt(freq);
         NotifierJobService.dispatchJob(this, seconds, true);
     }
 
@@ -324,7 +325,7 @@ public class HeaderSettings extends PreferenceActivity {
                                         if (AllInOneV2.getHLDB().hasUser(line))
                                             AllInOneV2.getHLDB().deleteUser(line);
 
-                                        AllInOneV2.getHLDB().addUser(line, label, Integer.parseInt(color));
+                                        AllInOneV2.getHLDB().addUser(line, label, NumberUtils.toInt(color));
                                     }
                                 } else AllInOneV2.wtl("line unhandled in restore: " + line);
                             } else if (line.contains("=")) {
@@ -355,7 +356,7 @@ public class HeaderSettings extends PreferenceActivity {
                                 if (key.equals("ampSortOption") || key.equals("notifsFrequency"))
                                     editor.putString(key, val);
                                 else
-                                    editor.putInt(key, Integer.parseInt(val));
+                                    editor.putInt(key, NumberUtils.toInt(val));
                             } else
                                 editor.putString(key, val);
                         } else

@@ -278,7 +278,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         // Init notification job if it isn't running and should be
         if (settings.getBoolean("notifsEnable", false)) {
-            int seconds = 60 * Integer.parseInt(settings.getString("notifsFrequency", "60"));
+            int seconds = 60 * NumberUtils.toInt(settings.getString("notifsFrequency", "60"));
             NotifierJobService.dispatchJob(this, seconds, false);
         }
 
@@ -2115,7 +2115,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     i = currPage.indexOf("&");
                     if (i != -1)
                         currPage = currPage.replace(currPage.substring(i), EMPTY_STRING);
-                    pagesInfo[0] = Integer.parseInt(currPage) + 1;
+                    pagesInfo[0] = NumberUtils.toInt(currPage) + 1;
                 } else {
                     pagesInfo[0] = 1;
                 }
@@ -2355,8 +2355,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 pageCount = pj.getElementsByTag("option").last().text();
             }
 
-            i[0] = Integer.parseInt(currPage);
-            i[1] = Integer.parseInt(pageCount);
+            i[0] = NumberUtils.toInt(currPage);
+            i[1] = NumberUtils.toInt(pageCount);
         }
         return i;
     }

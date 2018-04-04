@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.R;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 public class SeekBarPreference extends Preference implements OnSeekBarChangeListener {
 
     private final String TAG = getClass().getName();
@@ -63,7 +65,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
         try {
             String newInterval = attrs.getAttributeValue(APPLICATIONNS, "interval");
             if(newInterval != null)
-                mInterval = Integer.parseInt(newInterval);
+                mInterval = NumberUtils.toInt(newInterval);
         }
         catch(Exception e) {
             Log.e(TAG, "Invalid interval value", e);

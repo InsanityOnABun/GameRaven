@@ -29,6 +29,7 @@ import com.koushikdutta.async.http.ConnectionClosedException;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -1181,7 +1182,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
         int start = sc.indexOf("UserLevel','") + 12;
         int end = sc.indexOf('\'', start + 1);
         if (end > start)
-            userLevel = Integer.parseInt(sc.substring(start, end));
+            userLevel = NumberUtils.toInt(sc.substring(start, end));
 
         AllInOneV2.wtl("user level: " + userLevel);
     }

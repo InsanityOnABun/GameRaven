@@ -34,7 +34,6 @@ import android.widget.TextView;
 import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
 import com.ioabsoftware.gameraven.networking.NetDesc;
-import com.ioabsoftware.gameraven.networking.Session;
 import com.ioabsoftware.gameraven.util.AccountManager;
 import com.ioabsoftware.gameraven.util.DocumentParser;
 import com.ioabsoftware.gameraven.util.FinalDoc;

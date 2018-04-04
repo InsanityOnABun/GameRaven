@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
-import com.ioabsoftware.gameraven.BuildConfig;
 import com.ioabsoftware.gameraven.networking.NetDesc;
 
 import java.io.ByteArrayOutputStream;

@@ -16,8 +16,6 @@
 
 package net.margaritov.preference.colorpicker;
 
-import java.util.Locale;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -36,6 +34,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.R;
+
+import java.util.Locale;
 
 public class ColorPickerDialog
 	extends
