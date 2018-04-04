@@ -524,15 +524,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         wtl("creating default sig");
         defaultSig = "Posted with GameRaven *grver*";
 
-        wtl("getting css directory");
-        File cssDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/gameraven");
-        if (!cssDirectory.exists()) {
-            wtl("css directory does not exist, creating");
-            if (cssDirectory.mkdir())
-                wtl("css directory created");
-                else wtl("css directory creation failed");
-        }
-
         wtl("starting db creation");
         hlDB = new HighlightListDBHelper(this);
 
@@ -2272,7 +2263,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     private void processBoardWraps(Elements boardWraps,
                                    String boardWrapHeaderPrefix,
                                    boolean includeBoardWrapHeader) {
-        for (Element boardWrap : boardWraps){
+        for (Element boardWrap : boardWraps) {
             Element header = boardWrap.previousElementSibling();
             if (header.text().toLowerCase().startsWith(boardWrapHeaderPrefix)) {
                 if (includeBoardWrapHeader) {
