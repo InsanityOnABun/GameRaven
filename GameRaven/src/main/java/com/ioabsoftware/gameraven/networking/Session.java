@@ -1179,10 +1179,13 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
     private void updateUserLevel(Document doc) {
         String sc = doc.getElementsByTag("head").first().getElementsByTag("script").html();
-        int start = sc.indexOf("UserLevel','") + 12;
-        int end = sc.indexOf('\'', start + 1);
-        if (end > start)
-            userLevel = NumberUtils.toInt(sc.substring(start, end));
+        int baseStart = sc.indexOf("UserLevel','");
+        if (baseStart > -1) {
+            int start = baseStart + 12;
+            int end = sc.indexOf('\'', start + 1);
+            if (end > start)
+                userLevel = NumberUtils.toInt(sc.substring(start, end));
+        }
 
         AllInOneV2.wtl("user level: " + userLevel);
     }
