@@ -10,7 +10,7 @@ android {
         targetSdkVersion 27
 
         // <1-or-2-digit-major><2-digit-minor><2-digit-point><3-digit-increment>
-        versionCode 30400006
+        versionCode 30400007
         versionName "3.4"
     }
     signingConfigs {
