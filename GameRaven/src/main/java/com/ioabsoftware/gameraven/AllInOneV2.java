@@ -1591,7 +1591,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                             lPostLink = cells.get(1).child(0).attr("href");
                         }
 
-                        adapterRows.add(new TopicRowData(title, board, lPost, mCount, link,
+                        String flair = null;
+                        Element flairSpan = row.selectFirst("span.flair");
+                        if (flairSpan != null) {
+                            flair = flairSpan.text();
+                        }
+
+                        adapterRows.add(new TopicRowData(title, flair, board, lPost, mCount, link,
                                 lPostLink, null, TopicType.NORMAL, status, 0,
                                 TopicRowData.TopicFlavor.AMP));
                     }
@@ -1637,8 +1643,14 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                 status = ReadStatus.NEW_POST;
                         }
 
-                        adapterRows.add(new TopicRowData(topicText, board, lPostText, msgs, topicLink,
-                                lPostLink, removeLink, TopicType.NORMAL, status, 0,
+                        String flair = null;
+                        Element flairSpan = row.selectFirst("span.flair");
+                        if (flairSpan != null) {
+                            flair = flairSpan.text();
+                        }
+
+                        adapterRows.add(new TopicRowData(topicText, flair, board, lPostText, msgs,
+                                topicLink, lPostLink, removeLink, TopicType.NORMAL, status, 0,
                                 TopicRowData.TopicFlavor.TRACKED));
                     }
                 } else {
@@ -1800,8 +1812,15 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                     tc += " (" + hUser.getLabel() + ")";
                                 }
 
-                                adapterRows.add(new TopicRowData(title, tc, lastPost, mCount, tUrl,
-                                        lpUrl, null, type, status, hlColor, TopicRowData.TopicFlavor.BOARD));
+                                String flair = null;
+                                Element flairSpan = row.selectFirst("span.flair");
+                                if (flairSpan != null) {
+                                    flair = flairSpan.text();
+                                }
+
+                                adapterRows.add(new TopicRowData(title, flair, tc, lastPost, mCount,
+                                        tUrl, lpUrl, null, type, status, hlColor,
+                                        TopicRowData.TopicFlavor.BOARD));
                             } else
                                 skipFirst = false;
                         }

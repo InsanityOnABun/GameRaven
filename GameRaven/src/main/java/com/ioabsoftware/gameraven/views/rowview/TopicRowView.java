@@ -3,6 +3,10 @@ package com.ioabsoftware.gameraven.views.rowview;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +41,9 @@ public class TopicRowView extends BaseRowView {
 
     private static float titleTextSize = 0;
     private static float tcTextSize, msgLPTextSize, buttonTextSize;
+
+    private static ForegroundColorSpan flairForegroundColor;
+    private static StyleSpan flairBold;
 
     public TopicRowView(Context context) {
         super(context);
@@ -75,6 +82,14 @@ public class TopicRowView extends BaseRowView {
             tcTextSize = tcOrBoard.getTextSize();
             msgLPTextSize = msgLP.getTextSize();
             buttonTextSize = rightButton.getTextSize();
+        }
+
+        if (flairForegroundColor == null) {
+            flairForegroundColor = new ForegroundColorSpan(Theming.colorPrimary());
+        }
+
+        if (flairBold == null) {
+            flairBold = new StyleSpan(Typeface.BOLD);
         }
 
         lastPostListener = new OnClickListener() {
@@ -155,7 +170,18 @@ public class TopicRowView extends BaseRowView {
         lastPostButton.setVisibility(VISIBLE);
         lastPostSep.setVisibility(VISIBLE);
 
-        title.setText(myData.getTitle());
+        if (myData.getFlair() != null && myData.getFlair().length() > 0) {
+            int flag = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
+            int spanLength = myData.getFlair().length() + 2;
+            SpannableStringBuilder titleBuilder = new SpannableStringBuilder();
+            titleBuilder.append('[').append(myData.getFlair()).append("] ").append(myData.getTitle());
+            titleBuilder.setSpan(flairForegroundColor, 0, spanLength, flag);
+            titleBuilder.setSpan(flairBold, 0, spanLength, flag);
+            title.setText(titleBuilder);
+        } else {
+            title.setText(myData.getTitle());
+        }
+
         tcOrBoard.setText(myData.getTCOrBoard());
         msgLP.setText(String.format("%s Msgs, Last: %s", myData.getMCount(), myData.getLastPost()));
 

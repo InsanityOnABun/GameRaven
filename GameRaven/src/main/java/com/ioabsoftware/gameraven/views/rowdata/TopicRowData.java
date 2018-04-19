@@ -10,10 +10,14 @@ public class TopicRowData extends BaseRowData {
 
     public enum TopicType {NORMAL, POLL, LOCKED, ARCHIVED, PINNED}
 
-    private String title, tcOrBoard, lastPost, mCount, url, lPostUrl, untrackUrl;
+    private String title, flair, tcOrBoard, lastPost, mCount, url, lPostUrl, untrackUrl;
 
     public String getTitle() {
         return title;
+    }
+
+    public String getFlair() {
+        return flair;
     }
 
     public String getTCOrBoard() {
@@ -69,10 +73,11 @@ public class TopicRowData extends BaseRowData {
         return RowType.TOPIC;
     }
 
-    public TopicRowData(String titleIn, String tcOrBoardIn, String lastPostIn, String mCountIn,
-                        String urlIn, String lPostUrlIn, String untrackUrlIn, TopicType typeIn,
-                        ReadStatus statusIn, int hlColorIn, TopicFlavor flavorIn) {
+    public TopicRowData(String titleIn, String flairIn, String tcOrBoardIn, String lastPostIn,
+                        String mCountIn, String urlIn, String lPostUrlIn, String untrackUrlIn,
+                        TopicType typeIn, ReadStatus statusIn, int hlColorIn, TopicFlavor flavorIn) {
         title = titleIn;
+        flair = flairIn;
         tcOrBoard = tcOrBoardIn;
         lastPost = lastPostIn;
         mCount = mCountIn;
