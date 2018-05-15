@@ -3204,9 +3204,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     public void uploadImage(View view) {
         PackageManager pm = getPackageManager();
-        if (isPackageInstalled("com.ioabsoftware.railgun", pm)) {
-            startActivity(new Intent("com.ioabsoftware.railgun.INVOKE_FROM_APP"));
-        } else if (isPackageInstalled("com.ioabsoftware.imgtcuploader", pm)) {
+        if (isPackageInstalled("com.ioabsoftware.imgtcuploader", pm)) {
             startActivity(new Intent("com.ioabsoftware.imgtcuploader.INVOKE_FROM_APP"));
         } else if (isPackageInstalled("com.android.vending", pm)) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.railgun")));
