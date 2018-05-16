@@ -196,8 +196,9 @@ public class TopicRowView extends BaseRowView {
             typeIcon.append(" 18sp ").append(typeColor).append("}  ");
         }
 
+        String spacer = " {mdi-lock 18sp #00000000}";
         tcOrBoard.setText(String.format("%s%s%s",
-                typeIcon.toString(), myData.getTCOrBoard(), " {mdi-lock 18sp #ff0000}"));
+                typeIcon.toString(), myData.getTCOrBoard(), spacer));
 
         Iconify.addIcons(tcOrBoard);
 
