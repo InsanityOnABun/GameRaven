@@ -272,7 +272,7 @@ public class MessageRowData extends BaseRowData {
                 String key = pollElem.getElementsByAttributeValue("name", "key").attr("value");
 
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, Theming.convertDPtoPX(aio, 1));
+                        ViewGroup.LayoutParams.MATCH_PARENT, Theming.convertDPtoPX(1));
                 int x = 0;
                 for (Element e : pollElem.getElementsByAttributeValue("name", "poll_vote")) {
                     if (x > 0) {

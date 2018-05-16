@@ -244,14 +244,10 @@ public final class Theming {
     /**
      * Converts a DP value into a PX value, based on the current device's density
      *
-     * @param c  Context needed to find the display density.
      * @param dp The DP value to convert to PX
      * @return The dp value converted to pixels
      */
-    public static int convertDPtoPX(Context c, float dp) {
-        // Get the screen's density scale
-        final float scale = c.getResources().getDisplayMetrics().density;
-        // Convert the dps to pixels, based on density scale
-        return ((int) (dp * scale + 0.5f));
+    public static int convertDPtoPX(float dp) {
+        return ((int) (dp * Resources.getSystem().getDisplayMetrics().density + 0.5f));
     }
 }

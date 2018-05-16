@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -526,7 +527,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         hlDB = new HighlightListDBHelper(this);
 
         View foot = new View(this);
-        foot.setMinimumHeight(Theming.convertDPtoPX(this, 80));
+        foot.setMinimumHeight(Theming.convertDPtoPX(80));
         contentList.addFooterView(foot);
 
         adapterRows.add(new HeaderRowData("Loading..."));
@@ -1330,7 +1331,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             }
         }
 
-        contentList.setDividerHeight(Theming.convertDPtoPX(this, 1));
+        contentList.setDividerHeight(Theming.convertDPtoPX(1));
 
         switch (desc) {
             case BOARDS_EXPLORE:
