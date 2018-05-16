@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -173,13 +172,13 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
         final Button dSetColor = dialogView.findViewById(R.id.huSetColor);
         final TextView dColorVal = dialogView.findViewById(R.id.huColorVal);
 
-        final CheckedTextView dDelete = dialogView.findViewById(R.id.huDelete);
-
         dSetColor.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 ColorPickerDialog.Builder b = ColorPickerDialog.newBuilder();
-                b.setColor(NumberUtils.toInt(dColorVal.getText().toString()));
+                if (dColorVal.length() > 0 && !dColorVal.getText().equals("0")) {
+                    b.setColor(NumberUtils.toInt(dColorVal.getText().toString()));
+                }
                 ColorPickerDialog cpd = b.create();
                 cpd.setColorPickerDialogListener(new ColorPickerDialogListener() {
                     @Override
@@ -195,28 +194,16 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
                     }
                 });
                 cpd.show(activity.getFragmentManager(), "color-picker-dialog");
-//                int startColor = NumberUtils.toInt(dColorVal.getText().toString());
-//
-//                ColorPickerDialog picker = new ColorPickerDialog(c, startColor);
-//                picker.setOnColorChangedListener(new OnColorChangedListener() {
-//                    @Override
-//                    public void onColorChanged(int color) {
-//                        dSetColor.setBackgroundColor(color);
-//                        dSetColor.setTextColor(~color | 0xFF000000); //without alpha
-//                        dColorVal.setText(String.valueOf(color));
-//                    }
-//                });
-//                picker.setHexValueEnabled(true);
-//                picker.show();
             }
         });
 
         if (!isAddNew) {
-            dDelete.setVisibility(View.VISIBLE);
-            dDelete.setOnClickListener(new OnClickListener() {
+            dialogBuilder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    ((CheckedTextView) v).toggle();
+                public void onClick(DialogInterface dialog, int which) {
+                    AllInOneV2.getHLDB().deleteUser(user);
+                    if (listener != null)
+                        listener.beforeDismissSuccessfulSave();
                 }
             });
 
@@ -231,7 +218,6 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
         dialogBuilder.setPositiveButton("Save", null);
         dialogBuilder.setNegativeButton("Cancel", null);
 
-
         final AlertDialog diag = dialogBuilder.create();
         diag.setOnShowListener(new OnShowListener() {
             @Override
@@ -241,34 +227,30 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
                     public void onClick(View v) {
                         boolean shouldDismiss = true;
 
-                        if (!dDelete.isChecked()) {
-                            if (dName.getText().toString().length() > 0
-                                    && dLabel.getText().toString().length() > 0
-                                    && !dColorVal.getText().equals("0")) {
+                        if (dName.getText().toString().length() > 0
+                                && dLabel.getText().toString().length() > 0
+                                && !dColorVal.getText().equals("0")) {
 
-                                if (isAddNew) {
-                                    AllInOneV2.getHLDB().addUser(
-                                            dName.getText().toString(),
-                                            dLabel.getText().toString(),
-                                            NumberUtils.toInt(dColorVal
-                                                    .getText().toString()));
-                                } else {
-                                    user.setName(dName.getText().toString());
-                                    user.setLabel(dLabel.getText().toString());
-                                    user.setColor(NumberUtils.toInt(dColorVal
-                                            .getText().toString()));
-                                    AllInOneV2.getHLDB().updateUser(user);
-                                }
-
-
+                            if (isAddNew) {
+                                AllInOneV2.getHLDB().addUser(
+                                        dName.getText().toString(),
+                                        dLabel.getText().toString(),
+                                        NumberUtils.toInt(dColorVal
+                                                .getText().toString()));
                             } else {
-                                Toast.makeText(activity,
-                                        "Missing required info",
-                                        Toast.LENGTH_SHORT).show();
-                                shouldDismiss = false;
+                                user.setName(dName.getText().toString());
+                                user.setLabel(dLabel.getText().toString());
+                                user.setColor(NumberUtils.toInt(dColorVal
+                                        .getText().toString()));
+                                AllInOneV2.getHLDB().updateUser(user);
                             }
+
+
                         } else {
-                            AllInOneV2.getHLDB().deleteUser(user);
+                            Toast.makeText(activity,
+                                    "Missing required info",
+                                    Toast.LENGTH_SHORT).show();
+                            shouldDismiss = false;
                         }
 
                         if (shouldDismiss) {

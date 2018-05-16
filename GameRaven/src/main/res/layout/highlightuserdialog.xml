@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <CheckedTextView
-        android:id="@+id/huDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-        android:checked="false"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center_vertical"
-        android:text="@string/delete_qmark"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
     <EditText
         android:id="@+id/huName"
         android:layout_width="match_parent"
