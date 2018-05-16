@@ -2,7 +2,6 @@ package com.ioabsoftware.gameraven.views.rowview;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -21,6 +20,7 @@ import com.ioabsoftware.gameraven.views.BaseRowData.ReadStatus;
 import com.ioabsoftware.gameraven.views.BaseRowView;
 import com.ioabsoftware.gameraven.views.RowType;
 import com.ioabsoftware.gameraven.views.rowdata.TopicRowData;
+import com.joanzapata.iconify.Iconify;
 
 public class TopicRowView extends BaseRowView {
 
@@ -32,8 +32,6 @@ public class TopicRowView extends BaseRowView {
 
     OnClickListener lastPostListener, untrackListener;
 
-    TextView typeIndicator;
-
     TopicRowData myData;
 
 
@@ -42,8 +40,10 @@ public class TopicRowView extends BaseRowView {
     private static float titleTextSize = 0;
     private static float tcTextSize, msgLPTextSize, buttonTextSize;
 
-    private static ForegroundColorSpan flairForegroundColor;
-    private static StyleSpan flairBold;
+    private ForegroundColorSpan flairForegroundColor = new ForegroundColorSpan(Theming.colorPrimary());
+    private StyleSpan flairBold = new StyleSpan(Typeface.BOLD);
+
+    private String typeColor = "#" + Integer.toHexString(Theming.colorTopicTypeIndicator());
 
     public TopicRowView(Context context) {
         super(context);
@@ -70,8 +70,6 @@ public class TopicRowView extends BaseRowView {
         rightSep = findViewById(R.id.tvRightSep);
         leftSep = findViewById(R.id.tvLeftSep);
 
-        typeIndicator = findViewById(R.id.tvTypeIndicator);
-
         defaultTitleColor = title.getCurrentTextColor();
         defaultTCColor = tcOrBoard.getCurrentTextColor();
         defaultMsgLPColor = msgLP.getCurrentTextColor();
@@ -82,14 +80,6 @@ public class TopicRowView extends BaseRowView {
             tcTextSize = tcOrBoard.getTextSize();
             msgLPTextSize = msgLP.getTextSize();
             buttonTextSize = rightButton.getTextSize();
-        }
-
-        if (flairForegroundColor == null) {
-            flairForegroundColor = new ForegroundColorSpan(Theming.colorPrimary());
-        }
-
-        if (flairBold == null) {
-            flairBold = new StyleSpan(Typeface.BOLD);
         }
 
         lastPostListener = new OnClickListener() {
@@ -182,7 +172,35 @@ public class TopicRowView extends BaseRowView {
             title.setText(myData.getTitle());
         }
 
-        tcOrBoard.setText(myData.getTCOrBoard());
+        StringBuilder typeIcon = new StringBuilder();
+        switch (myData.getType()) {
+            case POLL:
+                typeIcon.append("{mdi-poll");
+                break;
+            case LOCKED:
+                typeIcon.append("{md-lock");
+                break;
+            case ARCHIVED:
+                typeIcon.append("{mdi-archive");
+                break;
+            case PINNED:
+                typeIcon.append("{mdi-pin");
+                break;
+            case NORMAL:
+            default:
+                typeIcon.setLength(0); // ensure empty
+                break;
+        }
+
+        if (typeIcon.length() > 0) {
+            typeIcon.append(" 18sp ").append(typeColor).append("}  ");
+        }
+
+        tcOrBoard.setText(String.format("%s%s%s",
+                typeIcon.toString(), myData.getTCOrBoard(), " {mdi-lock 18sp #ff0000}"));
+
+        Iconify.addIcons(tcOrBoard);
+
         msgLP.setText(String.format("%s Msgs, Last: %s", myData.getMCount(), myData.getLastPost()));
 
         int hlColor = myData.getHLColor();
@@ -223,28 +241,5 @@ public class TopicRowView extends BaseRowView {
 
             lastPostButton.setText(R.string.last_post);
         }
-
-        switch (myData.getType()) {
-            case NORMAL:
-                typeIndicator.setVisibility(View.GONE);
-                break;
-            case POLL:
-                setTypeIndicator(Theming.topicStatusIcons()[0]);
-                break;
-            case LOCKED:
-                setTypeIndicator(Theming.topicStatusIcons()[1]);
-                break;
-            case ARCHIVED:
-                setTypeIndicator(Theming.topicStatusIcons()[2]);
-                break;
-            case PINNED:
-                setTypeIndicator(Theming.topicStatusIcons()[3]);
-                break;
-        }
-    }
-
-    private void setTypeIndicator(Drawable icon) {
-        typeIndicator.setBackground(icon);
-        typeIndicator.setVisibility(View.VISIBLE);
     }
 }

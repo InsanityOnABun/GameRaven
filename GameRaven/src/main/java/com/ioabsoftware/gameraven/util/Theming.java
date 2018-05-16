@@ -10,9 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 
 import com.ioabsoftware.gameraven.R;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.MaterialCommunityIcons;
-import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -58,6 +55,12 @@ public final class Theming {
         return colorAccent;
     }
 
+    private static int colorTopicTypeIndicator;
+
+    public static int colorTopicTypeIndicator() {
+        return colorTopicTypeIndicator;
+    }
+
     private static int colorReadTopic;
 
     public static int colorReadTopic() {
@@ -95,12 +98,6 @@ public final class Theming {
 
     public static Style croutonStyle() {
         return croutonStyle;
-    }
-
-    private static Drawable[] topicStatusIcons = new Drawable[4];
-
-    public static Drawable[] topicStatusIcons() {
-        return topicStatusIcons;
     }
 
     private static Drawable selectableItemBackground;
@@ -176,21 +173,12 @@ public final class Theming {
         colorAccent = ta.getColor(4, resources.getColor(R.color.gf_blue_dark_accent));
         colorHiddenSpoiler = ta.getColor(5, resources.getColor(R.color.white));
         colorRevealedSpoiler = ta.getColor(6, resources.getColor(R.color.black));
-        int topicStatusIconColor = ta.getColor(7, resources.getColor(R.color.white));
+        colorTopicTypeIndicator = ta.getColor(7, resources.getColor(R.color.white));
         colorReadTopic = ta.getColor(8, resources.getColor(R.color.read_topic));
         selectableItemBackground = ta.getDrawable(9);
 
         // Finally, free the resources used by TypedArray
         ta.recycle();
-
-        topicStatusIcons[0] = new IconDrawable(c, MaterialCommunityIcons.mdi_poll)
-                .color(topicStatusIconColor).sizeDp(18);
-        topicStatusIcons[1] = new IconDrawable(c, MaterialIcons.md_lock)
-                .color(topicStatusIconColor).sizeDp(18);
-        topicStatusIcons[2] = new IconDrawable(c, MaterialCommunityIcons.mdi_archive)
-                .color(topicStatusIconColor).sizeDp(18);
-        topicStatusIcons[3] = new IconDrawable(c, MaterialCommunityIcons.mdi_pin)
-                .color(topicStatusIconColor).sizeDp(18);
 
         croutonStyle = new Style.Builder()
                 .setBackgroundColorValue(colorPrimaryDark)

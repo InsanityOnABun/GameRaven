@@ -31,7 +31,7 @@
         android:lines="1"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
-        app:layout_constraintLeft_toRightOf="@+id/tvTypeIndicator"
+        app:layout_constraintLeft_toRightOf="@+id/tvLeftSep"
         app:layout_constraintRight_toLeftOf="@+id/tvMsgCountLastPost"
         app:layout_constraintTop_toBottomOf="@+id/tvTopSpacer"
         tools:text="Topic CreatorTC" />
@@ -44,7 +44,8 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10sp"
         app:layout_constraintRight_toLeftOf="@+id/tvRightSep"
-        app:layout_constraintTop_toTopOf="@+id/tvTC"
+        app:layout_constraintLeft_toRightOf="@id/tvTC"
+        app:layout_constraintTop_toBottomOf="@+id/tvTopSpacer"
         tools:text="500 Msgs, Last: 12/12 12:12PM" />
 
     <TextView
@@ -59,9 +60,10 @@
         android:lines="2"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="13sp"
-        app:layout_constraintLeft_toRightOf="@+id/tvLeftButton"
+        app:layout_constraintLeft_toRightOf="@+id/tvLeftSep"
         app:layout_constraintRight_toLeftOf="@+id/tvRightSep"
         app:layout_constraintTop_toBottomOf="@+id/tvTC"
+        app:layout_constraintBottom_toTopOf="@id/tvBottomSpacer"
         tools:text="man fan died at the room shot up to 97 degrees asdf asdf asdf" />
 
     <View
@@ -117,13 +119,4 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvTopSpacer"
         tools:ignore="HardcodedText" />
-
-    <com.joanzapata.iconify.widget.IconTextView
-        android:id="@+id/tvTypeIndicator"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_alignWithParentIfMissing="true"
-        android:scaleType="fitStart"
-        app:layout_constraintTop_toBottomOf="@+id/tvTopSpacer"
-        app:layout_constraintLeft_toLeftOf="@id/tvTitle" />
 </android.support.constraint.ConstraintLayout>
