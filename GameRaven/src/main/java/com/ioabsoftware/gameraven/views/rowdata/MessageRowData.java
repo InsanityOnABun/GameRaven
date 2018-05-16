@@ -287,7 +287,7 @@ public class MessageRowData extends BaseRowData {
                     b.setText(e.nextElementSibling().text());
                     final HashMap<String, List<String>> data = new HashMap<String, List<String>>();
                     data.put("key", Collections.singletonList(key));
-                    data.put("poll_vote", Collections.singletonList(Integer.toString(x)));
+                    data.put("poll_vote", Collections.singletonList(String.valueOf(x)));
                     data.put("submit", Collections.singletonList("Vote"));
 
                     b.setOnClickListener(new OnClickListener() {

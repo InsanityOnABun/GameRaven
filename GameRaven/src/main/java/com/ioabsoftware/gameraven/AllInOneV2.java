@@ -16,7 +16,6 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -100,7 +99,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -188,7 +186,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     private int pollMinLevel = -1;
 
     public String getPollMinLevel() {
-        return Integer.toString(pollMinLevel);
+        return String.valueOf(pollMinLevel);
     }
 
 

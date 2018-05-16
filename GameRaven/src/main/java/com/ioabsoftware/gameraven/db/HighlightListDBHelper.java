@@ -224,7 +224,7 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
             dLabel.setText(user.getLabel());
             dSetColor.setBackgroundColor(user.getColor());
             dSetColor.setTextColor(~user.getColor() | 0xFF000000); //without alpha
-            dColorVal.setText(Integer.toString(user.getColor()));
+            dColorVal.setText(String.valueOf(user.getColor()));
         } else if (username != null)
             dName.setText(username);
 
