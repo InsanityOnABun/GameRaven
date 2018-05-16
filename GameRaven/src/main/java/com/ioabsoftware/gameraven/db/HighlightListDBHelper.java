@@ -20,9 +20,8 @@ import android.widget.Toast;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
-
-import net.margaritov.preference.colorpicker.ColorPickerDialog;
-import net.margaritov.preference.colorpicker.ColorPickerDialog.OnColorChangedListener;
+import com.jaredrummler.android.colorpicker.ColorPickerDialog;
+import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -152,18 +151,18 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
     /**
      * Shows a dialog used to add or update user highlighting.
      *
-     * @param c        Activity used as a Context and for getLayoutInflator
+     * @param activity        Activity used as a Context and for getLayoutInflator
      * @param user     HighlightedUser object. If null or ID equals -1, this is a new user being highlighted.
      * @param username Optional username to set. Does nothing if this isn't a new user being highlighted.
      * @param listener Optional listener to be fired just before the dialog gets dismissed on successful save.
      */
     @SuppressWarnings("ConstantConditions")
-    public static void showHighlightUserDialog(final Activity c, final HighlightedUser user,
+    public static void showHighlightUserDialog(final Activity activity, final HighlightedUser user,
                                                String username, final HlUDDismissListener listener) {
         final boolean isAddNew = (user == null || user.getID() == -1);
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(c);
-        LayoutInflater inflater = c.getLayoutInflater();
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.highlightuserdialog, null);
         dialogBuilder.setView(dialogView);
         dialogBuilder.setTitle("Add Highlighted User");
@@ -179,19 +178,36 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
         dSetColor.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                int startColor = NumberUtils.toInt(dColorVal.getText().toString());
-
-                ColorPickerDialog picker = new ColorPickerDialog(c, startColor);
-                picker.setOnColorChangedListener(new OnColorChangedListener() {
+                ColorPickerDialog.Builder b = ColorPickerDialog.newBuilder();
+                b.setColor(NumberUtils.toInt(dColorVal.getText().toString()));
+                ColorPickerDialog cpd = b.create();
+                cpd.setColorPickerDialogListener(new ColorPickerDialogListener() {
                     @Override
-                    public void onColorChanged(int color) {
+                    public void onColorSelected(int dialogId, int color) {
                         dSetColor.setBackgroundColor(color);
                         dSetColor.setTextColor(~color | 0xFF000000); //without alpha
                         dColorVal.setText(String.valueOf(color));
                     }
+
+                    @Override
+                    public void onDialogDismissed(int dialogId) {
+
+                    }
                 });
-                picker.setHexValueEnabled(true);
-                picker.show();
+                cpd.show(activity.getFragmentManager(), "color-picker-dialog");
+//                int startColor = NumberUtils.toInt(dColorVal.getText().toString());
+//
+//                ColorPickerDialog picker = new ColorPickerDialog(c, startColor);
+//                picker.setOnColorChangedListener(new OnColorChangedListener() {
+//                    @Override
+//                    public void onColorChanged(int color) {
+//                        dSetColor.setBackgroundColor(color);
+//                        dSetColor.setTextColor(~color | 0xFF000000); //without alpha
+//                        dColorVal.setText(String.valueOf(color));
+//                    }
+//                });
+//                picker.setHexValueEnabled(true);
+//                picker.show();
             }
         });
 
@@ -246,7 +262,7 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
 
 
                             } else {
-                                Toast.makeText(c,
+                                Toast.makeText(activity,
                                         "Missing required info",
                                         Toast.LENGTH_SHORT).show();
                                 shouldDismiss = false;
