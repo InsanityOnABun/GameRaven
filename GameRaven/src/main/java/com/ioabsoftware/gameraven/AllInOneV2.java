@@ -108,6 +108,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -160,11 +161,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     private TextView titleCounter;
     private TextView bodyCounter;
 
-    private Button postSubmitButton;
-    private Button postCancelButton;
-    private Button pollButton;
+    private Button postCancelButton, pollButton, flairButton, postSubmitButton;
 
-    private View pollSep;
+    private View pollSep, flairSep;
 
     private boolean pollUse = false;
 
@@ -198,6 +197,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     private LinkedHashMap<String, String> boardFlairs;
     private String activeFlairFilter;
+
+    private LinkedHashMap<String, String> updateTopicFlairs;
+    private int currTopicFlair;
 
     private LinearLayout postWrapper;
 
@@ -363,6 +365,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     case R.id.dwrCopyCurrURL:
                         android.content.ClipboardManager clipboard =
                                 (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        assert clipboard != null;
                         clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", session.getLastPath()));
                         Crouton.showText(AllInOneV2.this, "URL copied to clipboard.", Theming.croutonStyle());
                         break;
@@ -524,7 +527,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         postSubmitButton = findViewById(R.id.aioPostDo);
         postCancelButton = findViewById(R.id.aioPostCancel);
         pollButton = findViewById(R.id.aioPollOptions);
+        flairButton = findViewById(R.id.aioFlairSet);
+
         pollSep = findViewById(R.id.aioPollSep);
+        flairSep = findViewById(R.id.aioFlairSep);
 
         postWrapper = findViewById(R.id.aioPostWrapper);
 
@@ -996,20 +1002,21 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 return true;
 
             case R.id.filterBoard:
-                final String[] flairNames = boardFlairs.values().toArray(new String[0]);
-                final String[] flairVals = boardFlairs.keySet().toArray(new String[0]);
+                final String[] flairVals = boardFlairs.values().toArray(new String[0]);
+                final String[] flairKeys = boardFlairs.keySet().toArray(new String[0]);
 
                 int activeFlairIndex = 0;
-                for (String val : flairVals) {
-                    if (val.equals(activeFlairFilter)) {
-                        activeFlairIndex = Integer.valueOf(val);
+                for (int x = 0; x < flairKeys.length; x++) {
+                    if (flairKeys[x].equals(activeFlairFilter)) {
+                        activeFlairIndex = x;
                     }
                 }
+
                 AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
-                filterBuilder.setSingleChoiceItems(flairNames, activeFlairIndex, new OnClickListener() {
+                filterBuilder.setSingleChoiceItems(flairVals, activeFlairIndex, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String filterPage = "boards/" + boardID + "?filter=" + flairVals[which];
+                        String filterPage = "boards/" + boardID + "?filter=" + flairKeys[which];
                         session.get(NetDesc.BOARD, filterPage);
                         dialog.dismiss();
                     }
@@ -1272,6 +1279,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postWrapper.setVisibility(View.GONE);
             pollButton.setVisibility(View.GONE);
             pollSep.setVisibility(View.GONE);
+            flairButton.setVisibility(View.GONE);
+            flairSep.setVisibility(View.GONE);
             postBody.setText(null);
             postTitle.setText(null);
             clearPoll();
@@ -1293,6 +1302,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postSubmitButton.setEnabled(true);
             postCancelButton.setEnabled(true);
             pollButton.setEnabled(true);
+            flairButton.setEnabled(true);
         }
     }
 
@@ -1738,18 +1748,18 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         boardFlairs = new LinkedHashMap<>();
                         for (Element flair : flairsElem) {
                             String flairText = flair.text();
-                            String flairVal;
+                            String flairKey;
                             if (flairText.equals("All")) {
-                                flairVal = "0";
+                                flairKey = "0";
                             } else {
                                 String href = flair.child(0).attr("href");
                                 int index = href.indexOf("filter=") + 7;
-                                flairVal = href.substring(index);
+                                flairKey = href.substring(index);
                             }
                             if (flair.hasClass("active")) {
-                                activeFlairFilter = flairVal;
+                                activeFlairFilter = flairKey;
                             }
-                            boardFlairs.put(flairVal, flairText);
+                            boardFlairs.put(flairKey, flairText);
                         }
                         filterFlairsIcon.setVisible(true);
                     }
@@ -1985,7 +1995,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         String userTitles = EMPTY_STRING;
                         Element msgBody;
 
-                        boolean canReport = false, canDelete = false, canEdit = false, canQuote = false;
+                        boolean canReport = false, canDelete = false,
+                                canEdit = false, canQuote = false, canUpdateFlair = false;
 
                         Element infoBox = row.select("div.msg_infobox").first();
                         user = infoBox.getElementsByTag("b").first().text();
@@ -2024,6 +2035,22 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                 canEdit = true;
                             if (options.contains("quote"))
                                 canQuote = true;
+                            if (options.contains("flair"))
+                                canUpdateFlair = true;
+                        }
+
+                        if (canUpdateFlair) {
+                            updateTopicFlairs = new LinkedHashMap<>();
+                            Elements flairs = doc.selectFirst("select[name=flair]").select("option");
+
+                            int currFlair = 0;
+                            for (Element e : flairs) {
+                                updateTopicFlairs.put(e.attr("value"), e.attr("label"));
+                                if (e.hasAttr("selected")) {
+                                    currTopicFlair = currFlair;
+                                }
+                                currFlair++;
+                            }
                         }
 
                         int hlColor = 0;
@@ -2044,7 +2071,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                         wtl("creating messagerowdata object");
                         adapterRows.add(new MessageRowData(user, userTitles, avatarUrl, postNum,
-                                postTime, msgBody, boardID, topicID, mID, hlColor, canReport, canDelete, canEdit, canQuote));
+                                postTime, msgBody, boardID, topicID, mID, hlColor, canReport,
+                                canDelete, canEdit, canQuote, canUpdateFlair));
                     } else {
                         String postNum = row.select("span.message_num").first().text();
                         if (goToUrlDefinedPost) {
@@ -2086,7 +2114,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                     msg = new MessageRowData(user, EMPTY_STRING, EMPTY_STRING,
                             "#" + (msgRowCount - x), postTime, msgBody, boardID, topicID,
-                            mID, 0, false, false, false, false);
+                            mID, 0, false, false, false, false, false);
                     msg.disableTopClick();
                     adapterRows.add(msg);
                 }
@@ -2240,6 +2268,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             case LOGIN_S1:
             case MSG_MARK:
             case MSG_DELETE:
+            case TOPIC_UPDATE_FLAIR:
             case PM_SEND_S1:
             case PM_SEND_S2:
             case MSG_POST_S1:
@@ -2616,6 +2645,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postBody.setSelection(postBody.getText().length());
         } else {
             titleWrapper.setVisibility(View.VISIBLE);
+            flairButton.setEnabled(true);
+            flairButton.setVisibility(View.VISIBLE);
+            flairSep.setVisibility(View.VISIBLE);
             if (Session.userHasAdvancedPosting()) {
                 pollButton.setEnabled(true);
                 pollButton.setVisibility(View.VISIBLE);
@@ -2653,7 +2685,34 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void postFlairSet(View view) {
-        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        final String[] flairVals = new String[boardFlairs.size() - 1];
+        final String[] flairKeys = new String[boardFlairs.size() - 1];
+
+        int x = 0;
+        int activeFlairIndex = 0;
+        for (Map.Entry<String, String> e : boardFlairs.entrySet()) {
+            if (!e.getKey().equals("0")) {
+                flairVals[x] = e.getValue();
+                flairKeys[x] = e.getKey();
+
+                if (e.getKey().equals(flairForNewTopic)) {
+                    activeFlairIndex = x;
+                }
+
+                x++;
+            }
+        }
+
+        AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
+        filterBuilder.setSingleChoiceItems(flairVals, activeFlairIndex, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                flairForNewTopic = flairKeys[which];
+                dialog.dismiss();
+            }
+        });
+        filterBuilder.setNegativeButton(R.string.cancel, null);
+        filterBuilder.show();
     }
 
     public void postDo(View view) {
@@ -2691,6 +2750,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             wtl("sending topic");
             postSubmitButton.setEnabled(false);
             pollButton.setEnabled(false);
+            flairButton.setEnabled(false);
             postCancelButton.setEnabled(false);
             if (pollUse)
                 path += "&poll=1";
@@ -2716,6 +2776,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         }
     }
 
+    //TODO: strip these out
     /**
      * creates dialogs
      */
@@ -2912,6 +2973,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             listBuilder.add("Quote");
         if (clickedMsg.canEdit())
             listBuilder.add("Edit");
+        if (clickedMsg.canUpdateFlair())
+            listBuilder.add("Update Flair");
         if (clickedMsg.canDelete())
             listBuilder.add("Delete");
         if (clickedMsg.canReport())
@@ -2945,13 +3008,34 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     case "Edit":
                         editPostSetup(clickedMsg.getMessageForEditing(), clickedMsg.getMessageID());
                         break;
+                    case "Update Flair":
+                        final String[] flairKeys = updateTopicFlairs.keySet().toArray(new String[0]);
+                        String[] flairNames = updateTopicFlairs.values().toArray(new String[0]);
+                        AlertDialog.Builder flairUpdater = new AlertDialog.Builder(AllInOneV2.this);
+                        flairUpdater.setSingleChoiceItems(flairNames, currTopicFlair, new OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which != currTopicFlair) {
+                                    HashMap<String, List<String>> flairData = new HashMap<>();
+                                    flairData.put("flair", Collections.singletonList(flairKeys[which]));
+                                    flairData.put("action", Collections.singletonList("flair_update"));
+                                    flairData.put("key", Collections.singletonList(session.getSessionKey()));
+                                    session.post(NetDesc.TOPIC_UPDATE_FLAIR,
+                                            clickedMsg.getBoardActionLink(), flairData);
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+                        flairUpdater.setNegativeButton(R.string.cancel, null);
+                        flairUpdater.show();
+                        break;
                     case "Delete":
                         HashMap<String, List<String>> delData = new HashMap<>();
                         delData.put("action", Collections.singletonList("delete"));
                         delData.put("key", Collections.singletonList(session.getSessionKey()));
 
                         session.post(NetDesc.MSG_DELETE,
-                                clickedMsg.getMessageDetailLink().replace("/boards/", "/boardaction/"), delData);
+                                clickedMsg.getBoardActionLink(), delData);
                         break;
                     case "Report":
                         //noinspection deprecation

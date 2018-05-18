@@ -389,6 +389,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case MSG_MARK:
             case TOPIC_CLOSE:
             case MSG_DELETE:
+            case TOPIC_UPDATE_FLAIR:
             case LOGIN_S1:
             case EDIT_MSG:
             case MSG_POST_S1:
@@ -601,6 +602,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case LOGIN_S1:
                     case LOGIN_S2:
                     case MSG_DELETE:
+                    case TOPIC_UPDATE_FLAIR:
                     case EDIT_MSG:
                     case MSG_POST_S1:
                     case MSG_POST_S3:
@@ -647,6 +649,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case PM_OUTBOX:
                     case PM_OUTBOX_DETAIL:
                     case MSG_DELETE:
+                    case TOPIC_UPDATE_FLAIR:
                     case UNSPECIFIED:
                     case LOGIN_S1:
                     case LOGIN_S2:
@@ -852,8 +855,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         Crouton.showText(aio, markMessage, Theming.croutonStyle());
                         break;
 
+                    case TOPIC_UPDATE_FLAIR:
                     case MSG_DELETE:
-                        Crouton.showText(aio, "Message deleted.", Theming.croutonStyle());
+                        Crouton.showText(aio, "Done.", Theming.croutonStyle());
                         applySavedScroll = true;
                         savedScrollVal = aio.getScrollerVertLoc();
                         lastDesc = NetDesc.TOPIC;
@@ -966,6 +970,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case PM_OUTBOX:
                 case PM_OUTBOX_DETAIL:
                 case MSG_DELETE:
+                case TOPIC_UPDATE_FLAIR:
                 case NOTIFS_PAGE:
                 case MENTIONS_PAGE:
                 case FRIENDS:
@@ -1050,6 +1055,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case PM_OUTBOX_DETAIL:
             case MSG_MARK:
             case MSG_DELETE:
+            case TOPIC_UPDATE_FLAIR:
             case TOPIC_CLOSE:
             case GAME_SEARCH:
             case NOTIFS_PAGE:

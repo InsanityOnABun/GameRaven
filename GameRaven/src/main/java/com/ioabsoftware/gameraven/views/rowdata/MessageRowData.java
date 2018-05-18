@@ -55,7 +55,8 @@ public class MessageRowData extends BaseRowData {
     private boolean topClickable = true;
     private boolean isDeleted = false;
 
-    private boolean canReport = false, canDelete = false, canEdit = false, canQuote = false;
+    private boolean canReport = false, canDelete = false,
+            canEdit = false, canQuote = false, canUpdateFlair = false;
 
     @Override
     public String toString() {
@@ -140,6 +141,10 @@ public class MessageRowData extends BaseRowData {
         return canQuote;
     }
 
+    public boolean canUpdateFlair() {
+        return canUpdateFlair;
+    }
+
     public String getUnprocessedMessageText() {
         return unprocessedMessageText;
     }
@@ -167,6 +172,11 @@ public class MessageRowData extends BaseRowData {
         return GF_URLS.ROOT + "/boards/" + boardID + "/" + topicID + "/" + messageID;
     }
 
+    public String getBoardActionLink() {
+        return GF_URLS.ROOT +
+                "/boardaction?board=" + boardID + "&topic=" + topicID + "&message=" + messageID;
+    }
+
     public String getUserDetailLink() {
         return GF_URLS.ROOT + "/community/" + username.replace(' ', '+') + "/boards";
     }
@@ -186,7 +196,8 @@ public class MessageRowData extends BaseRowData {
 
     public MessageRowData(String userIn, String userTitlesIn, String avatarUrlIn, String postNumIn,
                           String postTimeIn, Element messageIn, String BID, String TID, String MID,
-                          int hlColorIn, boolean cReport, boolean cDelete, boolean cEdit, boolean cQuote) {
+                          int hlColorIn, boolean cReport, boolean cDelete, boolean cEdit,
+                          boolean cQuote, boolean cUpdateFlair) {
 
         if (aio == null || aio != AllInOneV2.get())
             aio = AllInOneV2.get();
@@ -206,6 +217,7 @@ public class MessageRowData extends BaseRowData {
         canDelete = cDelete;
         canEdit = cEdit;
         canQuote = cQuote;
+        canUpdateFlair = cUpdateFlair;
 
         String sigHtml = "";
         Element sig = messageIn.select("div.sig_text").first();

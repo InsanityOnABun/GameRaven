@@ -210,6 +210,10 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
         return myData.getMessageDetailLink();
     }
 
+    public String getBoardActionLink() {
+        return myData.getBoardActionLink();
+    }
+
     public String getUserDetailLink() {
         return myData.getUserDetailLink();
     }
@@ -258,6 +262,10 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
 
     public boolean canQuote() {
         return myData.canQuote();
+    }
+
+    public boolean canUpdateFlair() {
+        return myData.canUpdateFlair();
     }
 
 
