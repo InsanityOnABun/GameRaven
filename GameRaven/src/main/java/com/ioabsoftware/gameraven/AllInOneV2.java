@@ -21,7 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -106,6 +105,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -190,6 +190,14 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         return String.valueOf(pollMinLevel);
     }
 
+    private String flairForNewTopic = "1";
+
+    public String getFlairForNewTopic() {
+        return flairForNewTopic;
+    }
+
+    private LinkedHashMap<String, String> boardFlairs;
+    private String activeFlairFilter;
 
     private LinearLayout postWrapper;
 
@@ -809,7 +817,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     private MenuItem refreshIcon, replyIcon, pmInboxIcon, pmOutboxIcon, addFavIcon, remFavIcon,
             searchIcon, topicListIcon, sendUserPMIcon, tagUserIcon, unreadPMsIcon,
-            unreadNotifsIcon, clearUnreadNotifsIcon;
+            unreadNotifsIcon, clearUnreadNotifsIcon, filterFlairsIcon;
 
     private final String GAME_SEARCH_URL = "/search_advanced/index.html?game=";
 
@@ -830,6 +838,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 this, MaterialCommunityIcons.mdi_notification_clear_all).colorRes(R.color.white).actionBarSize());
         topicListIcon = menu.findItem(R.id.topicList).setIcon(new IconDrawable(
                 this, MaterialIcons.md_view_list).colorRes(R.color.white).actionBarSize());
+        filterFlairsIcon = menu.findItem(R.id.filterBoard).setIcon(new IconDrawable(
+                this, MaterialCommunityIcons.mdi_filter).colorRes(R.color.white).actionBarSize());
         addFavIcon = menu.findItem(R.id.addFav).setIcon(new IconDrawable(
                 this, MaterialIcons.md_favorite_border).colorRes(R.color.white).actionBarSize());
         remFavIcon = menu.findItem(R.id.remFav).setIcon(new IconDrawable(
@@ -902,8 +912,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 return true;
 
             case R.id.addFav:
-                AlertDialog.Builder afb = new AlertDialog.Builder(this);
-                afb.setNegativeButton("No", null);
+                AlertDialog.Builder addFavBuilder = new AlertDialog.Builder(this);
+                addFavBuilder.setNegativeButton("No", null);
 
                 final HashMap<String, List<String>> afData = new HashMap<>();
                 afData.put("key", Collections.singletonList(favKey));
@@ -912,8 +922,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                 switch (fMode) {
                     case ON_BOARD:
-                        afb.setTitle("Add Board to Favorites?");
-                        afb.setPositiveButton("Yes", new OnClickListener() {
+                        addFavBuilder.setTitle("Add Board to Favorites?");
+                        addFavBuilder.setPositiveButton("Yes", new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 afData.put("action", Collections.singletonList("addfav"));
@@ -922,8 +932,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         });
                         break;
                     case ON_TOPIC:
-                        afb.setTitle("Track Topic?");
-                        afb.setPositiveButton("Yes", new OnClickListener() {
+                        addFavBuilder.setTitle("Track Topic?");
+                        addFavBuilder.setPositiveButton("Yes", new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 afData.put("action", Collections.singletonList("tracktopic"));
@@ -933,13 +943,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         break;
                 }
 
-                afb.show();
+                addFavBuilder.show();
 
                 return true;
 
             case R.id.remFav:
-                AlertDialog.Builder rfb = new AlertDialog.Builder(this);
-                rfb.setNegativeButton("No", null);
+                AlertDialog.Builder remFavBuilder = new AlertDialog.Builder(this);
+                remFavBuilder.setNegativeButton("No", null);
 
                 final HashMap<String, List<String>> rfData = new HashMap<>();
                 rfData.put("key", Collections.singletonList(favKey));
@@ -948,8 +958,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                 switch (fMode) {
                     case ON_BOARD:
-                        rfb.setTitle("Remove Board from Favorites?");
-                        rfb.setPositiveButton("Yes", new OnClickListener() {
+                        remFavBuilder.setTitle("Remove Board from Favorites?");
+                        remFavBuilder.setPositiveButton("Yes", new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 rfData.put("action", Collections.singletonList("remfav"));
@@ -958,8 +968,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         });
                         break;
                     case ON_TOPIC:
-                        rfb.setTitle("Stop Tracking Topic?");
-                        rfb.setPositiveButton("Yes", new OnClickListener() {
+                        remFavBuilder.setTitle("Stop Tracking Topic?");
+                        remFavBuilder.setPositiveButton("Yes", new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 rfData.put("action", Collections.singletonList("stoptrack"));
@@ -969,7 +979,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         break;
                 }
 
-                rfb.show();
+                remFavBuilder.show();
 
                 return true;
 
@@ -983,6 +993,29 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
             case R.id.topicList:
                 session.get(NetDesc.BOARD, tlUrl);
+                return true;
+
+            case R.id.filterBoard:
+                final String[] flairNames = boardFlairs.values().toArray(new String[0]);
+                final String[] flairVals = boardFlairs.keySet().toArray(new String[0]);
+
+                int activeFlairIndex = 0;
+                for (String val : flairVals) {
+                    if (val.equals(activeFlairFilter)) {
+                        activeFlairIndex = Integer.valueOf(val);
+                    }
+                }
+                AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
+                filterBuilder.setSingleChoiceItems(flairNames, activeFlairIndex, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String filterPage = "boards/" + boardID + "?filter=" + flairVals[which];
+                        session.get(NetDesc.BOARD, filterPage);
+                        dialog.dismiss();
+                    }
+                });
+                filterBuilder.setNegativeButton(R.string.cancel, null);
+                filterBuilder.show();
                 return true;
 
             case R.id.unreadPMs:
@@ -999,17 +1032,17 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 return true;
 
             case R.id.tagUser:
-                AlertDialog.Builder b = new AlertDialog.Builder(this);
-                b.setTitle("Set " + userDetailData.getName() + "'s Tag");
-                b.setMessage("User tags can be up to 30 characters long and cannot contain any banned words." +
+                AlertDialog.Builder tagUserBuilder = new AlertDialog.Builder(this);
+                tagUserBuilder.setTitle("Set " + userDetailData.getName() + "'s Tag");
+                tagUserBuilder.setMessage("User tags can be up to 30 characters long and cannot contain any banned words." +
                         "If a banned word is detected, the tag will be discarded.");
 
                 final EditText tagText = new EditText(this);
                 tagText.setHint(R.string.user_tag_hint);
                 tagText.setText(userDetailData.getTagText());
-                b.setView(tagText);
+                tagUserBuilder.setView(tagText);
 
-                b.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                tagUserBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         HashMap<String, List<String>> data = new HashMap<>();
@@ -1022,7 +1055,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         AllInOneV2.get().getSession().post(NetDesc.USER_TAG, GF_URLS.ROOT + "/ajax/user_tag", data);
                     }
                 });
-                b.show();
+                tagUserBuilder.show();
                 return true;
 
             case R.id.reply:
@@ -1070,6 +1103,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         setMenuItemVisibility(unreadNotifsIcon, visible);
         setMenuItemVisibility(unreadPMsIcon, visible);
         setMenuItemVisibility(clearUnreadNotifsIcon, visible);
+        setMenuItemVisibility(filterFlairsIcon, visible);
 
         if (visible)
             fab.setVisibility(View.VISIBLE);
@@ -1091,6 +1125,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         setMenuItemEnabled(unreadNotifsIcon, enabled);
         setMenuItemEnabled(unreadPMsIcon, enabled);
         setMenuItemEnabled(clearUnreadNotifsIcon, enabled);
+        setMenuItemEnabled(filterFlairsIcon, enabled);
 
         fab.setEnabled(enabled);
     }
@@ -1698,6 +1733,27 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         }
                     }
 
+                    Elements flairsElem = doc.select("div.flair_option");
+                    if (flairsElem != null && !flairsElem.isEmpty()) {
+                        boardFlairs = new LinkedHashMap<>();
+                        for (Element flair : flairsElem) {
+                            String flairText = flair.text();
+                            String flairVal;
+                            if (flairText.equals("All")) {
+                                flairVal = "0";
+                            } else {
+                                String href = flair.child(0).attr("href");
+                                int index = href.indexOf("filter=") + 7;
+                                flairVal = href.substring(index);
+                            }
+                            if (flair.hasClass("active")) {
+                                activeFlairFilter = flairVal;
+                            }
+                            boardFlairs.put(flairVal, flairText);
+                        }
+                        filterFlairsIcon.setVisible(true);
+                    }
+
                     Element headerElem = doc.getElementsByClass("page-title").first();
                     if (headerElem != null)
                         headerTitle = headerElem.text();
@@ -1814,14 +1870,14 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                     tc += " (" + hUser.getLabel() + ")";
                                 }
 
-                                String flair = null;
+                                String rowFlair = null;
                                 Element flairSpan = row.selectFirst("span.flair");
                                 if (flairSpan != null) {
-                                    flair = flairSpan.text();
+                                    rowFlair = flairSpan.text();
                                 }
 
-                                adapterRows.add(new TopicRowData(title, flair, tc, lastPost, mCount,
-                                        tUrl, lpUrl, null, type, status, hlColor,
+                                adapterRows.add(new TopicRowData(title, rowFlair, tc, lastPost,
+                                        mCount, tUrl, lpUrl, null, type, status, hlColor,
                                         TopicRowData.TopicFlavor.BOARD));
                             } else
                                 skipFirst = false;
@@ -2594,6 +2650,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     public void postPollOptions(View view) {
         //noinspection deprecation
         showDialog(POLL_OPTIONS_DIALOG);
+    }
+
+    public void postFlairSet(View view) {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
     }
 
     public void postDo(View view) {

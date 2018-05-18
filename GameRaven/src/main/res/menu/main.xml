@@ -30,6 +30,11 @@
         android:title="@string/return_to_topic_list"
         android:visible="false" />
     <item
+        android:id="@+id/filterBoard"
+        app:showAsAction="always"
+        android:title="@string/filter_board"
+        android:visible="false" />
+    <item
         android:id="@+id/addFav"
         app:showAsAction="never"
         android:title="@string/add_to_favorites"

@@ -791,6 +791,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         HashMap<String, List<String>> tpc1Data = new HashMap<>();
                         tpc1Data.put("topictitle", Collections.singletonList(aio.getSavedPostTitle()));
                         tpc1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
+                        tpc1Data.put("flair", Collections.singletonList(aio.getFlairForNewTopic()));
                         tpc1Data.put("key", Collections.singletonList(sessionKey));
                         tpc1Data.put("post", Collections.singletonList("Post Message"));
                         if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
@@ -826,6 +827,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             HashMap<String, List<String>> tpc3Data = new HashMap<>();
                             tpc3Data.put("topictitle", Collections.singletonList(aio.getSavedPostTitle()));
                             tpc3Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
+                            tpc3Data.put("flair", Collections.singletonList(aio.getFlairForNewTopic()));
                             tpc3Data.put("post", Collections.singletonList("Post Message"));
                             tpc3Data.put("key", Collections.singletonList(sessionKey));
                             tpc3Data.put("override", Collections.singletonList("checked"));
