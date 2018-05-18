@@ -37,6 +37,7 @@ public class About extends AppCompatActivity {
         Theming.colorOverscroll(this);
 
         setSupportActionBar((android.support.v7.widget.Toolbar) findViewById(R.id.abtToolbar));
+        assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Button donate = findViewById(R.id.abtDonate);

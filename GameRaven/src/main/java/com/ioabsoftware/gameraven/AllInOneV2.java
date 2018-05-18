@@ -20,7 +20,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -90,8 +89,8 @@ import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.codechimp.apprater.AppRater;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Document;
@@ -614,7 +613,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         .setCallback(new FutureCallback<String>() {
                             @Override
                             public void onCompleted(Exception e, String result) {
-                                if (NumberUtils.isNumber(result)) {
+                                if (NumberUtils.isCreatable(result)) {
                                     int netVersion = Integer.valueOf(result);
                                     wtl("net version is " + netVersion);
 
@@ -794,7 +793,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     @Override
     public boolean onSearchRequested() {
         if (searchIcon != null && searchIcon.isVisible())
-            MenuItemCompat.expandActionView(searchIcon);
+            searchIcon.expandActionView();
 
         return false;
     }
@@ -863,9 +862,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         refreshIcon = menu.findItem(R.id.refresh).setIcon(new IconDrawable(
                 this, MaterialIcons.md_refresh).colorRes(R.color.white).actionBarSize());
 
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchIcon);
+        SearchView searchView = (SearchView) searchIcon.getActionView();
         if (searchView != null) {
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            assert searchManager != null;
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
             SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
@@ -1144,8 +1144,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     private void hideSoftKeyboard(View inputView) {
-        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
-                hideSoftInputFromWindow(inputView.getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        assert imm != null;
+        imm.hideSoftInputFromWindow(inputView.getWindowToken(), 0);
     }
 
     public void postError(String msg) {
@@ -1258,6 +1259,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         android.content.ClipboardManager clipboard =
                                 (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
+                        assert clipboard != null;
                         clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", savedPostBody));
 
                         Crouton.showText(AllInOneV2.this,
@@ -3218,8 +3220,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     public void pmCleanup(boolean wasSuccessful, String error) {
         if (wasSuccessful) {
             Crouton.showText(this, "PM sent.", Theming.croutonStyle());
-            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
-                    hideSoftInputFromWindow(pmSending.getWindowToken(), 0);
+            hideSoftKeyboard(pmSending);
 
             //noinspection deprecation
             dismissDialog(SEND_PM_DIALOG);
@@ -3433,6 +3434,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 public void onClick(DialogInterface dialogInterface, int i) {
                     android.content.ClipboardManager clipboard =
                             (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    assert clipboard != null;
                     clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", deets));
                     session.get(NetDesc.TOPIC, "/boards/1177-gameraven-development-and-discussion");
                 }
