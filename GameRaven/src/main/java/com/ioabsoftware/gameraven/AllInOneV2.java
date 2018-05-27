@@ -188,13 +188,14 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         return String.valueOf(pollMinLevel);
     }
 
-    private String flairForNewTopic = "1";
+    private int flairForNewTopic = 1;
 
-    public String getFlairForNewTopic() {
-        return flairForNewTopic;
+    public String getFlairForNewTopicAsString() {
+        return String.valueOf(flairForNewTopic);
     }
 
-    //TODO: flairs - filtering globals
+    private LinkedHashMap<Integer, Boolean> boardFlairsCurrent;
+    private LinkedHashMap<Integer, String> boardFlairsNames;
 
     private LinkedHashMap<String, String> updateTopicFlairs;
     private int currTopicFlair;
@@ -720,28 +721,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         firstResume = false;
 
-        //TODO: flairs - remove this dialog once no longer needed
-        if (!flairWarningShowing && !settings.getBoolean("flairWarningSeen2", false)) {
-            AlertDialog.Builder b = new AlertDialog.Builder(this);
-            b.setTitle("Hey, Listen!");
-            b.setMessage("Due to a site change, most support for topic flairs has been disabled. Click \"More...\" below for more details.");
-            b.setPositiveButton("More...", new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    settings.edit().putBoolean("flairWarningSeen2", true).apply();
-                    session.get(NetDesc.TOPIC, "https://gamefaqs.gamespot.com/boards/1177-gameraven-development-and-discussion/76644543");
-                }
-            });
-            b.setCancelable(false);
-            flairWarningShowing = true;
-            b.show();
-        }
-
         wtl("onResume finishing");
     }
-
-    //TODO: remove this flag once no longer needed
-    boolean flairWarningShowing = false;
 
     @Override
     protected void onStop() {
@@ -1020,30 +1001,95 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 session.get(NetDesc.BOARD, tlUrl);
                 return true;
 
-                //TODO: flairs - filter menu button pressed
-//            case R.id.filterBoard:
-//                final String[] flairVals = boardFlairs.values().toArray(new String[0]);
-//                final String[] flairKeys = boardFlairs.keySet().toArray(new String[0]);
-//
-//                int activeFlairIndex = 0;
-//                for (int x = 0; x < flairKeys.length; x++) {
-//                    if (flairKeys[x].equals(activeFlairFilter)) {
-//                        activeFlairIndex = x;
-//                    }
-//                }
-//
-//                AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
-//                filterBuilder.setSingleChoiceItems(flairVals, activeFlairIndex, new OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        String filterPage = "boards/" + boardID + "?filter=" + flairKeys[which];
-//                        session.get(NetDesc.BOARD, filterPage);
-//                        dialog.dismiss();
-//                    }
-//                });
-//                filterBuilder.setNegativeButton(R.string.cancel, null);
-//                filterBuilder.show();
-//                return true;
+            case R.id.filterBoard:
+                final int[] flairKeys = new int[boardFlairsNames.size() - 1];
+                final String[] flairNames = new String[boardFlairsNames.size() - 1];
+                final boolean[] flairCurrent = new boolean[boardFlairsNames.size() - 1];
+
+                final String boardToFilter;
+                if (boardID.contains("-")) {
+                    boardToFilter = boardID.substring(0, boardID.indexOf('-'));
+                } else {
+                    boardToFilter = boardID;
+                }
+
+                int x = 0;
+                for (Map.Entry<Integer, String> flair : boardFlairsNames.entrySet()) {
+                    if (flair.getKey() != -1) {
+                        flairKeys[x] = flair.getKey();
+                        flairNames[x] = flair.getValue();
+                        x++;
+                    }
+                }
+
+                x = 0;
+                for (Map.Entry<Integer, Boolean> flair : boardFlairsCurrent.entrySet()) {
+                    if (flair.getKey() != -1) {
+                        flairCurrent[x] = flair.getValue();
+                        x++;
+                    }
+                }
+
+                AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
+                filterBuilder.setMultiChoiceItems(flairNames, flairCurrent, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        flairCurrent[which] = isChecked;
+                    }
+                });
+                filterBuilder.setPositiveButton(R.string.ok, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        StringBuilder myrows = new StringBuilder().append('[');
+                        boolean pastFirst = false;
+                        boolean checkVal = true;
+                        int count = 0;
+
+                        for (boolean isCurrent : flairCurrent) {
+                            if (isCurrent) count++;
+                        }
+
+                        if (count == 0) checkVal = false;
+
+                        for (int x = 0; x < flairCurrent.length; x++) {
+                            if (flairCurrent[x] == checkVal) {
+                                if (pastFirst) myrows.append(',');
+                                myrows.append('"').append(flairKeys[x]).append('"');
+                                pastFirst = true;
+                            }
+                        }
+                        myrows.append(']');
+
+                        HashMap<String, List<String>> data = new HashMap<>();
+                        data.put("key", Collections.singletonList(session.getSessionKey()));
+                        data.put("b", Collections.singletonList(boardToFilter));
+                        data.put("list", Collections.singletonList(myrows.toString()));
+                        session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
+                        wtl(data.toString());
+                    }
+                });
+                filterBuilder.setNeutralButton("Clear Filter", new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        StringBuilder myrows = new StringBuilder().append('[');
+                        boolean pastFirst = false;
+                        for (Integer key : flairKeys) {
+                            if (pastFirst) myrows.append(',');
+                            myrows.append('"').append(key).append('"');
+                            pastFirst = true;
+                        }
+                        myrows.append(']');
+
+                        HashMap<String, List<String>> data = new HashMap<>();
+                        data.put("key", Collections.singletonList(session.getSessionKey()));
+                        data.put("b", Collections.singletonList(boardToFilter));
+                        data.put("list", Collections.singletonList(myrows.toString()));
+                        session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
+                    }
+                });
+                filterBuilder.setNegativeButton(R.string.cancel, null);
+                filterBuilder.show();
+                return true;
 
             case R.id.unreadPMs:
             case R.id.pmInbox:
@@ -1765,27 +1811,42 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         }
                     }
 
-                    //TODO: flairs - get available flairs and which are active for board
-//                    Elements flairsElem = doc.select("div.flair_option");
-//                    if (flairsElem != null && !flairsElem.isEmpty()) {
-//                        boardFlairs = new LinkedHashMap<>();
-//                        for (Element flair : flairsElem) {
-//                            String flairText = flair.text();
-//                            String flairKey;
-//                            if (flairText.equals("All")) {
-//                                flairKey = "0";
-//                            } else {
-//                                String href = flair.child(0).attr("href");
-//                                int index = href.indexOf("filter=") + 7;
-//                                flairKey = href.substring(index);
-//                            }
-//                            if (flair.hasClass("active")) {
-//                                activeFlairFilter = flairKey;
-//                            }
-//                            boardFlairs.put(flairKey, flairText);
-//                        }
-//                        filterFlairsIcon.setVisible(true);
-//                    }
+                    Elements flairsElem = doc.select("div.flair_option");
+                    if (flairsElem != null && !flairsElem.isEmpty()) {
+                        boardFlairsCurrent = new LinkedHashMap<>();
+                        boardFlairsNames = new LinkedHashMap<>();
+                        boolean pastFirstCurrent = false;
+                        StringBuilder filterHeader = new StringBuilder("Applied Filters: ");
+
+                        for (Element flair : flairsElem) {
+                            boolean isCurrent = flair.hasClass("current");
+                            String flairText = flair.text();
+                            int flairKey;
+                            if (!flair.hasClass("custom") && !flair.hasClass("custom_save")) {
+                                if (flair.hasClass("all")) {
+                                    flairKey = -1;
+                                } else {
+                                    Element i = flair.selectFirst("i.filter_option");
+                                    flairKey = Integer.valueOf(i.attr("data-id"));
+                                }
+
+                                if (isCurrent && flairKey != -1) {
+                                    if (pastFirstCurrent) filterHeader.append(", ");
+                                    filterHeader.append(flairText);
+                                    pastFirstCurrent = true;
+                                }
+
+                                boardFlairsCurrent.put(flairKey, isCurrent);
+                                boardFlairsNames.put(flairKey, flairText);
+                            }
+                        }
+
+                        if (pastFirstCurrent) {
+                            adapterRows.add(new HeaderRowData(filterHeader.toString()));
+                        }
+
+                        filterFlairsIcon.setVisible(true);
+                    }
 
                     Element headerElem = doc.getElementsByClass("page-title").first();
                     if (headerElem != null)
@@ -2708,39 +2769,34 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void postFlairSet(View view) {
-        //TODO: flairs - select flair for new topic
-        AlertDialog.Builder b = new AlertDialog.Builder(this);
-        b.setMessage("Temporarily disabled. Sorry!");
-        b.setPositiveButton(R.string.ok, null);
-        b.show();
-//        final String[] flairVals = new String[boardFlairs.size() - 1];
-//        final String[] flairKeys = new String[boardFlairs.size() - 1];
-//
-//        int x = 0;
-//        int activeFlairIndex = 0;
-//        for (Map.Entry<String, String> e : boardFlairs.entrySet()) {
-//            if (!e.getKey().equals("0")) {
-//                flairVals[x] = e.getValue();
-//                flairKeys[x] = e.getKey();
-//
-//                if (e.getKey().equals(flairForNewTopic)) {
-//                    activeFlairIndex = x;
-//                }
-//
-//                x++;
-//            }
-//        }
-//
-//        AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
-//        filterBuilder.setSingleChoiceItems(flairVals, activeFlairIndex, new OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                flairForNewTopic = flairKeys[which];
-//                dialog.dismiss();
-//            }
-//        });
-//        filterBuilder.setNegativeButton(R.string.cancel, null);
-//        filterBuilder.show();
+        final int[] flairKeys = new int[boardFlairsNames.size() - 1];
+        String[] flairNames = new String[boardFlairsNames.size() - 1];
+
+        int x = 0;
+        int activeFlairIndex = 0;
+        for (Map.Entry<Integer, String> flair : boardFlairsNames.entrySet()) {
+            if (flair.getKey() != -1) {
+                flairKeys[x] = flair.getKey();
+                flairNames[x] = flair.getValue();
+
+                if (flairForNewTopic == flair.getKey()) {
+                    activeFlairIndex = x;
+                }
+
+                x++;
+            }
+        }
+
+        AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
+        filterBuilder.setSingleChoiceItems(flairNames, activeFlairIndex, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                flairForNewTopic = flairKeys[which];
+                dialog.dismiss();
+            }
+        });
+        filterBuilder.setNegativeButton(R.string.cancel, null);
+        filterBuilder.show();
     }
 
     public void postDo(View view) {
@@ -2805,6 +2861,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     //TODO: strip these out
+
     /**
      * creates dialogs
      */

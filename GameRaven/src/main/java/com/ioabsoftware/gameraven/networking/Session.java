@@ -376,6 +376,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case BOARDS_EXPLORE:
             case BOARDS_FAVORITE:
             case BOARD:
+            case BOARD_UPDATE_FILTER:
             case TOPIC:
             case GAME_SEARCH:
             case MESSAGE_DETAIL:
@@ -589,6 +590,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case BOARDS_EXPLORE:
                     case BOARDS_FAVORITE:
                     case BOARD:
+                    case BOARD_UPDATE_FILTER:
                     case TOPIC:
                     case GAME_SEARCH:
                     case MESSAGE_DETAIL:
@@ -678,6 +680,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         AllInOneV2.wtl("finishing lastDesc, lastRes, etc. setting");
                         break;
 
+                    case BOARD_UPDATE_FILTER:
                     case USER_TAG:
                     case MSG_MARK:
                     case TOPIC_CLOSE:
@@ -794,7 +797,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         HashMap<String, List<String>> tpc1Data = new HashMap<>();
                         tpc1Data.put("topictitle", Collections.singletonList(aio.getSavedPostTitle()));
                         tpc1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-                        tpc1Data.put("flair", Collections.singletonList(aio.getFlairForNewTopic()));
+                        tpc1Data.put("flair", Collections.singletonList(aio.getFlairForNewTopicAsString()));
                         tpc1Data.put("key", Collections.singletonList(sessionKey));
                         tpc1Data.put("post", Collections.singletonList("Post Message"));
                         if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
@@ -830,7 +833,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             HashMap<String, List<String>> tpc3Data = new HashMap<>();
                             tpc3Data.put("topictitle", Collections.singletonList(aio.getSavedPostTitle()));
                             tpc3Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-                            tpc3Data.put("flair", Collections.singletonList(aio.getFlairForNewTopic()));
+                            tpc3Data.put("flair", Collections.singletonList(aio.getFlairForNewTopicAsString()));
                             tpc3Data.put("post", Collections.singletonList("Post Message"));
                             tpc3Data.put("key", Collections.singletonList(sessionKey));
                             tpc3Data.put("override", Collections.singletonList("checked"));
@@ -902,6 +905,10 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case MESSAGE_DETAIL:
                         AllInOneV2.wtl("session hNR determined this is a message");
                         processTopicsAndMessages(doc, resUrl, NetDesc.MESSAGE_DETAIL);
+                        break;
+
+                    case BOARD_UPDATE_FILTER:
+                        goBack(true);
                         break;
 
                     case GAME_SEARCH:
@@ -983,6 +990,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     AllInOneV2.wtl("finished history addition");
                     break;
 
+                case BOARD_UPDATE_FILTER:
                 case USER_TAG:
                 case MSG_MARK:
                 case TOPIC_CLOSE:
@@ -1076,6 +1084,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                 break;
 
+            case BOARD_UPDATE_FILTER:
             case LOGIN_S1:
             case LOGIN_S2:
             case EDIT_MSG:
