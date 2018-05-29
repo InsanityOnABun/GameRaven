@@ -10,8 +10,8 @@ android {
         targetSdkVersion 27
 
         // <1-or-2-digit-major><2-digit-minor><2-digit-point><3-digit-increment>
-        versionCode 30501000
-        versionName "3.5.1 Beta 1"
+        versionCode 30501001
+        versionName "3.5.1"
     }
     signingConfigs {
         release {
