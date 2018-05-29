@@ -1352,6 +1352,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postBody.setText(null);
             postTitle.setText(null);
             clearPoll();
+            flairForNewTopic = 1;
             messageIDForEditing = null;
 
             fab.setVisibility(View.VISIBLE);
