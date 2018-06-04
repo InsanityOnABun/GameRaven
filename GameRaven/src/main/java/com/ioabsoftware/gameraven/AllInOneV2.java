@@ -3456,15 +3456,36 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void uploadImage(View view) {
+        invokeRailgun();
+    }
+
+    public void invokeRailgun() {
         PackageManager pm = getPackageManager();
-        if (isPackageInstalled("com.ioabsoftware.imgtcuploader", pm)) {
+        if (isPackageInstalled("com.ioabsoftware.imgtcuploader", pm) || isPackageInstalled("com.ioabsoftware.imgtcuploader.lite", pm)) {
             startActivity(new Intent("com.ioabsoftware.imgtcuploader.INVOKE_IMAGE_PICKER"));
         } else if (isPackageInstalled("com.android.vending", pm)) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader")));
+            AlertDialog.Builder installRailgun = new AlertDialog.Builder(this);
+            installRailgun.setTitle("Railgun Image Uploader");
+            installRailgun.setMessage("Railgun not installed. Click \"Full\" or \"Lite\" below to install it. The Lite version is ad-supported.\n\n" +
+                    "Railgun is a quick and easy method for uploading images to an image host and get a pastable direct link to the image back.");
+            installRailgun.setPositiveButton("Full", new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader")));
+                }
+            });
+            installRailgun.setNeutralButton("Lite", new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader.lite")));
+                }
+            });
+            installRailgun.setNegativeButton("Cancel", null);
+            installRailgun.show();
         } else {
             AlertDialog.Builder noAppStore = new AlertDialog.Builder(this);
             noAppStore.setTitle("Railgun Image Uploader");
-            noAppStore.setMessage("The Google Play Store is not available on this phone. How did you install GameRaven?");
+            noAppStore.setMessage("The Google Play Store is not available on this phone, which is needed to install Railgun.");
             noAppStore.setPositiveButton("OK", null);
             noAppStore.show();
         }
