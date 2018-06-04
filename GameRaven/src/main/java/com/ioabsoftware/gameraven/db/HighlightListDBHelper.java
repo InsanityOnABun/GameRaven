@@ -172,39 +172,33 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
         final Button dSetColor = dialogView.findViewById(R.id.huSetColor);
         final TextView dColorVal = dialogView.findViewById(R.id.huColorVal);
 
-        dSetColor.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorPickerDialog.Builder b = ColorPickerDialog.newBuilder();
-                if (dColorVal.length() > 0 && !dColorVal.getText().equals("0")) {
-                    b.setColor(NumberUtils.toInt(dColorVal.getText().toString()));
-                }
-                ColorPickerDialog cpd = b.create();
-                cpd.setColorPickerDialogListener(new ColorPickerDialogListener() {
-                    @Override
-                    public void onColorSelected(int dialogId, int color) {
-                        dSetColor.setBackgroundColor(color);
-                        dSetColor.setTextColor(~color | 0xFF000000); //without alpha
-                        dColorVal.setText(String.valueOf(color));
-                    }
-
-                    @Override
-                    public void onDialogDismissed(int dialogId) {
-
-                    }
-                });
-                cpd.show(activity.getFragmentManager(), "color-picker-dialog");
+        dSetColor.setOnClickListener(v -> {
+            ColorPickerDialog.Builder b = ColorPickerDialog.newBuilder();
+            if (dColorVal.length() > 0 && !dColorVal.getText().equals("0")) {
+                b.setColor(NumberUtils.toInt(dColorVal.getText().toString()));
             }
+            ColorPickerDialog cpd = b.create();
+            cpd.setColorPickerDialogListener(new ColorPickerDialogListener() {
+                @Override
+                public void onColorSelected(int dialogId, int color) {
+                    dSetColor.setBackgroundColor(color);
+                    dSetColor.setTextColor(~color | 0xFF000000); //without alpha
+                    dColorVal.setText(String.valueOf(color));
+                }
+
+                @Override
+                public void onDialogDismissed(int dialogId) {
+
+                }
+            });
+            cpd.show(activity.getFragmentManager(), "color-picker-dialog");
         });
 
         if (!isAddNew) {
-            dialogBuilder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    AllInOneV2.getHLDB().deleteUser(user);
-                    if (listener != null)
-                        listener.beforeDismissSuccessfulSave();
-                }
+            dialogBuilder.setNeutralButton("Delete", (dialog, which) -> {
+                AllInOneV2.getHLDB().deleteUser(user);
+                if (listener != null)
+                    listener.beforeDismissSuccessfulSave();
             });
 
             dName.setText(user.getName());
@@ -219,50 +213,42 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
         dialogBuilder.setNegativeButton("Cancel", null);
 
         final AlertDialog diag = dialogBuilder.create();
-        diag.setOnShowListener(new OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                diag.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        boolean shouldDismiss = true;
+        diag.setOnShowListener(dialog -> diag.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            boolean shouldDismiss = true;
 
-                        if (dName.getText().toString().length() > 0
-                                && dLabel.getText().toString().length() > 0
-                                && !dColorVal.getText().equals("0")) {
+            if (dName.getText().toString().length() > 0
+                    && dLabel.getText().toString().length() > 0
+                    && !dColorVal.getText().equals("0")) {
 
-                            if (isAddNew) {
-                                AllInOneV2.getHLDB().addUser(
-                                        dName.getText().toString(),
-                                        dLabel.getText().toString(),
-                                        NumberUtils.toInt(dColorVal
-                                                .getText().toString()));
-                            } else {
-                                user.setName(dName.getText().toString());
-                                user.setLabel(dLabel.getText().toString());
-                                user.setColor(NumberUtils.toInt(dColorVal
-                                        .getText().toString()));
-                                AllInOneV2.getHLDB().updateUser(user);
-                            }
+                if (isAddNew) {
+                    AllInOneV2.getHLDB().addUser(
+                            dName.getText().toString(),
+                            dLabel.getText().toString(),
+                            NumberUtils.toInt(dColorVal
+                                    .getText().toString()));
+                } else {
+                    user.setName(dName.getText().toString());
+                    user.setLabel(dLabel.getText().toString());
+                    user.setColor(NumberUtils.toInt(dColorVal
+                            .getText().toString()));
+                    AllInOneV2.getHLDB().updateUser(user);
+                }
 
 
-                        } else {
-                            Toast.makeText(activity,
-                                    "Missing required info",
-                                    Toast.LENGTH_SHORT).show();
-                            shouldDismiss = false;
-                        }
-
-                        if (shouldDismiss) {
-                            if (listener != null)
-                                listener.beforeDismissSuccessfulSave();
-
-                            diag.dismiss();
-                        }
-                    }
-                });
+            } else {
+                Toast.makeText(activity,
+                        "Missing required info",
+                        Toast.LENGTH_SHORT).show();
+                shouldDismiss = false;
             }
-        });
+
+            if (shouldDismiss) {
+                if (listener != null)
+                    listener.beforeDismissSuccessfulSave();
+
+                diag.dismiss();
+            }
+        }));
         diag.show();
     }
 

@@ -50,12 +50,7 @@ public class GameSearchRowView extends BaseRowView {
             platformTextSize = platform.getTextSize();
         }
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AllInOneV2.get().getSession().get(NetDesc.BOARD, myData.getUrl());
-            }
-        });
+        setOnClickListener(v -> AllInOneV2.get().getSession().get(NetDesc.BOARD, myData.getUrl()));
     }
 
     @Override

@@ -302,12 +302,7 @@ public class MessageRowData extends BaseRowData {
                     data.put("poll_vote", Collections.singletonList(String.valueOf(x)));
                     data.put("submit", Collections.singletonList("Vote"));
 
-                    b.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            aio.getSession().post(NetDesc.TOPIC, action, data);
-                        }
-                    });
+                    b.setOnClickListener(v -> aio.getSession().post(NetDesc.TOPIC, action, data));
                     pollInnerWrapper.addView(b);
                 }
 
@@ -319,12 +314,7 @@ public class MessageRowData extends BaseRowData {
                 Button b = new Button(aio);
                 b.setBackgroundDrawable(Theming.selectableItemBackground());
                 b.setText(R.string.view_results);
-                b.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        aio.getSession().get(NetDesc.TOPIC, action + "?results=1");
-                    }
-                });
+                b.setOnClickListener(v1 -> aio.getSession().get(NetDesc.TOPIC, action + "?results=1"));
                 pollInnerWrapper.addView(b);
             }
 

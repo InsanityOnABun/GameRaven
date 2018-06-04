@@ -93,12 +93,9 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         accounts = (PreferenceCategory) findPreference("accounts");
         updateAccountList();
 
-        findPreference("addAccount").setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                addAccountDialog.show();
-                return true;
-            }
-
+        findPreference("addAccount").setOnPreferenceClickListener(preference -> {
+            addAccountDialog.show();
+            return true;
         });
     }
 
@@ -108,12 +105,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
                 R.layout.settings_activity, new LinearLayout(this), false);
 
         Toolbar mActionBar = contentView.findViewById(R.id.saToolbar);
-        mActionBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mActionBar.setNavigationOnClickListener(v -> finish());
         mActionBar.setTitle(getTitle());
         mActionBar.setTitleTextColor(Color.WHITE);
 
@@ -136,13 +128,10 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
 
         for (String s : AccountManager.getUsernames(this)) {
             Preference pref = new Preference(this);
-            pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    clickedAccount = preference;
-                    modifyAccountDialog.show();
-                    return true;
-                }
+            pref.setOnPreferenceClickListener(preference -> {
+                clickedAccount = preference;
+                modifyAccountDialog.show();
+                return true;
             });
 
             String sig = settings.getString("customSig" + s, "");
@@ -181,37 +170,30 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         b.setPositiveButton("OK", null);
 
         final AlertDialog d = b.create();
-        d.setOnShowListener(new OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                userView.setText("");
-                passView.setText("");
-                d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+        d.setOnShowListener(dialog -> {
+            userView.setText("");
+            passView.setText("");
+            d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+                verifyUser = userView.getText().toString().trim();
+                verifyPass = passView.getText().toString();
 
-                    @Override
-                    public void onClick(View view) {
-                        verifyUser = userView.getText().toString().trim();
-                        verifyPass = passView.getText().toString();
+                if (verifyUser.indexOf('@') == -1) {
+                    verifyAccountDialog.show();
 
-                        if (verifyUser.indexOf('@') == -1) {
-                            verifyAccountDialog.show();
-
-                            accountVerifier.getCookieMiddleware().clear();
-                            currentDesc = NetDesc.VERIFY_ACCOUNT_S1;
-                            accountVerifier.build(SettingsAccount.this)
-                                    .load("GET", GF_URLS.ROOT)
-                                    .as(new DocumentParser())
-                                    .withResponse()
-                                    .setCallback(SettingsAccount.this);
-                        } else {
-                            Crouton.showText(SettingsAccount.this,
-                                    "Please use your username, not your email address.",
-                                    Theming.croutonStyle(),
-                                    (ViewGroup) v.findViewById(R.id.addaccUser).getParent());
-                        }
-                    }
-                });
-            }
+                    accountVerifier.getCookieMiddleware().clear();
+                    currentDesc = NetDesc.VERIFY_ACCOUNT_S1;
+                    accountVerifier.build(SettingsAccount.this)
+                            .load("GET", GF_URLS.ROOT)
+                            .as(new DocumentParser())
+                            .withResponse()
+                            .setCallback(SettingsAccount.this);
+                } else {
+                    Crouton.showText(SettingsAccount.this,
+                            "Please use your username, not your email address.",
+                            Theming.croutonStyle(),
+                            (ViewGroup) v.findViewById(R.id.addaccUser).getParent());
+                }
+            });
         });
 
         return d;
@@ -238,34 +220,28 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
         final EditText sigContent = v.findViewById(R.id.modaccSigContent);
         final TextView sigCounter = v.findViewById(R.id.modaccSigCounter);
 
-        defaultAcc.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!modifyAccountInit) {
-                    if (isChecked) {
-                        settings.edit().putString("defaultAccount", clickedAccountName).apply();
-                        Crouton.showText(SettingsAccount.this,
-                                "Default account saved.",
-                                Theming.croutonStyle(),
-                                (ViewGroup) buttonView.getParent().getParent());
-                    } else {
-                        settings.edit().putString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT).apply();
-                        Crouton.showText(SettingsAccount.this,
-                                "Default account removed.",
-                                Theming.croutonStyle(),
-                                (ViewGroup) buttonView.getParent().getParent());
-                    }
+        defaultAcc.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!modifyAccountInit) {
+                if (isChecked) {
+                    settings.edit().putString("defaultAccount", clickedAccountName).apply();
+                    Crouton.showText(SettingsAccount.this,
+                            "Default account saved.",
+                            Theming.croutonStyle(),
+                            (ViewGroup) buttonView.getParent().getParent());
+                } else {
+                    settings.edit().putString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT).apply();
+                    Crouton.showText(SettingsAccount.this,
+                            "Default account removed.",
+                            Theming.croutonStyle(),
+                            (ViewGroup) buttonView.getParent().getParent());
                 }
             }
         });
 
-        useGFAQsSig.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!modifyAccountInit) {
-                    settings.edit().putBoolean("useGFAQsSig" + clickedAccountName, isChecked).apply();
-                    sigContent.setEnabled(!isChecked);
-                }
+        useGFAQsSig.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!modifyAccountInit) {
+                settings.edit().putBoolean("useGFAQsSig" + clickedAccountName, isChecked).apply();
+                sigContent.setEnabled(!isChecked);
             }
         });
 
@@ -295,93 +271,76 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
             }
         });
 
-        deleteAcc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (clickedAccountName.equals(settings.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT)))
-                    settings.edit().putString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT).apply();
+        deleteAcc.setOnClickListener(v12 -> {
+            if (clickedAccountName.equals(settings.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT)))
+                settings.edit().putString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT).apply();
 
-                settings.edit().remove("customSig" + clickedAccountName).apply();
+            settings.edit().remove("customSig" + clickedAccountName).apply();
 
-                AccountManager.removeUser(SettingsAccount.this, clickedAccountName);
-                accounts.removePreference(clickedAccount);
-                modifyAccountDialog.dismiss();
-                Crouton.showText(SettingsAccount.this, "Account removed.", Theming.croutonStyle());
-            }
+            AccountManager.removeUser(SettingsAccount.this, clickedAccountName);
+            accounts.removePreference(clickedAccount);
+            modifyAccountDialog.dismiss();
+            Crouton.showText(SettingsAccount.this, "Account removed.", Theming.croutonStyle());
         });
 
         b.setPositiveButton("Save Sig", null);
 
-        b.setNeutralButton("Clear Sig", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                settings.edit().putString("customSig" + clickedAccountName, "").apply();
-                sigContent.setText("");
-                Crouton.showText(SettingsAccount.this, "Signature cleared and saved.", Theming.croutonStyle());
-            }
+        b.setNeutralButton("Clear Sig", (dialog, which) -> {
+            settings.edit().putString("customSig" + clickedAccountName, "").apply();
+            sigContent.setText("");
+            Crouton.showText(SettingsAccount.this, "Signature cleared and saved.", Theming.croutonStyle());
         });
 
         b.setNegativeButton("Close", null);
 
         final AlertDialog d = b.create();
 
-        d.setOnShowListener(new OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                clickedAccountName = clickedAccount.getTitle().toString();
-                d.setTitle("Modify " + clickedAccountName);
+        d.setOnShowListener(dialog -> {
+            clickedAccountName = clickedAccount.getTitle().toString();
+            d.setTitle("Modify " + clickedAccountName);
 
-                modifyAccountInit = true;
+            modifyAccountInit = true;
 
-                defaultAcc.setChecked(clickedAccountName.equals(
-                        settings.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT)));
+            defaultAcc.setChecked(clickedAccountName.equals(
+                    settings.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT)));
 
-                useGFAQsSig.setChecked(settings.getBoolean("useGFAQsSig" + clickedAccountName, false));
+            useGFAQsSig.setChecked(settings.getBoolean("useGFAQsSig" + clickedAccountName, false));
 
-                modifyAccountInit = false;
+            modifyAccountInit = false;
 
-                sigContent.setText(settings.getString("customSig" + clickedAccountName, ""));
+            sigContent.setText(settings.getString("customSig" + clickedAccountName, ""));
 
-                d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String escapedSig = StringEscapeUtils.escapeHtml4(sigContent.getText().toString());
-                        int length = escapedSig.length();
-                        int lines = 0;
-                        for (int i = 0; i < escapedSig.length(); i++) {
-                            if (escapedSig.charAt(i) == '\n') lines++;
-                        }
+            d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v1 -> {
+                String escapedSig = StringEscapeUtils.escapeHtml4(sigContent.getText().toString());
+                int length = escapedSig.length();
+                int lines = 0;
+                for (int i = 0; i < escapedSig.length(); i++) {
+                    if (escapedSig.charAt(i) == '\n') lines++;
+                }
 
-                        if (length < 161) {
-                            if (lines < 2) {
-                                settings.edit().putString("customSig" + clickedAccountName,
-                                        sigContent.getText().toString()).apply();
+                if (length < 161) {
+                    if (lines < 2) {
+                        settings.edit().putString("customSig" + clickedAccountName,
+                                sigContent.getText().toString()).apply();
 
-                                Crouton.showText(SettingsAccount.this, "Signature saved.", Theming.croutonStyle());
-                                d.dismiss();
-                            } else {
-                                Crouton.showText(SettingsAccount.this,
-                                        "Signatures can only have 1 line break.",
-                                        Theming.croutonStyle(),
-                                        (ViewGroup) sigContent.getParent());
-                            }
-                        } else {
-                            Crouton.showText(SettingsAccount.this,
-                                    "Signatures can only have a maximum of 160 characters.",
-                                    Theming.croutonStyle(),
-                                    (ViewGroup) sigContent.getParent());
-                        }
+                        Crouton.showText(SettingsAccount.this, "Signature saved.", Theming.croutonStyle());
+                        d.dismiss();
+                    } else {
+                        Crouton.showText(SettingsAccount.this,
+                                "Signatures can only have 1 line break.",
+                                Theming.croutonStyle(),
+                                (ViewGroup) sigContent.getParent());
                     }
-                });
-            }
+                } else {
+                    Crouton.showText(SettingsAccount.this,
+                            "Signatures can only have a maximum of 160 characters.",
+                            Theming.croutonStyle(),
+                            (ViewGroup) sigContent.getParent());
+                }
+            });
         });
 
-        d.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                updateAccountList();
-            }
-        });
+        d.setOnDismissListener(dialog -> updateAccountList());
 
         return d;
     }

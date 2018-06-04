@@ -49,12 +49,9 @@ public class MentionRowView extends BaseRowView {
             timeTextSize = time.getTextSize();
         }
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AllInOneV2.get().enableGoToUrlDefinedPost();
-                AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getUrl());
-            }
+        setOnClickListener(v -> {
+            AllInOneV2.get().enableGoToUrlDefinedPost();
+            AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getUrl());
         });
     }
 

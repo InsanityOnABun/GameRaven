@@ -52,12 +52,7 @@ public class NotifRowView extends BaseRowView {
             timeTextSize = time.getTextSize();
         }
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AllInOneV2.get().processNotif(myData.getTitle(), myData.getUrl());
-            }
-        });
+        setOnClickListener(v -> AllInOneV2.get().processNotif(myData.getTitle(), myData.getUrl()));
     }
 
     @Override

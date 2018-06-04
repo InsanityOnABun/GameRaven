@@ -342,49 +342,46 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 this, MaterialCommunityIcons.mdi_help_circle).color(Theming.colorPrimary()));
         navMenu.findItem(R.id.dwrExit).setIcon(new IconDrawable(
                 this, MaterialCommunityIcons.mdi_close_circle).color(Theming.colorPrimary()));
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.dwrBoardsExplore:
-                        session.get(NetDesc.BOARDS_EXPLORE, GF_URLS.BOARDS_EXPLORE);
-                        break;
-                    case R.id.dwrBoardsFavorites:
-                        showBoardFavoritesQuickList();
-                        break;
-                    case R.id.dwrAMPList:
-                        session.get(NetDesc.AMP_LIST, buildAMPLink());
-                        break;
-                    case R.id.dwrTrackedTopics:
-                        session.get(NetDesc.TRACKED_TOPICS, "/user/tracked");
-                        break;
-                    case R.id.dwrPMInbox:
-                        session.get(NetDesc.PM_INBOX, "/pm/");
-                        break;
-                    case R.id.dwrCopyCurrURL:
-                        android.content.ClipboardManager clipboard =
-                                (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        assert clipboard != null;
-                        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", session.getLastPath()));
-                        Crouton.showText(AllInOneV2.this, "URL copied to clipboard.", Theming.croutonStyle());
-                        break;
-                    case R.id.dwrHighlightList:
-                        startActivity(new Intent(AllInOneV2.this, SettingsHighlightedUsers.class));
-                        break;
-                    case R.id.dwrSettings:
-                        startActivity(new Intent(AllInOneV2.this, HeaderSettings.class));
-                        break;
-                    case R.id.dwrAbout:
-                        startActivity(new Intent(AllInOneV2.this, About.class));
-                        break;
-                    case R.id.dwrExit:
-                        AllInOneV2.this.finish();
-                        break;
-                }
-                drawerLayout.closeDrawers();
-
-                return false;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.dwrBoardsExplore:
+                    session.get(NetDesc.BOARDS_EXPLORE, GF_URLS.BOARDS_EXPLORE);
+                    break;
+                case R.id.dwrBoardsFavorites:
+                    showBoardFavoritesQuickList();
+                    break;
+                case R.id.dwrAMPList:
+                    session.get(NetDesc.AMP_LIST, buildAMPLink());
+                    break;
+                case R.id.dwrTrackedTopics:
+                    session.get(NetDesc.TRACKED_TOPICS, "/user/tracked");
+                    break;
+                case R.id.dwrPMInbox:
+                    session.get(NetDesc.PM_INBOX, "/pm/");
+                    break;
+                case R.id.dwrCopyCurrURL:
+                    android.content.ClipboardManager clipboard =
+                            (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    assert clipboard != null;
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", session.getLastPath()));
+                    Crouton.showText(AllInOneV2.this, "URL copied to clipboard.", Theming.croutonStyle());
+                    break;
+                case R.id.dwrHighlightList:
+                    startActivity(new Intent(AllInOneV2.this, SettingsHighlightedUsers.class));
+                    break;
+                case R.id.dwrSettings:
+                    startActivity(new Intent(AllInOneV2.this, HeaderSettings.class));
+                    break;
+                case R.id.dwrAbout:
+                    startActivity(new Intent(AllInOneV2.this, About.class));
+                    break;
+                case R.id.dwrExit:
+                    AllInOneV2.this.finish();
+                    break;
             }
+            drawerLayout.closeDrawers();
+
+            return false;
         });
 
 
@@ -437,40 +434,15 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         pageJumperWrapper = findViewById(R.id.aioHeader);
         firstPage = findViewById(R.id.aioFirstPage);
-        firstPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                session.get(pageJumperDesc, firstPageUrl);
-            }
-        });
+        firstPage.setOnClickListener(v -> session.get(pageJumperDesc, firstPageUrl));
         prevPage = findViewById(R.id.aioPreviousPage);
-        prevPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                session.get(pageJumperDesc, prevPageUrl);
-            }
-        });
+        prevPage.setOnClickListener(v -> session.get(pageJumperDesc, prevPageUrl));
         nextPage = findViewById(R.id.aioNextPage);
-        nextPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                session.get(pageJumperDesc, nextPageUrl);
-            }
-        });
+        nextPage.setOnClickListener(v -> session.get(pageJumperDesc, nextPageUrl));
         lastPage = findViewById(R.id.aioLastPage);
-        lastPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                session.get(pageJumperDesc, lastPageUrl);
-            }
-        });
+        lastPage.setOnClickListener(v -> session.get(pageJumperDesc, lastPageUrl));
         pageLabel = findViewById(R.id.aioPageLabel);
-        pageLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                jumperDialogBuilder.show();
-            }
-        });
+        pageLabel.setOnClickListener(v -> jumperDialogBuilder.show());
 
         Theming.setTextSizeBases(firstPage.getTextSize(), pageLabel.getTextSize());
 
@@ -552,16 +524,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 new int[][]{new int[]{}},
                 new int[]{Theming.colorPrimary()}));
         fab.setRippleColor(Theming.colorAccent());
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pMode == PostMode.ON_BOARD)
-                    postSetup(false);
-                else if (pMode == PostMode.ON_TOPIC)
-                    postSetup(true);
-                else if (pMode == PostMode.NEW_PM)
-                    pmSetup(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
-            }
+        fab.setOnClickListener(v -> {
+            if (pMode == PostMode.ON_BOARD)
+                postSetup(false);
+            else if (pMode == PostMode.ON_TOPIC)
+                postSetup(true);
+            else if (pMode == PostMode.NEW_PM)
+                pmSetup(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
         });
         fab.setVisibility(View.GONE);
 
@@ -610,32 +579,26 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 Ion.with(this)
                         .load("GET", "http://ioabsoftware.com/gameraven/latest.txt")
                         .asString()
-                        .setCallback(new FutureCallback<String>() {
-                            @Override
-                            public void onCompleted(Exception e, String result) {
-                                if (NumberUtils.isCreatable(result)) {
-                                    int netVersion = Integer.valueOf(result);
-                                    wtl("net version is " + netVersion);
+                        .setCallback((e, result) -> {
+                            if (NumberUtils.isCreatable(result)) {
+                                int netVersion = Integer.valueOf(result);
+                                wtl("net version is " + netVersion);
 
-                                    if (netVersion > BuildConfig.VERSION_CODE) {
-                                        AlertDialog.Builder b = new AlertDialog.Builder(AllInOneV2.this);
-                                        b.setTitle("New Version Found");
-                                        b.setMessage("Open Google Play Market to download new version? Note that although " +
-                                                "care is taken to make sure this notification only goes out once the update " +
-                                                "has spread to all Google servers, there is still a chance the update may not " +
-                                                "show up in the Play Store at first. Rest assured, there is a new version. " +
-                                                "It just hasn't reached your local Google Play server yet.");
-                                        b.setPositiveButton("Yes", new OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Intent i = new Intent(Intent.ACTION_VIEW);
-                                                i.setData(Uri.parse("market://details?id=com.ioabsoftware.gameraven"));
-                                                AllInOneV2.this.startActivity(i);
-                                            }
-                                        });
-                                        b.setNegativeButton("No", null);
-                                        b.show();
-                                    }
+                                if (netVersion > BuildConfig.VERSION_CODE) {
+                                    AlertDialog.Builder b = new AlertDialog.Builder(AllInOneV2.this);
+                                    b.setTitle("New Version Found");
+                                    b.setMessage("Open Google Play Market to download new version? Note that although " +
+                                            "care is taken to make sure this notification only goes out once the update " +
+                                            "has spread to all Google servers, there is still a chance the update may not " +
+                                            "show up in the Play Store at first. Rest assured, there is a new version. " +
+                                            "It just hasn't reached your local Google Play server yet.");
+                                    b.setPositiveButton("Yes", (dialog, which) -> {
+                                        Intent i = new Intent(Intent.ACTION_VIEW);
+                                        i.setData(Uri.parse("market://details?id=com.ioabsoftware.gameraven"));
+                                        AllInOneV2.this.startActivity(i);
+                                    });
+                                    b.setNegativeButton("No", null);
+                                    b.show();
                                 }
                             }
                         });
@@ -709,12 +672,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setTitle("Welcome!");
             b.setMessage("Would you like to view the quick start help files? This dialog won't be shown again.");
-            b.setPositiveButton("Yes", new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://ioabsoftware.com/gameraven/quickstart.html")));
-                }
-            });
+            b.setPositiveButton("Yes", (dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://ioabsoftware.com/gameraven/quickstart.html"))));
             b.setNegativeButton("No", null);
             b.show();
         }
@@ -929,22 +887,16 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 switch (fMode) {
                     case ON_BOARD:
                         addFavBuilder.setTitle("Add Board to Favorites?");
-                        addFavBuilder.setPositiveButton("Yes", new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                afData.put("action", Collections.singletonList("addfav"));
-                                session.post(NetDesc.BOARD, afPath, afData);
-                            }
+                        addFavBuilder.setPositiveButton("Yes", (dialog, which) -> {
+                            afData.put("action", Collections.singletonList("addfav"));
+                            session.post(NetDesc.BOARD, afPath, afData);
                         });
                         break;
                     case ON_TOPIC:
                         addFavBuilder.setTitle("Track Topic?");
-                        addFavBuilder.setPositiveButton("Yes", new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                afData.put("action", Collections.singletonList("tracktopic"));
-                                session.post(NetDesc.TOPIC, afPath, afData);
-                            }
+                        addFavBuilder.setPositiveButton("Yes", (dialog, which) -> {
+                            afData.put("action", Collections.singletonList("tracktopic"));
+                            session.post(NetDesc.TOPIC, afPath, afData);
                         });
                         break;
                 }
@@ -965,22 +917,16 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 switch (fMode) {
                     case ON_BOARD:
                         remFavBuilder.setTitle("Remove Board from Favorites?");
-                        remFavBuilder.setPositiveButton("Yes", new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                rfData.put("action", Collections.singletonList("remfav"));
-                                session.post(NetDesc.BOARD, rfPath, rfData);
-                            }
+                        remFavBuilder.setPositiveButton("Yes", (dialog, which) -> {
+                            rfData.put("action", Collections.singletonList("remfav"));
+                            session.post(NetDesc.BOARD, rfPath, rfData);
                         });
                         break;
                     case ON_TOPIC:
                         remFavBuilder.setTitle("Stop Tracking Topic?");
-                        remFavBuilder.setPositiveButton("Yes", new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                rfData.put("action", Collections.singletonList("stoptrack"));
-                                session.post(NetDesc.TOPIC, rfPath, rfData);
-                            }
+                        remFavBuilder.setPositiveButton("Yes", (dialog, which) -> {
+                            rfData.put("action", Collections.singletonList("stoptrack"));
+                            session.post(NetDesc.TOPIC, rfPath, rfData);
                         });
                         break;
                 }
@@ -1031,61 +977,50 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 }
 
                 AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
-                filterBuilder.setMultiChoiceItems(flairNames, flairCurrent, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        flairCurrent[which] = isChecked;
+                filterBuilder.setMultiChoiceItems(flairNames, flairCurrent, (dialog, which, isChecked) -> flairCurrent[which] = isChecked);
+                filterBuilder.setPositiveButton(R.string.ok, (dialog, which) -> {
+                    StringBuilder myrows = new StringBuilder().append('[');
+                    boolean pastFirst = false;
+                    boolean checkVal = true;
+                    int count = 0;
+
+                    for (boolean isCurrent : flairCurrent) {
+                        if (isCurrent) count++;
                     }
-                });
-                filterBuilder.setPositiveButton(R.string.ok, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        StringBuilder myrows = new StringBuilder().append('[');
-                        boolean pastFirst = false;
-                        boolean checkVal = true;
-                        int count = 0;
 
-                        for (boolean isCurrent : flairCurrent) {
-                            if (isCurrent) count++;
-                        }
+                    if (count == 0) checkVal = false;
 
-                        if (count == 0) checkVal = false;
-
-                        for (int x = 0; x < flairCurrent.length; x++) {
-                            if (flairCurrent[x] == checkVal) {
-                                if (pastFirst) myrows.append(',');
-                                myrows.append('"').append(flairKeys[x]).append('"');
-                                pastFirst = true;
-                            }
-                        }
-                        myrows.append(']');
-
-                        HashMap<String, List<String>> data = new HashMap<>();
-                        data.put("key", Collections.singletonList(session.getSessionKey()));
-                        data.put("b", Collections.singletonList(boardToFilter));
-                        data.put("list", Collections.singletonList(myrows.toString()));
-                        session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
-                        wtl(data.toString());
-                    }
-                });
-                filterBuilder.setNeutralButton("Clear Filter", new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        StringBuilder myrows = new StringBuilder().append('[');
-                        boolean pastFirst = false;
-                        for (Integer key : flairKeys) {
+                    for (int x1 = 0; x1 < flairCurrent.length; x1++) {
+                        if (flairCurrent[x1] == checkVal) {
                             if (pastFirst) myrows.append(',');
-                            myrows.append('"').append(key).append('"');
+                            myrows.append('"').append(flairKeys[x1]).append('"');
                             pastFirst = true;
                         }
-                        myrows.append(']');
-
-                        HashMap<String, List<String>> data = new HashMap<>();
-                        data.put("key", Collections.singletonList(session.getSessionKey()));
-                        data.put("b", Collections.singletonList(boardToFilter));
-                        data.put("list", Collections.singletonList(myrows.toString()));
-                        session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
                     }
+                    myrows.append(']');
+
+                    HashMap<String, List<String>> data = new HashMap<>();
+                    data.put("key", Collections.singletonList(session.getSessionKey()));
+                    data.put("b", Collections.singletonList(boardToFilter));
+                    data.put("list", Collections.singletonList(myrows.toString()));
+                    session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
+                    wtl(data.toString());
+                });
+                filterBuilder.setNeutralButton("Clear Filter", (dialog, which) -> {
+                    StringBuilder myrows = new StringBuilder().append('[');
+                    boolean pastFirst = false;
+                    for (Integer key : flairKeys) {
+                        if (pastFirst) myrows.append(',');
+                        myrows.append('"').append(key).append('"');
+                        pastFirst = true;
+                    }
+                    myrows.append(']');
+
+                    HashMap<String, List<String>> data = new HashMap<>();
+                    data.put("key", Collections.singletonList(session.getSessionKey()));
+                    data.put("b", Collections.singletonList(boardToFilter));
+                    data.put("list", Collections.singletonList(myrows.toString()));
+                    session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
                 });
                 filterBuilder.setNegativeButton(R.string.cancel, null);
                 filterBuilder.show();
@@ -1115,18 +1050,15 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 tagText.setText(userDetailData.getTagText());
                 tagUserBuilder.setView(tagText);
 
-                tagUserBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        HashMap<String, List<String>> data = new HashMap<>();
-                        data.put("key", Collections.singletonList(userDetailData.getTagKey()));
-                        assert tagText.getText() != null : "tagText.getText() is null";
-                        data.put("t", Collections.singletonList(tagText.getText().toString()));
-                        data.put("user", Collections.singletonList(userDetailData.getID()));
+                tagUserBuilder.setPositiveButton("OK", (dialog, which) -> {
+                    HashMap<String, List<String>> data = new HashMap<>();
+                    data.put("key", Collections.singletonList(userDetailData.getTagKey()));
+                    assert tagText.getText() != null : "tagText.getText() is null";
+                    data.put("t", Collections.singletonList(tagText.getText().toString()));
+                    data.put("user", Collections.singletonList(userDetailData.getID()));
 
-                        hideSoftKeyboard(tagText);
-                        AllInOneV2.get().getSession().post(NetDesc.USER_TAG, GF_URLS.ROOT + "/ajax/user_tag", data);
-                    }
+                    hideSoftKeyboard(tagText);
+                    AllInOneV2.get().getSession().post(NetDesc.USER_TAG, GF_URLS.ROOT + "/ajax/user_tag", data);
                 });
                 tagUserBuilder.show();
                 return true;
@@ -1272,21 +1204,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         AlertDialog.Builder b = new AlertDialog.Builder(AllInOneV2.this);
         b.setTitle(title);
         b.setMessage(msg);
-        b.setPositiveButton(posButtonText, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (retry)
-                    session.get(session.getLastAttemptedDesc(), session.getLastAttemptedPath());
-                else
-                    refreshClicked(new View(AllInOneV2.this));
-            }
+        b.setPositiveButton(posButtonText, (dialog, which) -> {
+            if (retry)
+                session.get(session.getLastAttemptedDesc(), session.getLastAttemptedPath());
+            else
+                refreshClicked(new View(AllInOneV2.this));
         });
-        b.setNegativeButton("Dismiss", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                postExecuteCleanup(session.getLastDesc());
-            }
-        });
+        b.setNegativeButton("Dismiss", (dialog, which) -> postExecuteCleanup(session.getLastDesc()));
         b.show();
     }
 
@@ -1297,45 +1221,29 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 "and posting again without first checking if the post went through may result in the post " +
                 "being submitted twice.");
 
-        b.setPositiveButton("Refresh", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                session.get(Session.determineNetDesc(postPostUrl), postPostUrl);
-            }
-        });
+        b.setPositiveButton("Refresh", (dialog, which) -> session.get(Session.determineNetDesc(postPostUrl), postPostUrl));
 
         b.setNeutralButton("Copy Post", null);
 
-        b.setNegativeButton("Dismiss", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                session.setLastPathAndDesc(postPostUrl, Session.determineNetDesc(postPostUrl));
-                ptrCleanup();
-            }
+        b.setNegativeButton("Dismiss", (dialog, which) -> {
+            session.setLastPathAndDesc(postPostUrl, Session.determineNetDesc(postPostUrl));
+            ptrCleanup();
         });
 
         b.setCancelable(false);
         final AlertDialog d = b.create();
-        d.setOnShowListener(new OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                d.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        android.content.ClipboardManager clipboard =
-                                (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        d.setOnShowListener(dialog -> d.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(v -> {
+            android.content.ClipboardManager clipboard =
+                    (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-                        assert clipboard != null;
-                        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", savedPostBody));
+            assert clipboard != null;
+            clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", savedPostBody));
 
-                        Crouton.showText(AllInOneV2.this,
-                                "Message body copied to clipboard.",
-                                Theming.croutonStyle(),
-                                (ViewGroup) v.getParent().getParent().getParent());
-                    }
-                });
-            }
-        });
+            Crouton.showText(AllInOneV2.this,
+                    "Message body copied to clipboard.",
+                    Theming.croutonStyle(),
+                    (ViewGroup) v.getParent().getParent().getParent());
+        }));
         d.show();
     }
 
@@ -2414,29 +2322,16 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         viewAdapter.notifyDataSetChanged();
 
         if (consumeGoToUrlDefinedPost() && !Session.applySavedScroll) {
-            contentList.post(new Runnable() {
-                @Override
-                public void run() {
-                    contentList.setSelection(goToThisIndex);
-                }
-            });
+            contentList.post(() -> contentList.setSelection(goToThisIndex));
 
         } else if (Session.applySavedScroll) {
-            contentList.post(new Runnable() {
-                @Override
-                public void run() {
-                    contentList.setSelectionFromTop(Session.savedScrollVal[0], Session.savedScrollVal[1]);
-                    Session.applySavedScroll = false;
-                }
+            contentList.post(() -> {
+                contentList.setSelectionFromTop(Session.savedScrollVal[0], Session.savedScrollVal[1]);
+                Session.applySavedScroll = false;
             });
 
         } else {
-            contentList.post(new Runnable() {
-                @Override
-                public void run() {
-                    contentList.setSelectionAfterHeaderView();
-                }
-            });
+            contentList.post(() -> contentList.setSelectionAfterHeaderView());
         }
 
         if (swipeRefreshLayout.isRefreshing())
@@ -2653,17 +2548,14 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     jumperDialogBuilder.setTitle("Select a page...");
                 }
 
-                jumperDialogBuilder.setItems(items, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int x = jumperPageUrl.indexOf("?page=") + 6;
-                        if (x == 5) // -1 + 6 = 5, when "?page=" is not found
-                            x = jumperPageUrl.indexOf("&page=") + 6;
+                jumperDialogBuilder.setItems(items, (dialog, which) -> {
+                    int x = jumperPageUrl.indexOf("?page=") + 6;
+                    if (x == 5) // -1 + 6 = 5, when "?page=" is not found
+                        x = jumperPageUrl.indexOf("&page=") + 6;
 
-                        String go = jumperPageUrl.substring(0, x) + which + jumperPageUrl.substring(x);
-                        wtl("jumper dialog url: " + go);
-                        session.get(pageJumperDesc, go);
-                    }
+                    String go = jumperPageUrl.substring(0, x) + which + jumperPageUrl.substring(x);
+                    wtl("jumper dialog url: " + go);
+                    session.get(pageJumperDesc, go);
                 });
 
                 pageLabel.setEnabled(true);
@@ -2752,12 +2644,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         if (settings.getBoolean("confirmPostCancel", false)) {
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setMessage("Cancel this post?");
-            b.setPositiveButton("Yes", new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    postInterfaceCleanup();
-                }
-            });
+            b.setPositiveButton("Yes", (dialog, which) -> postInterfaceCleanup());
             b.setNegativeButton("No", null);
             b.show();
         } else
@@ -2789,12 +2676,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         }
 
         AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
-        filterBuilder.setSingleChoiceItems(flairNames, activeFlairIndex, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                flairForNewTopic = flairKeys[which];
-                dialog.dismiss();
-            }
+        filterBuilder.setSingleChoiceItems(flairNames, activeFlairIndex, (dialog, which) -> {
+            flairForNewTopic = flairKeys[which];
+            dialog.dismiss();
         });
         filterBuilder.setNegativeButton(R.string.cancel, null);
         filterBuilder.show();
@@ -2805,12 +2689,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         if (settings.getBoolean("confirmPostSubmit", false)) {
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setMessage("Submit this post?");
-            b.setPositiveButton("Yes", new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    postSubmit();
-                }
-            });
+            b.setPositiveButton("Yes", (dialog, which) -> postSubmit());
             b.setNegativeButton("No", null);
             b.show();
         } else
@@ -2920,13 +2799,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         options[9] = v.findViewById(R.id.po10);
         final Spinner minLevel = v.findViewById(R.id.poMinLevel);
 
-        poUse.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                poTitle.setEnabled(isChecked);
-                for (int x = 0; x < 10; x++)
-                    options[x].setEnabled(isChecked);
-            }
+        poUse.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            poTitle.setEnabled(isChecked);
+            for (int x = 0; x < 10; x++)
+                options[x].setEnabled(isChecked);
         });
 
         for (int x = 0; x < 10; x++)
@@ -2936,35 +2812,24 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         poTitle.setText(pollTitle);
         poUse.setChecked(pollUse);
 
-        b.setPositiveButton("Save", new OnClickListener() {
-            @Override
-            @SuppressWarnings("ConstantConditions")
-            public void onClick(DialogInterface dialog, int which) {
-                pollUse = poUse.isChecked();
-                pollTitle = poTitle.getText().toString();
-                pollMinLevel = minLevel.getSelectedItemPosition();
+        b.setPositiveButton("Save", (dialog, which) -> {
+            pollUse = poUse.isChecked();
+            pollTitle = poTitle.getText().toString();
+            pollMinLevel = minLevel.getSelectedItemPosition();
 
-                for (int x = 0; x < 10; x++) {
-                    pollOptions[x] = options[x].getText().toString();
-                }
+            for (int x = 0; x < 10; x++) {
+                pollOptions[x] = options[x].getText().toString();
             }
         });
 
         b.setNegativeButton("Cancel", null);
 
-        b.setNeutralButton("Clear", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                clearPoll();
-            }
-        });
+        b.setNeutralButton("Clear", (dialog, which) -> clearPoll());
 
         Dialog dialog = b.create();
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            public void onDismiss(DialogInterface dialog) {
-                //noinspection deprecation
-                removeDialog(POLL_OPTIONS_DIALOG);
-            }
+        dialog.setOnDismissListener(dialog1 -> {
+            //noinspection deprecation
+            removeDialog(POLL_OPTIONS_DIALOG);
         });
         return dialog;
     }
@@ -2989,48 +2854,43 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         else
             reportOptions = getResources().getStringArray(R.array.msgReportReasons);
 
-        reportMsgBuilder.setItems(reportOptions, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                reportCode = getResources().getStringArray(R.array.msgReportCodes)[which];
+        reportMsgBuilder.setItems(reportOptions, (dialog, which) -> {
+            reportCode = getResources().getStringArray(R.array.msgReportCodes)[which];
 
-                /*
-                <form action="https://www.gamefaqs.com/features/board_mark/pick.php" method="post">
-                <input type="hidden" name="b" value="848">
-                <input type="hidden" name="t" value="71881473">
-                <input type="hidden" name="m" value="821951056">
-                <input type="hidden" name="r" value="8">
-                <input type="hidden" name="rt" value="Testing">
-                <input type="hidden" name="i" value="0">
-                <input type="hidden" name="key" value="[session key]">
-                <input type="submit">
-                </form>
-                 */
+            /*
+            <form action="https://www.gamefaqs.com/features/board_mark/pick.php" method="post">
+            <input type="hidden" name="b" value="848">
+            <input type="hidden" name="t" value="71881473">
+            <input type="hidden" name="m" value="821951056">
+            <input type="hidden" name="r" value="8">
+            <input type="hidden" name="rt" value="Testing">
+            <input type="hidden" name="i" value="0">
+            <input type="hidden" name="key" value="[session key]">
+            <input type="submit">
+            </form>
+             */
 
-                HashMap<String, List<String>> markData = new HashMap<>();
-                markData.put("b", Collections.singletonList(boardID));
-                markData.put("t", Collections.singletonList(topicID));
-                markData.put("m", Collections.singletonList(clickedMsg.getMessageID()));
-                markData.put("r", Collections.singletonList(reportCode));
-                markData.put("rt", Collections.singletonList(EMPTY_STRING));
-                markData.put("i", Collections.singletonList("0"));
-                markData.put("key", Collections.singletonList(session.getSessionKey()));
+            HashMap<String, List<String>> markData = new HashMap<>();
+            markData.put("b", Collections.singletonList(boardID));
+            markData.put("t", Collections.singletonList(topicID));
+            markData.put("m", Collections.singletonList(clickedMsg.getMessageID()));
+            markData.put("r", Collections.singletonList(reportCode));
+            markData.put("rt", Collections.singletonList(EMPTY_STRING));
+            markData.put("i", Collections.singletonList("0"));
+            markData.put("key", Collections.singletonList(session.getSessionKey()));
 
-                session.post(NetDesc.MSG_MARK, "/features/board_mark/pick.php", markData);
+            session.post(NetDesc.MSG_MARK, "/features/board_mark/pick.php", markData);
 
 
 //                session.get(NetDesc.MARKMSG_S1, clickedMsg.getMessageDetailLink());
-            }
         });
 
         reportMsgBuilder.setNegativeButton("Cancel", null);
 
         Dialog dialog = reportMsgBuilder.create();
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            public void onDismiss(DialogInterface dialog) {
-                //noinspection deprecation
-                removeDialog(REPORT_MESSAGE_DIALOG);
-            }
+        dialog.setOnDismissListener(dialog1 -> {
+            //noinspection deprecation
+            removeDialog(REPORT_MESSAGE_DIALOG);
         });
         return dialog;
     }
@@ -3077,89 +2937,78 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         adapter.addAll(listBuilder);
 
         lv.setAdapter(adapter);
-        lv.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selected = (String) parent.getItemAtPosition(position);
-                assert selected != null : "selected is null";
-                switch (selected) {
-                    case "View Previous Version(s)":
-                    case "Message Detail":
-                        session.get(NetDesc.MESSAGE_DETAIL, clickedMsg.getMessageDetailLink());
-                        break;
-                    case "Quote":
-                        String msg = (quoteSelection != null ? quoteSelection : clickedMsg.getMessageForQuoting());
-                        quoteSetup(clickedMsg.getUser(), msg);
-                        break;
-                    case "Edit":
-                        editPostSetup(clickedMsg.getMessageForEditing(), clickedMsg.getMessageID());
-                        break;
-                    case "Update Flair":
-                        final String[] flairKeys = updateTopicFlairs.keySet().toArray(new String[0]);
-                        String[] flairNames = updateTopicFlairs.values().toArray(new String[0]);
-                        AlertDialog.Builder flairUpdater = new AlertDialog.Builder(AllInOneV2.this);
-                        flairUpdater.setSingleChoiceItems(flairNames, currTopicFlair, new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which != currTopicFlair) {
-                                    HashMap<String, List<String>> flairData = new HashMap<>();
-                                    flairData.put("flair", Collections.singletonList(flairKeys[which]));
-                                    flairData.put("action", Collections.singletonList("flair_update"));
-                                    flairData.put("key", Collections.singletonList(session.getSessionKey()));
-                                    session.post(NetDesc.TOPIC_UPDATE_FLAIR,
-                                            clickedMsg.getBoardActionLink(), flairData);
-                                }
-                                dialog.dismiss();
-                            }
-                        });
-                        flairUpdater.setNegativeButton(R.string.cancel, null);
-                        flairUpdater.show();
-                        break;
-                    case "Delete":
-                        HashMap<String, List<String>> delData = new HashMap<>();
-                        delData.put("action", Collections.singletonList("delete"));
-                        delData.put("key", Collections.singletonList(session.getSessionKey()));
+        lv.setOnItemClickListener((parent, view, position, id) -> {
+            String selected = (String) parent.getItemAtPosition(position);
+            assert selected != null : "selected is null";
+            switch (selected) {
+                case "View Previous Version(s)":
+                case "Message Detail":
+                    session.get(NetDesc.MESSAGE_DETAIL, clickedMsg.getMessageDetailLink());
+                    break;
+                case "Quote":
+                    String msg = (quoteSelection != null ? quoteSelection : clickedMsg.getMessageForQuoting());
+                    quoteSetup(clickedMsg.getUser(), msg);
+                    break;
+                case "Edit":
+                    editPostSetup(clickedMsg.getMessageForEditing(), clickedMsg.getMessageID());
+                    break;
+                case "Update Flair":
+                    final String[] flairKeys = updateTopicFlairs.keySet().toArray(new String[0]);
+                    String[] flairNames = updateTopicFlairs.values().toArray(new String[0]);
+                    AlertDialog.Builder flairUpdater = new AlertDialog.Builder(AllInOneV2.this);
+                    flairUpdater.setSingleChoiceItems(flairNames, currTopicFlair, (dialog, which) -> {
+                        if (which != currTopicFlair) {
+                            HashMap<String, List<String>> flairData = new HashMap<>();
+                            flairData.put("flair", Collections.singletonList(flairKeys[which]));
+                            flairData.put("action", Collections.singletonList("flair_update"));
+                            flairData.put("key", Collections.singletonList(session.getSessionKey()));
+                            session.post(NetDesc.TOPIC_UPDATE_FLAIR,
+                                    clickedMsg.getBoardActionLink(), flairData);
+                        }
+                        dialog.dismiss();
+                    });
+                    flairUpdater.setNegativeButton(R.string.cancel, null);
+                    flairUpdater.show();
+                    break;
+                case "Delete":
+                    HashMap<String, List<String>> delData = new HashMap<>();
+                    delData.put("action", Collections.singletonList("delete"));
+                    delData.put("key", Collections.singletonList(session.getSessionKey()));
 
-                        session.post(NetDesc.MSG_DELETE,
-                                clickedMsg.getBoardActionLink(), delData);
-                        break;
-                    case "Report":
-                        //noinspection deprecation
-                        showDialog(REPORT_MESSAGE_DIALOG);
-                        break;
-                    case "Highlight User":
-                        HighlightedUser user = hlDB.getHighlightedUsers().get(clickedMsg.getUser().toLowerCase(Locale.US));
-                        HighlightListDBHelper.showHighlightUserDialog(AllInOneV2.this, user, clickedMsg.getUser(), null);
-                        break;
-                    case "User Details":
-                        session.get(NetDesc.USER_DETAIL, clickedMsg.getUserDetailLink());
-                        break;
-                    default:
-                        Crouton.showText(AllInOneV2.this, "not recognized: " + selected, Theming.croutonStyle());
-                        break;
-                }
-
-                //noinspection deprecation
-                dismissDialog(MESSAGE_ACTION_DIALOG);
+                    session.post(NetDesc.MSG_DELETE,
+                            clickedMsg.getBoardActionLink(), delData);
+                    break;
+                case "Report":
+                    //noinspection deprecation
+                    showDialog(REPORT_MESSAGE_DIALOG);
+                    break;
+                case "Highlight User":
+                    HighlightedUser user = hlDB.getHighlightedUsers().get(clickedMsg.getUser().toLowerCase(Locale.US));
+                    HighlightListDBHelper.showHighlightUserDialog(AllInOneV2.this, user, clickedMsg.getUser(), null);
+                    break;
+                case "User Details":
+                    session.get(NetDesc.USER_DETAIL, clickedMsg.getUserDetailLink());
+                    break;
+                default:
+                    Crouton.showText(AllInOneV2.this, "not recognized: " + selected, Theming.croutonStyle());
+                    break;
             }
+
+            //noinspection deprecation
+            dismissDialog(MESSAGE_ACTION_DIALOG);
         });
 
         msgActionBuilder.setNegativeButton("Cancel", null);
 
         Dialog dialog = msgActionBuilder.create();
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            public void onDismiss(DialogInterface dialog) {
-                //noinspection deprecation
-                removeDialog(MESSAGE_ACTION_DIALOG);
-            }
+        dialog.setOnDismissListener(dialog12 -> {
+            //noinspection deprecation
+            removeDialog(MESSAGE_ACTION_DIALOG);
         });
 
-        dialog.setOnShowListener(new OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                if (quoteSelection != null)
-                    Crouton.showText(AllInOneV2.this, "Selected text prepped for quoting.", Theming.croutonStyle(), wrapper);
-            }
+        dialog.setOnShowListener(dialog1 -> {
+            if (quoteSelection != null)
+                Crouton.showText(AllInOneV2.this, "Selected text prepped for quoting.", Theming.croutonStyle(), wrapper);
         });
 
         return dialog;
@@ -3191,54 +3040,43 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         b.setNegativeButton("Cancel", null);
 
         final AlertDialog d = b.create();
-        d.setOnShowListener(new OnShowListener() {
-            @Override
-            @SuppressWarnings("ConstantConditions")
-            public void onShow(DialogInterface dialog) {
-                d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String toContent = to.getText().toString();
-                        String subjectContent = subject.getText().toString();
-                        String messageContent = message.getText().toString();
+        d.setOnShowListener(dialog -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v1 -> {
+            String toContent = to.getText().toString();
+            String subjectContent = subject.getText().toString();
+            String messageContent = message.getText().toString();
 
-                        if (toContent.length() > 0) {
-                            if (subjectContent.length() > 0) {
-                                if (messageContent.length() > 0) {
-                                    savedTo = toContent;
-                                    savedSubject = subjectContent;
-                                    savedMessage = messageContent;
+            if (toContent.length() > 0) {
+                if (subjectContent.length() > 0) {
+                    if (messageContent.length() > 0) {
+                        savedTo = toContent;
+                        savedSubject = subjectContent;
+                        savedMessage = messageContent;
 
-                                    pmSending.setVisibility(View.VISIBLE);
+                        pmSending.setVisibility(View.VISIBLE);
 
-                                    session.get(NetDesc.PM_SEND_S1, "/pm/new");
+                        session.get(NetDesc.PM_SEND_S1, "/pm/new");
 
-                                } else
-                                    Crouton.showText(AllInOneV2.this,
-                                            "The message can't be empty.",
-                                            Theming.croutonStyle(),
-                                            (ViewGroup) to.getParent());
-                            } else
-                                Crouton.showText(AllInOneV2.this,
-                                        "The subject can't be empty.",
-                                        Theming.croutonStyle(),
-                                        (ViewGroup) to.getParent());
-                        } else
-                            Crouton.showText(AllInOneV2.this,
-                                    "The recipient can't be empty.",
-                                    Theming.croutonStyle(),
-                                    (ViewGroup) to.getParent());
-                    }
-                });
-            }
-        });
+                    } else
+                        Crouton.showText(AllInOneV2.this,
+                                "The message can't be empty.",
+                                Theming.croutonStyle(),
+                                (ViewGroup) to.getParent());
+                } else
+                    Crouton.showText(AllInOneV2.this,
+                            "The subject can't be empty.",
+                            Theming.croutonStyle(),
+                            (ViewGroup) to.getParent());
+            } else
+                Crouton.showText(AllInOneV2.this,
+                        "The recipient can't be empty.",
+                        Theming.croutonStyle(),
+                        (ViewGroup) to.getParent());
+        }));
 
-        d.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            public void onDismiss(DialogInterface dialog) {
-                pmSending = null;
-                //noinspection deprecation
-                removeDialog(SEND_PM_DIALOG);
-            }
+        d.setOnDismissListener(dialog -> {
+            pmSending = null;
+            //noinspection deprecation
+            removeDialog(SEND_PM_DIALOG);
         });
         return d;
     }
@@ -3251,14 +3089,11 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setTitle("My Boards");
             b.setNegativeButton("Cancel", null);
-            b.setItems(boardFavoritesQuickListOptions, new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (which == 0) {
-                        session.get(NetDesc.BOARDS_FAVORITE, GF_URLS.BOARDS_FAVORITES);
-                    } else {
-                        session.get(NetDesc.BOARD, boardFavoritesQuickListLinks[which]);
-                    }
+            b.setItems(boardFavoritesQuickListOptions, (dialog, which) -> {
+                if (which == 0) {
+                    session.get(NetDesc.BOARDS_FAVORITE, GF_URLS.BOARDS_FAVORITES);
+                } else {
+                    session.get(NetDesc.BOARD, boardFavoritesQuickListLinks[which]);
                 }
             });
             drawerLayout.closeDrawers();
@@ -3468,18 +3303,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             installRailgun.setTitle("Railgun Image Uploader");
             installRailgun.setMessage("Railgun not installed. Click \"Full\" or \"Lite\" below to install it. The Lite version is ad-supported.\n\n" +
                     "Railgun is a quick and easy method for uploading images to an image host and get a pastable direct link to the image back.");
-            installRailgun.setPositiveButton("Full", new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader")));
-                }
-            });
-            installRailgun.setNeutralButton("Lite", new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader.lite")));
-                }
-            });
+            installRailgun.setPositiveButton("Full", (dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader"))));
+            installRailgun.setNeutralButton("Lite", (dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ioabsoftware.imgtcuploader.lite"))));
             installRailgun.setNegativeButton("Cancel", null);
             installRailgun.show();
         } else {
@@ -3534,15 +3359,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     "to the clipboard and be taken to correct board to report this.\n" +
                     "\n" +
                     deets);
-            b.setPositiveButton("OK", new OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    android.content.ClipboardManager clipboard =
-                            (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    assert clipboard != null;
-                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", deets));
-                    session.get(NetDesc.TOPIC, "/boards/1177-gameraven-development-and-discussion");
-                }
+            b.setPositiveButton("OK", (dialogInterface, i) -> {
+                android.content.ClipboardManager clipboard =
+                        (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                assert clipboard != null;
+                clipboard.setPrimaryClip(android.content.ClipData.newPlainText("simple text", deets));
+                session.get(NetDesc.TOPIC, "/boards/1177-gameraven-development-and-discussion");
             });
             b.setNegativeButton("Dismiss", null);
             b.show();

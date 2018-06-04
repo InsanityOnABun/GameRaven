@@ -106,12 +106,7 @@ public class HeaderSettings extends PreferenceActivity {
                 R.layout.settings_activity, new LinearLayout(this), false);
 
         Toolbar mActionBar = contentView.findViewById(R.id.saToolbar);
-        mActionBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mActionBar.setNavigationOnClickListener(v -> finish());
         mActionBar.setTitle(getTitle());
         mActionBar.setTitleTextColor(Color.WHITE);
 
@@ -424,131 +419,106 @@ public class HeaderSettings extends PreferenceActivity {
              */
             if ("accountsnotifs".equals(settings)) {
                 addPreferencesFromResource(R.xml.prefsaccountsnotifs);
-                findPreference("manageAccounts").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        startActivity(new Intent(getActivity(), SettingsAccount.class));
-                        return true;
-                    }
+                findPreference("manageAccounts").setOnPreferenceClickListener(preference -> {
+                    startActivity(new Intent(getActivity(), SettingsAccount.class));
+                    return true;
                 });
-                findPreference("customSig").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
-                        LayoutInflater inflater = getActivity().getLayoutInflater();
-                        @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.modifysig, null);
-                        b.setView(v);
-                        b.setTitle("Modify Global Custom Signature");
+                findPreference("customSig").setOnPreferenceClickListener(preference -> {
+                    AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.modifysig, null);
+                    b.setView(v);
+                    b.setTitle("Modify Global Custom Signature");
 
-                        final EditText sigText = v.findViewById(R.id.sigEditText);
-                        final TextView sigCounter = v.findViewById(R.id.sigCounter);
-                        final LinearLayout sigWrapper = v.findViewById(R.id.sigWrapper);
+                    final EditText sigText = v.findViewById(R.id.sigEditText);
+                    final TextView sigCounter = v.findViewById(R.id.sigCounter);
+                    final LinearLayout sigWrapper = v.findViewById(R.id.sigWrapper);
 
-                        sigText.setHint(AllInOneV2.defaultSig);
-                        sigText.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void afterTextChanged(Editable s) {
-                                String escapedSig = StringEscapeUtils.escapeHtml4(sigText.getText().toString());
-                                int length = escapedSig.length();
-                                int lines = 0;
-                                for (int i = 0; i < escapedSig.length(); i++) {
-                                    if (escapedSig.charAt(i) == '\n') lines++;
-                                }
-
-                                String sigCounterText = (1 - lines) + " line break(s), " +
-                                        (160 - length) + " characters available";
-                                sigCounter.setText(sigCounterText);
+                    sigText.setHint(AllInOneV2.defaultSig);
+                    sigText.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            String escapedSig = StringEscapeUtils.escapeHtml4(sigText.getText().toString());
+                            int length = escapedSig.length();
+                            int lines = 0;
+                            for (int i = 0; i < escapedSig.length(); i++) {
+                                if (escapedSig.charAt(i) == '\n') lines++;
                             }
 
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count,
-                                                          int after) {
-
-                            }
-
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before,
-                                                      int count) {
-                            }
-                        });
-                        sigText.setText(prefs.getString("customSig", ""));
-
-                        b.setPositiveButton("Save Sig", null);
-                        b.setNeutralButton("Clear Sig", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                prefs.edit().putString("customSig", "").apply();
-                                Toast.makeText(getActivity(), "Signature cleared and saved.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        b.setNegativeButton("Cancel", null);
-
-                        final AlertDialog d = b.create();
-                        d.setOnShowListener(new DialogInterface.OnShowListener() {
-                            @SuppressWarnings("ConstantConditions")
-                            @Override
-                            public void onShow(DialogInterface dialog) {
-                                d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-
-                                    @Override
-                                    public void onClick(View view) {
-                                        String escapedSig = StringEscapeUtils.escapeHtml4(sigText.getText().toString());
-                                        int length = escapedSig.length();
-                                        int lines = 0;
-                                        for (int i = 0; i < escapedSig.length(); i++) {
-                                            if (escapedSig.charAt(i) == '\n') lines++;
-                                        }
-
-                                        if (length < 161) {
-                                            if (lines < 2) {
-                                                prefs.edit().putString("customSig", sigText.getText().toString()).apply();
-                                                Toast.makeText(getActivity(), "Signature saved.", Toast.LENGTH_SHORT).show();
-                                                d.dismiss();
-                                            } else
-                                                Crouton.showText(getActivity(),
-                                                        "Signatures can only have 1 line break.",
-                                                        Theming.croutonStyle(),
-                                                        sigWrapper);
-                                        } else
-                                            Crouton.showText(getActivity(),
-                                                    "Signatures can only have a maximum of 160 characters.",
-                                                    Theming.croutonStyle(),
-                                                    sigWrapper);
-                                    }
-                                });
-                            }
-                        });
-
-                        d.show();
-                        return true;
-                    }
-                });
-                findPreference("notifsEnable").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        if ((Boolean) newValue) {
-                            // enabling notifications
-                            if (prefs.getString("defaultAccount", NO_DEFAULT_ACCOUNT).equals(NO_DEFAULT_ACCOUNT)) {
-                                Crouton.showText(getActivity(), "You have no default account set!", Theming.croutonStyle(), (ViewGroup) getView());
-                                return false;
-                            } else {
-                                ((HeaderSettings) getActivity()).enableNotifs(
-                                        prefs.getString("notifsFrequency", "60"));
-                            }
-                        } else {
-                            // disabling notifications
-                            ((HeaderSettings) getActivity()).disableNotifs();
+                            String sigCounterText = (1 - lines) + " line break(s), " +
+                                    (160 - length) + " characters available";
+                            sigCounter.setText(sigCounterText);
                         }
-                        return true;
+
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count,
+                                                      int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before,
+                                                  int count) {
+                        }
+                    });
+                    sigText.setText(prefs.getString("customSig", ""));
+
+                    b.setPositiveButton("Save Sig", null);
+                    b.setNeutralButton("Clear Sig", (dialog, which) -> {
+                        prefs.edit().putString("customSig", "").apply();
+                        Toast.makeText(getActivity(), "Signature cleared and saved.", Toast.LENGTH_SHORT).show();
+                    });
+                    b.setNegativeButton("Cancel", null);
+
+                    final AlertDialog d = b.create();
+                    d.setOnShowListener(dialog -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+                        String escapedSig = StringEscapeUtils.escapeHtml4(sigText.getText().toString());
+                        int length = escapedSig.length();
+                        int lines = 0;
+                        for (int i = 0; i < escapedSig.length(); i++) {
+                            if (escapedSig.charAt(i) == '\n') lines++;
+                        }
+
+                        if (length < 161) {
+                            if (lines < 2) {
+                                prefs.edit().putString("customSig", sigText.getText().toString()).apply();
+                                Toast.makeText(getActivity(), "Signature saved.", Toast.LENGTH_SHORT).show();
+                                d.dismiss();
+                            } else
+                                Crouton.showText(getActivity(),
+                                        "Signatures can only have 1 line break.",
+                                        Theming.croutonStyle(),
+                                        sigWrapper);
+                        } else
+                            Crouton.showText(getActivity(),
+                                    "Signatures can only have a maximum of 160 characters.",
+                                    Theming.croutonStyle(),
+                                    sigWrapper);
+                    }));
+
+                    d.show();
+                    return true;
+                });
+                findPreference("notifsEnable").setOnPreferenceChangeListener((preference, newValue) -> {
+                    if ((Boolean) newValue) {
+                        // enabling notifications
+                        if (prefs.getString("defaultAccount", NO_DEFAULT_ACCOUNT).equals(NO_DEFAULT_ACCOUNT)) {
+                            Crouton.showText(getActivity(), "You have no default account set!", Theming.croutonStyle(), (ViewGroup) getView());
+                            return false;
+                        } else {
+                            ((HeaderSettings) getActivity()).enableNotifs(
+                                    prefs.getString("notifsFrequency", "60"));
+                        }
+                    } else {
+                        // disabling notifications
+                        ((HeaderSettings) getActivity()).disableNotifs();
                     }
+                    return true;
                 });
 
-                findPreference("notifsFrequency").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        ((HeaderSettings) getActivity()).enableNotifs((String) newValue);
-                        return true;
-                    }
+                findPreference("notifsFrequency").setOnPreferenceChangeListener((preference, newValue) -> {
+                    ((HeaderSettings) getActivity()).enableNotifs((String) newValue);
+                    return true;
                 });
 
                 // remove first notifsFrequency setting (1 min dev) if release build
@@ -572,102 +542,66 @@ public class HeaderSettings extends PreferenceActivity {
              */
             else if ("theming".equals(settings)) {
                 addPreferencesFromResource(R.xml.prefstheming);
-                findPreference("manageHighlightedUsers").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        startActivity(new Intent(getActivity(), SettingsHighlightedUsers.class));
-                        return true;
-                    }
+                findPreference("manageHighlightedUsers").setOnPreferenceClickListener(preference -> {
+                    startActivity(new Intent(getActivity(), SettingsHighlightedUsers.class));
+                    return true;
                 });
-                findPreference("gfTheme").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    @SuppressLint("SetTextI18n")
-                    public boolean onPreferenceClick(Preference preference) {
-                        AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
-                        LayoutInflater inflater = getActivity().getLayoutInflater();
-                        @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.themepicker, null);
-                        b.setView(v);
-                        b.setTitle("Select Theme");
+                findPreference("gfTheme").setOnPreferenceClickListener(preference -> {
+                    AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    @SuppressLint("InflateParams") final View v = inflater.inflate(R.layout.themepicker, null);
+                    b.setView(v);
+                    b.setTitle("Select Theme");
 
-                        final TextView current = v.findViewById(R.id.tpSelected);
+                    final TextView current = v.findViewById(R.id.tpSelected);
 
-                        v.findViewById(R.id.tpBlueLight).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Light Blue").apply();
-                                current.setText("Selected: Light Blue");
-                            }
-                        });
-                        v.findViewById(R.id.tpBlueDark).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Dark Blue").apply();
-                                current.setText("Selected: Dark Blue");
-                            }
-                        });
-                        v.findViewById(R.id.tpRedLight).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Light Red").apply();
-                                current.setText("Selected: Light Red");
-                            }
-                        });
-                        v.findViewById(R.id.tpRedDark).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Dark Red").apply();
-                                current.setText("Selected: Dark Red");
-                            }
-                        });
-                        v.findViewById(R.id.tpGreenLight).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Light Green").apply();
-                                current.setText("Selected: Light Green");
-                            }
-                        });
-                        v.findViewById(R.id.tpGreenDark).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Dark Green").apply();
-                                current.setText("Selected: Dark Green");
-                            }
-                        });
-                        v.findViewById(R.id.tpOrangeLight).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Light Orange").apply();
-                                current.setText("Selected: Light Orange");
-                            }
-                        });
-                        v.findViewById(R.id.tpOrangeDark).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Dark Orange").apply();
-                                current.setText("Selected: Dark Orange");
-                            }
-                        });
-                        v.findViewById(R.id.tpPurpleLight).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Light Purple").apply();
-                                current.setText("Selected: Light Purple");
-                            }
-                        });
-                        v.findViewById(R.id.tpPurpleDark).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                prefs.edit().putString("gfTheme", "Dark Purple").apply();
-                                current.setText("Selected: Dark Purple");
-                            }
-                        });
+                    v.findViewById(R.id.tpBlueLight).setOnClickListener(v110 -> {
+                        prefs.edit().putString("gfTheme", "Light Blue").apply();
+                        current.setText("Selected: Light Blue");
+                    });
+                    v.findViewById(R.id.tpBlueDark).setOnClickListener(v19 -> {
+                        prefs.edit().putString("gfTheme", "Dark Blue").apply();
+                        current.setText("Selected: Dark Blue");
+                    });
+                    v.findViewById(R.id.tpRedLight).setOnClickListener(v18 -> {
+                        prefs.edit().putString("gfTheme", "Light Red").apply();
+                        current.setText("Selected: Light Red");
+                    });
+                    v.findViewById(R.id.tpRedDark).setOnClickListener(v17 -> {
+                        prefs.edit().putString("gfTheme", "Dark Red").apply();
+                        current.setText("Selected: Dark Red");
+                    });
+                    v.findViewById(R.id.tpGreenLight).setOnClickListener(v16 -> {
+                        prefs.edit().putString("gfTheme", "Light Green").apply();
+                        current.setText("Selected: Light Green");
+                    });
+                    v.findViewById(R.id.tpGreenDark).setOnClickListener(v15 -> {
+                        prefs.edit().putString("gfTheme", "Dark Green").apply();
+                        current.setText("Selected: Dark Green");
+                    });
+                    v.findViewById(R.id.tpOrangeLight).setOnClickListener(v14 -> {
+                        prefs.edit().putString("gfTheme", "Light Orange").apply();
+                        current.setText("Selected: Light Orange");
+                    });
+                    v.findViewById(R.id.tpOrangeDark).setOnClickListener(v13 -> {
+                        prefs.edit().putString("gfTheme", "Dark Orange").apply();
+                        current.setText("Selected: Dark Orange");
+                    });
+                    v.findViewById(R.id.tpPurpleLight).setOnClickListener(v12 -> {
+                        prefs.edit().putString("gfTheme", "Light Purple").apply();
+                        current.setText("Selected: Light Purple");
+                    });
+                    v.findViewById(R.id.tpPurpleDark).setOnClickListener(v1 -> {
+                        prefs.edit().putString("gfTheme", "Dark Purple").apply();
+                        current.setText("Selected: Dark Purple");
+                    });
 
-                        current.setText("Selected: " + prefs.getString("gfTheme", "Light Blue"));
+                    current.setText("Selected: " + prefs.getString("gfTheme", "Light Blue"));
 
-                        b.setPositiveButton("OK", null);
+                    b.setPositiveButton("OK", null);
 
-                        b.show();
-                        return true;
-                    }
+                    b.show();
+                    return true;
                 });
             }
             /*
@@ -675,50 +609,40 @@ public class HeaderSettings extends PreferenceActivity {
              */
             else if ("general".equals(settings)) {
                 addPreferencesFromResource(R.xml.prefsgeneral);
-                findPreference("backupSettings").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        AlertDialog.Builder bb = new AlertDialog.Builder(getActivity());
-                        bb.setTitle("Backup Settings");
-                        bb.setMessage("Are you sure you want to back up your settings? This will " +
-                                "overwrite any previous backup, and passwords are stored as plain " +
-                                "text. This also requires permission to write to the SD card, which " +
-                                "will be requested if necessary when you press yes.");
-                        bb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                                    ((HeaderSettings) getActivity()).backupSettings();
-                                else
-                                    checkForWritePermissions();
-                            }
-                        });
-                        bb.setNegativeButton("Cancel", null);
-                        bb.create().show();
-                        return true;
-                    }
+                findPreference("backupSettings").setOnPreferenceClickListener(preference -> {
+                    AlertDialog.Builder bb = new AlertDialog.Builder(getActivity());
+                    bb.setTitle("Backup Settings");
+                    bb.setMessage("Are you sure you want to back up your settings? This will " +
+                            "overwrite any previous backup, and passwords are stored as plain " +
+                            "text. This also requires permission to write to the SD card, which " +
+                            "will be requested if necessary when you press yes.");
+                    bb.setPositiveButton("Yes", (dialog, which) -> {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+                            ((HeaderSettings) getActivity()).backupSettings();
+                        else
+                            checkForWritePermissions();
+                    });
+                    bb.setNegativeButton("Cancel", null);
+                    bb.create().show();
+                    return true;
                 });
 
-                findPreference("restoreSettings").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        AlertDialog.Builder rb = new AlertDialog.Builder(getActivity());
-                        rb.setTitle("Restore Settings");
-                        rb.setMessage("Are you sure you want to restore your settings? This will " +
-                                "wipe any previously added accounts. This also requires permission " +
-                                "to read from the SD card, which will be requested if necessary " +
-                                "when you press yes.");
-                        rb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                                    ((HeaderSettings) getActivity()).restoreSettings();
-                                else
-                                    checkForReadPermissions();
-                            }
-                        });
-                        rb.setNegativeButton("Cancel", null);
-                        rb.create().show();
-                        return true;
-                    }
+                findPreference("restoreSettings").setOnPreferenceClickListener(preference -> {
+                    AlertDialog.Builder rb = new AlertDialog.Builder(getActivity());
+                    rb.setTitle("Restore Settings");
+                    rb.setMessage("Are you sure you want to restore your settings? This will " +
+                            "wipe any previously added accounts. This also requires permission " +
+                            "to read from the SD card, which will be requested if necessary " +
+                            "when you press yes.");
+                    rb.setPositiveButton("Yes", (dialog, which) -> {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+                            ((HeaderSettings) getActivity()).restoreSettings();
+                        else
+                            checkForReadPermissions();
+                    });
+                    rb.setNegativeButton("Cancel", null);
+                    rb.create().show();
+                    return true;
                 });
             }
         }

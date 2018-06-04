@@ -57,14 +57,11 @@ public class PMRowView extends BaseRowView {
             timeTextSize = time.getTextSize();
         }
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (myData.isFromInbox())
-                    AllInOneV2.get().getSession().get(NetDesc.PM_INBOX_DETAIL, myData.getUrl());
-                else
-                    AllInOneV2.get().getSession().get(NetDesc.PM_OUTBOX_DETAIL, myData.getUrl());
-            }
+        setOnClickListener(v -> {
+            if (myData.isFromInbox())
+                AllInOneV2.get().getSession().get(NetDesc.PM_INBOX_DETAIL, myData.getUrl());
+            else
+                AllInOneV2.get().getSession().get(NetDesc.PM_OUTBOX_DETAIL, myData.getUrl());
         });
     }
 

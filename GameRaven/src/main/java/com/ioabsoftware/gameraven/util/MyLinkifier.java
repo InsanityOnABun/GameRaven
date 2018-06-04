@@ -89,34 +89,30 @@ public class MyLinkifier {
      *  Filters out web URL matches that occur after an at-sign (@).  This is
      *  to prevent turning the domain name in an email address into a web link.
      */
-    public static final MatchFilter sUrlMatchFilter = new MatchFilter() {
-        public final boolean acceptMatch(CharSequence s, int start, int end) {
-            if (start == 0) {
-                return true;
-            }
-
-            return s.charAt(start - 1) != '@';
+    public static final MatchFilter sUrlMatchFilter = (s, start, end) -> {
+        if (start == 0) {
+            return true;
         }
+
+        return s.charAt(start - 1) != '@';
     };
 
     /**
      *  Filters out URL matches that don't have enough digits to be a
      *  phone number.
      */
-    public static final MatchFilter sPhoneNumberMatchFilter = new MatchFilter() {
-        public final boolean acceptMatch(CharSequence s, int start, int end) {
-            int digitCount = 0;
+    public static final MatchFilter sPhoneNumberMatchFilter = (s, start, end) -> {
+        int digitCount = 0;
 
-            for (int i = start; i < end; i++) {
-                if (Character.isDigit(s.charAt(i))) {
-                    digitCount++;
-                    if (digitCount >= PHONE_NUMBER_MINIMUM_DIGITS) {
-                        return true;
-                    }
+        for (int i = start; i < end; i++) {
+            if (Character.isDigit(s.charAt(i))) {
+                digitCount++;
+                if (digitCount >= PHONE_NUMBER_MINIMUM_DIGITS) {
+                    return true;
                 }
             }
-            return false;
         }
+        return false;
     };
 
     /**
@@ -126,11 +122,7 @@ public class MyLinkifier {
      *  &apos;+1 (919) 555-1212&apos;
      *  becomes &apos;+19195551212&apos;
      */
-    public static final TransformFilter sPhoneNumberTransformFilter = new TransformFilter() {
-        public final String transformUrl(final Matcher match, String url) {
-            return Patterns.digitsAndPlusOnly(match);
-        }
-    };
+    public static final TransformFilter sPhoneNumberTransformFilter = (match, url) -> Patterns.digitsAndPlusOnly(match);
 
     /**
      *  MatchFilter enables client code to have more control over

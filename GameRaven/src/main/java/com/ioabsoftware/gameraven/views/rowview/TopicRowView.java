@@ -82,35 +82,19 @@ public class TopicRowView extends BaseRowView {
             buttonTextSize = rightButton.getTextSize();
         }
 
-        lastPostListener = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AllInOneV2.get().enableGoToUrlDefinedPost();
-                AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getLastPostUrl());
-            }
+        lastPostListener = v -> {
+            AllInOneV2.get().enableGoToUrlDefinedPost();
+            AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getLastPostUrl());
         };
 
-        untrackListener = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AllInOneV2.get().getSession().get(NetDesc.TRACKED_TOPICS, myData.getUntrackUrl());
-            }
-        };
+        untrackListener = v -> AllInOneV2.get().getSession().get(NetDesc.TRACKED_TOPICS, myData.getUntrackUrl());
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getUrl());
-            }
-        });
+        setOnClickListener(v -> AllInOneV2.get().getSession().get(NetDesc.TOPIC, myData.getUrl()));
 
-        setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                String url = myData.getUrl().substring(0, myData.getUrl().lastIndexOf('/'));
-                AllInOneV2.get().getSession().get(NetDesc.BOARD, url);
-                return true;
-            }
+        setOnLongClickListener(v -> {
+            String url = myData.getUrl().substring(0, myData.getUrl().lastIndexOf('/'));
+            AllInOneV2.get().getSession().get(NetDesc.BOARD, url);
+            return true;
         });
     }
 

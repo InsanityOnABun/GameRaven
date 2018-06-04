@@ -53,21 +53,18 @@ public class BoardRowView extends BaseRowView {
             descTextSize = desc.getTextSize();
         }
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (myData.getUrl() == null) {
-                    AlertDialog.Builder b = new AlertDialog.Builder(BoardRowView.this.getContext());
-                    b.setTitle("Cannot Access " + myData.getName());
-                    b.setMessage(myData.getName() +
-                            " cannot be accessed, most likely due to user level requirements.");
-                    b.setPositiveButton("Ok", null);
-                    b.create().show();
-                } else {
-                    NetDesc desc = (myData.getBoardType() == BoardRowData.BoardType.EXPLORER_LINK ?
-                            NetDesc.BOARDS_EXPLORE : NetDesc.BOARD);
-                    AllInOneV2.get().getSession().get(desc, myData.getUrl());
-                }
+        setOnClickListener(v -> {
+            if (myData.getUrl() == null) {
+                AlertDialog.Builder b = new AlertDialog.Builder(BoardRowView.this.getContext());
+                b.setTitle("Cannot Access " + myData.getName());
+                b.setMessage(myData.getName() +
+                        " cannot be accessed, most likely due to user level requirements.");
+                b.setPositiveButton("Ok", null);
+                b.create().show();
+            } else {
+                NetDesc desc = (myData.getBoardType() == BoardRowData.BoardType.EXPLORER_LINK ?
+                        NetDesc.BOARDS_EXPLORE : NetDesc.BOARD);
+                AllInOneV2.get().getSession().get(desc, myData.getUrl());
             }
         });
     }

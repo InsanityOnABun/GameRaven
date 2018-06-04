@@ -445,13 +445,10 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             "Redirect: " + resUrl);
 
                     final String path = resUrl;
-                    b.setPositiveButton("Open Page In Browser", new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
-                            aio.startActivity(browserIntent);
-                            aio.finish();
-                        }
+                    b.setPositiveButton("Open Page In Browser", (dialog, which) -> {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
+                        aio.startActivity(browserIntent);
+                        aio.finish();
                     });
 
                     b.create().show();
@@ -484,20 +481,17 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                     b.setView(wrapper);
 
-                    b.setPositiveButton("Login", new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            HashMap<String, List<String>> loginData = new HashMap<>();
-                            // "EMAILADDR", user, "PASSWORD", password, "path", lastPath, "key", key
-                            loginData.put("EMAILADDR", Collections.singletonList(user));
-                            loginData.put("PASSWORD", Collections.singletonList(password));
-                            loginData.put("path", Collections.singletonList(GF_URLS.ROOT));
-                            loginData.put("key", Collections.singletonList(key));
-                            loginData.put("recaptcha_challenge_field", Collections.singletonList(form.getText().toString()));
-                            loginData.put("recaptcha_response_field", Collections.singletonList("manual_challenge"));
+                    b.setPositiveButton("Login", (dialog, which) -> {
+                        HashMap<String, List<String>> loginData = new HashMap<>();
+                        // "EMAILADDR", user, "PASSWORD", password, "path", lastPath, "key", key
+                        loginData.put("EMAILADDR", Collections.singletonList(user));
+                        loginData.put("PASSWORD", Collections.singletonList(password));
+                        loginData.put("path", Collections.singletonList(GF_URLS.ROOT));
+                        loginData.put("key", Collections.singletonList(key));
+                        loginData.put("recaptcha_challenge_field", Collections.singletonList(form.getText().toString()));
+                        loginData.put("recaptcha_response_field", Collections.singletonList("manual_challenge"));
 
-                            post(NetDesc.LOGIN_S2, "/user/login_captcha.html", loginData);
-                        }
+                        post(NetDesc.LOGIN_S2, "/user/login_captcha.html", loginData);
                     });
 
                     b.create().show();
@@ -1174,19 +1168,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
         b.setTitle("Post Warning");
         b.setMessage(msg);
 
-        b.setPositiveButton("Post anyway", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                post(desc, path, data);
-            }
-        });
+        b.setPositiveButton("Post anyway", (dialog, which) -> post(desc, path, data));
 
-        b.setNegativeButton("Cancel", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                aio.postExecuteCleanup(desc);
-            }
-        });
+        b.setNegativeButton("Cancel", (dialog, which) -> aio.postExecuteCleanup(desc));
 
         Dialog d = b.create();
         d.setCancelable(false);
