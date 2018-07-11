@@ -62,7 +62,6 @@ import com.ioabsoftware.gameraven.util.DocumentParser;
 import com.ioabsoftware.gameraven.util.Theming;
 import com.ioabsoftware.gameraven.views.BaseRowData;
 import com.ioabsoftware.gameraven.views.BaseRowData.ReadStatus;
-import com.ioabsoftware.gameraven.views.MarqueeToolbar;
 import com.ioabsoftware.gameraven.views.ViewAdapter;
 import com.ioabsoftware.gameraven.views.rowdata.BoardRowData;
 import com.ioabsoftware.gameraven.views.rowdata.BoardRowData.BoardType;
@@ -300,7 +299,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         AccountManager.init(this);
 
-        setSupportActionBar((MarqueeToolbar) findViewById(R.id.aioToolbar));
+        setSupportActionBar(findViewById(R.id.aioToolbar));
         ActionBar aBar = getSupportActionBar();
         assert aBar != null : "Action bar is null";
 
