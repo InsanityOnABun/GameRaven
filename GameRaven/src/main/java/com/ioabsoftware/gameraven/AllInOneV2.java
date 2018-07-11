@@ -2027,7 +2027,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                         if (canUpdateFlair) {
                             updateTopicFlairs = new LinkedHashMap<>();
-                            Elements flairs = doc.selectFirst("select[name=flair]").select("option");
+                            Elements flairs = doc.selectFirst("div.flair_dialog").select("option");
 
                             int currFlair = 0;
                             for (Element e : flairs) {
@@ -2952,7 +2952,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     flairUpdater.setSingleChoiceItems(flairNames, currTopicFlair, (dialog, which) -> {
                         if (which != currTopicFlair) {
                             HashMap<String, List<String>> flairData = new HashMap<>();
-                            flairData.put("flair", Collections.singletonList(flairKeys[which]));
+                            flairData.put("target_id", Collections.singletonList(flairKeys[which]));
                             flairData.put("action", Collections.singletonList("flair_update"));
                             flairData.put("key", Collections.singletonList(session.getSessionKey()));
                             session.post(NetDesc.TOPIC_UPDATE_FLAIR,
