@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -42,7 +43,7 @@ public class NotifierJobService extends SimpleJobService {
     public static final int NOTIF_ID = 1;
 
     private static NotificationManager notifManager;
-    private static Notification.Builder notifBuilder;
+    private static NotificationCompat.Builder notifBuilder;
 
     @Override
     public int onRunJob(JobParameters job) {
@@ -164,14 +165,15 @@ public class NotifierJobService extends SimpleJobService {
 
                     if (triggerNotif) {
                         initNotifManagerAndBuilder();
-                        notifBuilder.setSmallIcon(R.drawable.ic_notif_small)
-                                .setContentTitle("GameRaven")
-                                .setContentText(notifMsg);
                         Intent notifIntent = new Intent(this, AllInOneV2.class);
                         PendingIntent pendingNotif = PendingIntent.getActivity(this, 0, notifIntent, PendingIntent.FLAG_ONE_SHOT);
-                        notifBuilder.setContentIntent(pendingNotif);
-                        notifBuilder.setAutoCancel(true);
-                        notifBuilder.setDefaults(Notification.DEFAULT_ALL);
+
+                        notifBuilder.setSmallIcon(R.drawable.ic_notif_small)
+                                .setContentTitle("GameRaven")
+                                .setContentText(notifMsg)
+                                .setContentIntent(pendingNotif)
+                                .setAutoCancel(true)
+                                .setDefaults(Notification.DEFAULT_ALL);
 
                         notifManager.notify(null, NOTIF_ID, notifBuilder.build());
                     }
@@ -207,10 +209,9 @@ public class NotifierJobService extends SimpleJobService {
             mChannel.enableLights(false);
             mChannel.enableVibration(false);
             notifManager.createNotificationChannel(mChannel);
-            notifBuilder = new Notification.Builder(this, getString(R.string.app_name));
-        } else {
-            notifBuilder = new Notification.Builder(this);
         }
+
+            notifBuilder = new NotificationCompat.Builder(this, getString(R.string.app_name));
     }
 
     public static void dispatchJob(Context c, int notifFreqInSeconds, boolean shouldReplace) {
