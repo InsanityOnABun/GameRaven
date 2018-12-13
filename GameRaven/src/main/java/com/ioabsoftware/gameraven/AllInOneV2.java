@@ -1895,9 +1895,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 wtl(tlUrl);
                 setMenuItemVisibility(topicListIcon, true);
 
-                Element headerElem = doc.getElementsByClass("title").first();
+                Element headerElem = doc.selectFirst("h1.page-title");
                 if (headerElem != null)
-                    headerTitle = headerElem.text();
+                    headerTitle = headerElem.ownText();
                 else
                     headerTitle = "GFAQs Cache Error, Title Not Found";
 
