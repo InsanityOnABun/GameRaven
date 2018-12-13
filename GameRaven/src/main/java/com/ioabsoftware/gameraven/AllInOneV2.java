@@ -25,7 +25,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.format.Time;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -79,7 +78,6 @@ import com.ioabsoftware.gameraven.views.rowview.MessageRowView;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialCommunityIcons;
 import com.joanzapata.iconify.fonts.MaterialIcons;
-import com.koushikdutta.ion.Ion;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -559,47 +557,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         swipeRefreshLayout.setEnabled(settings.getBoolean("enablePTR", false));
         contentList.setFastScrollEnabled(settings.getBoolean("enableFastScroll", true));
-
-        int lastUpdateYear = settings.getInt("lastUpdateYear", 0);
-        int lastUpdateYearDay = settings.getInt("lastUpdateYearDay", 0);
-        @SuppressWarnings("deprecation") Time now = new Time();
-        now.setToNow();
-        if (lastUpdateYear != now.year || lastUpdateYearDay != now.yearDay) {
-            wtl("checking for update");
-            try {
-                wtl("my version is " + BuildConfig.VERSION_CODE);
-                Ion.with(this)
-                        .load("GET", "http://ioabsoftware.com/gameraven/latest.txt")
-                        .asString()
-                        .setCallback((e, result) -> {
-                            if (NumberUtils.isCreatable(result)) {
-                                int netVersion = Integer.valueOf(result);
-                                wtl("net version is " + netVersion);
-
-                                if (netVersion > BuildConfig.VERSION_CODE) {
-                                    AlertDialog.Builder b = new AlertDialog.Builder(AllInOneV2.this);
-                                    b.setTitle("New Version Found");
-                                    b.setMessage("Open Google Play Market to download new version? Note that although " +
-                                            "care is taken to make sure this notification only goes out once the update " +
-                                            "has spread to all Google servers, there is still a chance the update may not " +
-                                            "show up in the Play Store at first. Rest assured, there is a new version. " +
-                                            "It just hasn't reached your local Google Play server yet.");
-                                    b.setPositiveButton("Yes", (dialog, which) -> {
-                                        Intent i = new Intent(Intent.ACTION_VIEW);
-                                        i.setData(Uri.parse("market://details?id=com.ioabsoftware.gameraven"));
-                                        AllInOneV2.this.startActivity(i);
-                                    });
-                                    b.setNegativeButton("No", null);
-                                    b.show();
-                                }
-                            }
-                        });
-
-                settings.edit().putInt("lastUpdateYear", now.year).putInt("lastUpdateYearDay", now.yearDay).apply();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
 
         if (Theming.updateTextScale(settings.getInt("textScale", 100) / 100f)) {
             int px = TypedValue.COMPLEX_UNIT_PX;
