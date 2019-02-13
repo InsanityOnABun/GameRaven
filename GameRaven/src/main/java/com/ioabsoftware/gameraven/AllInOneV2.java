@@ -522,7 +522,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             else if (pMode == PostMode.NEW_PM)
                 pmSetup(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
         });
-        fab.setVisibility(View.GONE);
+        fab.hide();
 
         AppRater.app_launched(this);
 
@@ -1060,9 +1060,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         setMenuItemVisibility(filterFlairsIcon, visible);
 
         if (visible)
-            fab.setVisibility(View.VISIBLE);
+            fab.show();
         else
-            fab.setVisibility(View.GONE);
+            fab.hide();
     }
 
     private void setAllMenuItemsEnabled(boolean enabled) {
@@ -1212,7 +1212,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             flairForNewTopic = 1;
             messageIDForEditing = null;
 
-            fab.setVisibility(View.VISIBLE);
+            fab.show();
 
             hideSoftKeyboard(postBody);
 
@@ -1474,7 +1474,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     adapterRows.add(new HeaderRowData("There are no private messages here at this time."));
                 }
 
-                fab.setVisibility(View.VISIBLE);
+                fab.show();
                 pMode = PostMode.NEW_PM;
 
                 if (isInbox)
@@ -2390,12 +2390,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     private void updatePostingRights(Document pRes, boolean onTopic) {
         if (onTopic) {
             if (pRes.getElementsByClass("user").first().text().contains("Post New Message")) {
-                fab.setVisibility(View.VISIBLE);
+                fab.show();
                 pMode = PostMode.ON_TOPIC;
             }
         } else {
             if (pRes.getElementsByClass("user").first().text().contains("New Topic")) {
-                fab.setVisibility(View.VISIBLE);
+                fab.show();
                 pMode = PostMode.ON_BOARD;
             }
         }
@@ -2560,7 +2560,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     private void postSetup(boolean postingOnTopic) {
         findViewById(R.id.aioHTMLScroller).scrollTo(0, 0);
         pageJumperWrapper.setVisibility(View.GONE);
-        fab.setVisibility(View.GONE);
+        fab.hide();
         postSubmitButton.setEnabled(true);
         postCancelButton.setEnabled(true);
 
