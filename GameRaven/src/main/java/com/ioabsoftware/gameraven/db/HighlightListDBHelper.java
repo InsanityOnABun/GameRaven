@@ -1,6 +1,5 @@
 package com.ioabsoftware.gameraven.db;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
@@ -153,7 +154,7 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
      * @param listener Optional listener to be fired just before the dialog gets dismissed on successful save.
      */
     @SuppressWarnings("ConstantConditions")
-    public static void showHighlightUserDialog(final Activity activity, final HighlightedUser user,
+    public static void showHighlightUserDialog(final AppCompatActivity activity, final HighlightedUser user,
                                                String username, final HlUDDismissListener listener) {
         final boolean isAddNew = (user == null || user.getID() == -1);
 
@@ -188,7 +189,7 @@ public class HighlightListDBHelper extends SQLiteOpenHelper {
 
                 }
             });
-            cpd.show(activity.getFragmentManager(), "color-picker-dialog");
+            cpd.show(activity.getSupportFragmentManager(), "color-picker-dialog");
         });
 
         if (!isAddNew) {
