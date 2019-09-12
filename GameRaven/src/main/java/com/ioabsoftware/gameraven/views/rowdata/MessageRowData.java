@@ -341,6 +341,12 @@ public class MessageRowData extends BaseRowData {
             v.html(url);
         }
 
+        // test removal of data elements in cite tag
+        Elements cites = messageIn.select("cite[data-quote-id]");
+        for (Element cite : cites) {
+            cite.removeAttr("data-quote-id").removeAttr("data-user-id");
+        }
+
         unprocessedMessageText = messageIn.html() + sigHtml;
 
         AllInOneV2.wtl("creating ssb");
