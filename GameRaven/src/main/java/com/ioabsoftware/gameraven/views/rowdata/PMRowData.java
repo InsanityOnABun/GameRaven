@@ -55,8 +55,8 @@ public class PMRowData extends BaseRowData {
                 "\nsender: " + sender +
                 "\ntime: " + time +
                 "\nurl: " + url +
-                "\nisOld: " + String.valueOf(isOld) +
-                "\nisFromInbox: " + String.valueOf(isFromInbox);
+                "\nisOld: " + isOld +
+                "\nisFromInbox: " + isFromInbox;
     }
 
 }

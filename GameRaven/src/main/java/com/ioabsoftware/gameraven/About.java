@@ -6,12 +6,13 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.ioabsoftware.gameraven.util.Theming;
 import com.joanzapata.iconify.Iconify;
@@ -36,7 +37,7 @@ public class About extends AppCompatActivity {
 
         Theming.colorOverscroll(this);
 
-        setSupportActionBar((android.support.v7.widget.Toolbar) findViewById(R.id.abtToolbar));
+        setSupportActionBar(findViewById(R.id.abtToolbar));
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -48,7 +49,7 @@ public class About extends AppCompatActivity {
             String verName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
             String buildNumLabel = getString(R.string.buildNumber);
             int verCode = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionCode;
-            String verString = versionLabel + " " + verName + "\n" + buildNumLabel + " " + String.valueOf(verCode);
+            String verString = versionLabel + " " + verName + "\n" + buildNumLabel + " " + verCode;
             ((TextView) findViewById(R.id.abtBuildVer)).setText(verString);
         } catch (NameNotFoundException e) {
             ((TextView) findViewById(R.id.abtBuildVer)).setText(R.string.versionNotSet);

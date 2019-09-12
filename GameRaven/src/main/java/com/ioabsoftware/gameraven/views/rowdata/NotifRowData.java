@@ -42,7 +42,7 @@ public class NotifRowData extends BaseRowData {
         return "title: " + title +
                 "\ntime: " + time +
                 "\nurl: " + url +
-                "\nisOld: " + String.valueOf(isOld);
+                "\nisOld: " + isOld;
     }
 
 }

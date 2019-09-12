@@ -26,13 +26,13 @@ public class History {
     }
 
 
-    private int vertPos[];
+    private int[] vertPos;
 
     public int[] getVertPos() {
         return vertPos;
     }
 
-    public History(String pathIn, NetDesc descIn, byte[] resBodyAsBytesIn, int vertPosIn[]) {
+    public History(String pathIn, NetDesc descIn, byte[] resBodyAsBytesIn, int[] vertPosIn) {
         path = pathIn;
         desc = descIn;
         resBodyAsBytes = resBodyAsBytesIn;
