@@ -226,6 +226,10 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
         return myData.getMessageID();
     }
 
+    public String getUserID() {
+        return myData.getUserID();
+    }
+
     public String getUser() {
         return myData.getUser();
     }

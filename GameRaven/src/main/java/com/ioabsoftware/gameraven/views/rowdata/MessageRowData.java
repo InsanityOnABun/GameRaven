@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
@@ -42,7 +44,7 @@ import java.util.List;
 
 public class MessageRowData extends BaseRowData {
 
-    private String username, userTitles, avatarUrl, postNum, postTime, messageID, boardID, topicID;
+    private String username, userTitles, avatarUrl, postNum, postTime, messageID, boardID, topicID, userID;
     private final String unprocessedMessageText;
 
     private LinearLayout poll = null;
@@ -124,6 +126,10 @@ public class MessageRowData extends BaseRowData {
         return boardID;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
     public boolean canReport() {
         return canReport;
     }
@@ -195,8 +201,8 @@ public class MessageRowData extends BaseRowData {
 
     public MessageRowData(String userIn, String userTitlesIn, String avatarUrlIn, String postNumIn,
                           String postTimeIn, Element messageIn, String BID, String TID, String MID,
-                          int hlColorIn, boolean cReport, boolean cDelete, boolean cEdit,
-                          boolean cQuote, boolean cUpdateFlair) {
+                          String UID, int hlColorIn, boolean cReport, boolean cDelete,
+                          boolean cEdit, boolean cQuote, boolean cUpdateFlair) {
 
         if (aio == null || aio != AllInOneV2.get())
             aio = AllInOneV2.get();
@@ -210,6 +216,7 @@ public class MessageRowData extends BaseRowData {
         boardID = BID;
         topicID = TID;
         messageID = MID;
+        userID = UID;
         hlColor = hlColorIn;
 
         canReport = cReport;
@@ -341,16 +348,18 @@ public class MessageRowData extends BaseRowData {
             v.html(url);
         }
 
-        // test removal of data elements in cite tag
+        unprocessedMessageText = messageIn.html() + sigHtml;
+
+        // remove data elements in cite tag for spannedMessage building
         Elements cites = messageIn.select("cite[data-quote-id]");
         for (Element cite : cites) {
             cite.removeAttr("data-quote-id").removeAttr("data-user-id");
         }
 
-        unprocessedMessageText = messageIn.html() + sigHtml;
+        String msgForSSB = messageIn.html() + sigHtml;
 
         AllInOneV2.wtl("creating ssb");
-        SpannableStringBuilder ssb = new SpannableStringBuilder(processContent(false, true));
+        SpannableStringBuilder ssb = new SpannableStringBuilder(processContent(false, true, msgForSSB));
 
         AllInOneV2.wtl("adding bold spans");
         addGenericSpans(ssb, "<b>", "</b>", new StyleSpan(Typeface.BOLD));
@@ -506,15 +515,20 @@ public class MessageRowData extends BaseRowData {
     }
 
     public String getMessageForQuoting() {
-        return processContent(true, false);
+        return processContent(true, false, null);
     }
 
     public String getMessageForEditing() {
-        return processContent(true, false);
+        return processContent(true, false, null);
     }
 
-    private String processContent(boolean removeSig, boolean ignoreLtGt) {
-        String finalBody = unprocessedMessageText;
+    private String processContent(boolean removeSig, boolean ignoreLtGt, @Nullable String altText) {
+        String finalBody;
+        if (altText == null) {
+            finalBody = unprocessedMessageText;
+        } else {
+            finalBody = altText;
+        }
 
         AllInOneV2.wtl("beginning opening anchor tag removal");
         while (finalBody.contains("<a ")) {

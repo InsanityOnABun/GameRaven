@@ -19,7 +19,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -45,6 +44,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -539,6 +539,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     @Override
     protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         if (intent.getData() != null && intent.getData().getPath() != null) {
             String url = intent.getData().getPath();
             NetDesc desc = Session.determineNetDesc(url);
@@ -707,10 +708,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void toggleMenu() {
-        if (drawerLayout.isDrawerOpen(Gravity.START))
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawers();
         else
-            drawerLayout.openDrawer(Gravity.START);
+            drawerLayout.openDrawer(GravityCompat.START);
     }
 
     @Override
@@ -1935,6 +1936,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         String postNum;
                         String postTime;
                         String mID = null;
+                        String uID;
                         String userTitles = EMPTY_STRING;
                         Element msgBody;
 
@@ -1953,6 +1955,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                             userTitles += " (" + userTag.text() + ")";
 
                         postTime = infoBox.select("span.post_time").first().text();
+
+                        Element userSubmenu = infoBox.selectFirst("div.user_submenu");
+                        uID = userSubmenu.attr("data-userid");
 
                         Element number = infoBox.select("span.message_num").first();
                         postNum = number.text();
@@ -2014,7 +2019,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                         wtl("creating messagerowdata object");
                         adapterRows.add(new MessageRowData(user, userTitles, avatarUrl, postNum,
-                                postTime, msgBody, boardID, topicID, mID, hlColor, canReport,
+                                postTime, msgBody, boardID, topicID, mID, uID, hlColor, canReport,
                                 canDelete, canEdit, canQuote, canUpdateFlair));
                     } else {
                         String postNum = row.select("span.message_num").first().text();
@@ -2051,13 +2056,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     Element currRow = msgRows.get(x);
                     Element msgInfobox = currRow.select("div.msg_infobox").first();
                     Element msgBody = currRow.select("div.msg_body").first();
-
                     String user = msgInfobox.getElementsByTag("b").first().text();
                     String postTime = msgInfobox.select("span.post_time").first().text();
 
                     msg = new MessageRowData(user, EMPTY_STRING, EMPTY_STRING,
                             "#" + (msgRowCount - x), postTime, msgBody, boardID, topicID,
-                            mID, 0, false, false, false, false, false);
+                            mID, EMPTY_STRING, 0, false, false, false, false, false);
                     msg.disableTopClick();
                     adapterRows.add(msg);
                 }
@@ -2540,9 +2544,11 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         postSetup(true);
     }
 
-    private void quoteSetup(String user, String msg) {
+    private void quoteSetup(String user, String msg, String mID, String uID) {
         wtl("quoteSetup fired");
-        String quotedMsg = "<cite>" + user + " posted...</cite>\n" + "<quote>" + msg + "</quote>\n";
+        // <cite data-quote-id="925122238" data-user-id="3705639">
+        String openCite = "<cite data-quote-id=\"" + mID + "\" data-user-id=\"" + uID + "\">";
+        String quotedMsg = openCite + user + " posted...</cite>\n" + "<quote>" + msg + "</quote>\n";
 
         int start = Math.max(postBody.getSelectionStart(), 0);
         int end = Math.max(postBody.getSelectionEnd(), 0);
@@ -2897,7 +2903,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     break;
                 case "Quote":
                     String msg = (quoteSelection != null ? quoteSelection : clickedMsg.getMessageForQuoting());
-                    quoteSetup(clickedMsg.getUser(), msg);
+                    quoteSetup(clickedMsg.getUser(), msg, clickedMsg.getMessageID(), clickedMsg.getUserID());
                     break;
                 case "Edit":
                     editPostSetup(clickedMsg.getMessageForEditing(), clickedMsg.getMessageID());
@@ -3221,7 +3227,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     public void onBackPressed() {
         if (searchIcon != null && searchIcon.isActionViewExpanded()) {
             searchIcon.collapseActionView();
-        } else if (drawerLayout.isDrawerOpen(Gravity.START)) {
+        } else if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawers();
         } else if (postWrapper.getVisibility() == View.VISIBLE) {
             postCancel(postCancelButton);
