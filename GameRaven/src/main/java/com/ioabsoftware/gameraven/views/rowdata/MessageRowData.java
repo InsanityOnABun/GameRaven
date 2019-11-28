@@ -258,7 +258,7 @@ public class MessageRowData extends BaseRowData {
 
             poll.addView(pollInnerWrapper);
 
-            if (pollElem.getElementsByTag("form").isEmpty()) {
+            if (pollElem.getElementsByTag("input").isEmpty()) {
                 // poll has been voted in
                 // poll_foot_left
                 TextView t;
@@ -326,6 +326,7 @@ public class MessageRowData extends BaseRowData {
 
             // remove the poll element so it doesn't get put in unprocessedMessageText
             messageIn.getElementsByClass("board_poll").first().remove();
+            messageIn.getElementsByTag("script").last().remove();
         }
 
         Elements images = messageIn.select("a.img_container");
