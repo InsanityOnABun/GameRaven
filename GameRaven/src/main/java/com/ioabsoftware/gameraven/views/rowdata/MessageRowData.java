@@ -11,7 +11,9 @@ import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.UnderlineSpan;
 import android.text.util.Linkify;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ import androidx.annotation.Nullable;
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
+import com.ioabsoftware.gameraven.networking.NetDesc;
 import com.ioabsoftware.gameraven.networking.Session;
 import com.ioabsoftware.gameraven.util.MyLinkifier;
 import com.ioabsoftware.gameraven.util.Theming;
@@ -35,6 +38,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class MessageRowData extends BaseRowData {
 
@@ -237,9 +243,7 @@ public class MessageRowData extends BaseRowData {
 
             // Check if poll has been voted in, remove relevant html elements so
             // they don't get put in unprocessedMessageText
-            boolean notVoted = false;
             if (messageIn.getElementById("poll_vote") != null) {
-                notVoted = true;
                 messageIn.getElementById("poll_vote").remove();
                 messageIn.getElementsByTag("script").last().remove();
             }
@@ -274,7 +278,7 @@ public class MessageRowData extends BaseRowData {
                 optTitles[x] = e.getElementsByClass("poll_opt").first().text();
                 optPercents[x] = e.getElementsByClass("poll_pct").first().ownText();
                 optVotes[x] = e.getElementsByClass("poll_votes").first().text();
-                if (e.getElementsByTag("b").isEmpty()) {
+                if (!e.getElementsByTag("b").isEmpty()) {
                     myRegisteredVote = x;
                 }
                 x++;
@@ -283,49 +287,44 @@ public class MessageRowData extends BaseRowData {
             if (myRegisteredVote == -1) {
                 // poll has NOT been voted in
 
-                // code from previous not voted yet block
-//                final String action = "/boards/" + boardID + "/" + topicID;
-//                String key = pollElem.getElementsByAttributeValue("name", "key").attr("value");
-//
-//                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-//                        ViewGroup.LayoutParams.MATCH_PARENT, Theming.convertDPtoPX(1));
-//                int x = 0;
-//                for (Element e : pollElem.getElementsByAttributeValue("name", "poll_vote")) {
-//                    if (x > 0) {
-//                        View v = new View(aio);
-//                        v.setLayoutParams(lp);
-//                        v.setBackgroundColor(Theming.colorPrimary());
-//                        pollInnerWrapper.addView(v);
-//                    }
-//                    x++;
-//                    Button b = new Button(aio);
-//                    b.setBackgroundDrawable(Theming.selectableItemBackground());
-//                    b.setText(e.nextElementSibling().text());
-//                    final HashMap<String, List<String>> data = new HashMap<String, List<String>>();
-//                    data.put("key", Collections.singletonList(key));
-//                    data.put("poll_vote", Collections.singletonList(String.valueOf(x)));
-//                    data.put("submit", Collections.singletonList("Vote"));
-//
-//                    b.setOnClickListener(v -> aio.getSession().post(NetDesc.TOPIC, action, data));
-//                    pollInnerWrapper.addView(b);
-//                }
-//
-//                View v = new View(aio);
-//                v.setLayoutParams(lp);
-//                v.setBackgroundColor(Theming.colorPrimary());
-//                pollInnerWrapper.addView(v);
-//
-//                Button b = new Button(aio);
-//                b.setBackgroundDrawable(Theming.selectableItemBackground());
-//                b.setText(R.string.view_results);
-//                b.setOnClickListener(v1 -> aio.getSession().get(NetDesc.TOPIC, action + "?results=1"));
-//                pollInnerWrapper.addView(b);
+                String key = pollElem.getElementsByAttributeValue("name", "key").attr("value");
+
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, Theming.convertDPtoPX(1));
+
+                for (int y = 0; y < rowCount; y++) {
+                    if (y > 0) {
+                        View v = new View(aio);
+                        v.setLayoutParams(lp);
+                        v.setBackgroundColor(Theming.colorPrimary());
+                        pollInnerWrapper.addView(v);
+                    }
+                    Button b = new Button(aio);
+                    b.setBackgroundDrawable(Theming.selectableItemBackground());
+                    b.setText(optTitles[y]);
+                    final HashMap<String, List<String>> data = new HashMap<>();
+                    data.put("option", Collections.singletonList(String.valueOf(y + 1)));
+                    data.put("board", Collections.singletonList(boardID));
+                    data.put("topic", Collections.singletonList(topicID));
+                    data.put("message", Collections.singletonList("0"));
+                    data.put("key", Collections.singletonList(key));
+
+                    b.setOnClickListener(v -> aio.getSession().post(
+                            NetDesc.TOPIC_POLL_VOTE, "/ajax/forum_poll_vote", data));
+                    pollInnerWrapper.addView(b);
+                }
             } else {
                 // poll has been voted in
+
                 TextView t;
                 for (int y = 0; y < rowCount; y++) {
                     t = new TextView(aio);
-                    String text = optTitles[y] + " (" + optPercents[y] + ", " + optVotes[y] + ")";
+                    String text = optTitles[y] + " (" + optPercents[y] + ", " + optVotes[y];
+                    if (optVotes[y].equals("1")) {
+                        text += " vote)";
+                    } else {
+                        text += " votes)";
+                    }
                     if (y == myRegisteredVote) {
                         SpannableStringBuilder votedFor = new SpannableStringBuilder(text);
                         votedFor.setSpan(new StyleSpan(Typeface.BOLD), 0, text.length(), 0);
