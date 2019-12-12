@@ -1,13 +1,22 @@
 package com.ioabsoftware.gameraven.views.rowview;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.LevelListDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.os.AsyncTask;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.method.ArrowKeyMovementMethod;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -175,7 +184,17 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                     .error(R.drawable.avatar_default)
                     .load(myData.getAvatarUrl());
 
-        message.setText(myData.getSpannedMessage());
+//        message.setText(myData.getSpannedMessage());
+        Spanned spanned = Html.fromHtml(myData.getUnprocessedMessageText(), source -> {
+                    LevelListDrawable d = new LevelListDrawable();
+                    Drawable empty = getResources().getDrawable(R.drawable.abc_btn_check_material);;
+                    d.addLevel(0, 0, empty);
+                    d.setBounds(0, 0, empty.getIntrinsicWidth(), empty.getIntrinsicHeight());
+                    new ImageGetterAsyncTask(getContext(), source, d).execute(message);
+
+                    return d;
+                }, null);
+        message.setText(spanned);
 
         message.setMovementMethod(ArrowKeyMovementMethod.getInstance());
         message.setTextIsSelectable(true);
@@ -328,6 +347,47 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
             return true;
         }
 
+    }
+
+    class ImageGetterAsyncTask extends AsyncTask<TextView, Void, Bitmap> {
+        private LevelListDrawable levelListDrawable;
+        private Context context;
+        private String source;
+        private TextView t;
+
+        public ImageGetterAsyncTask(Context context, String source, LevelListDrawable levelListDrawable) {
+            this.context = context;
+            this.source = source;
+            this.levelListDrawable = levelListDrawable;
+        }
+
+        @Override
+        protected Bitmap doInBackground(TextView... params) {
+            t = params[0];
+            try {
+                Log.d("gr-imagegetter", "Downloading the image from: " + source);
+                return Ion.with(context).load(source).asBitmap().get();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Bitmap bitmap) {
+            try {
+                Drawable d = new BitmapDrawable(context.getResources(), bitmap);
+                Point size = new Point();
+                ((Activity) context).getWindowManager().getDefaultDisplay().getSize(size);
+                // Lets calculate the ratio according to the screen width in px
+                int multiplier = size.x / bitmap.getWidth();
+                Log.d("gr-imagegetter", "multiplier: " + multiplier);
+                levelListDrawable.addLevel(1, 1, d);
+                // Set bounds width  and height according to the bitmap resized size
+                levelListDrawable.setBounds(0, 0, bitmap.getWidth() * multiplier, bitmap.getHeight() * multiplier);
+                levelListDrawable.setLevel(1);
+                t.setText(t.getText()); // invalidate() doesn't work correctly...
+            } catch (Exception e) { /* Like a null bitmap, etc. */ }
+        }
     }
 
 }
