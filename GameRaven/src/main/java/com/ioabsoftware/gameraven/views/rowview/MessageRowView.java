@@ -12,7 +12,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.os.AsyncTask;
-import android.text.Html;
 import android.text.Spanned;
 import android.text.method.ArrowKeyMovementMethod;
 import android.util.AttributeSet;
@@ -22,6 +21,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.text.HtmlCompat;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
@@ -185,7 +186,9 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                     .load(myData.getAvatarUrl());
 
 //        message.setText(myData.getSpannedMessage());
-        Spanned spanned = Html.fromHtml(myData.getUnprocessedMessageText(), source -> {
+        Spanned spanned = HtmlCompat.fromHtml(myData.getUnprocessedMessageText(),
+                HtmlCompat.FROM_HTML_MODE_LEGACY,
+                source -> {
                     LevelListDrawable d = new LevelListDrawable();
                     Drawable empty = getResources().getDrawable(R.drawable.abc_btn_check_material);;
                     d.addLevel(0, 0, empty);
