@@ -3,41 +3,29 @@ package com.ioabsoftware.gameraven.views.rowdata;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.text.style.TypefaceSpan;
-import android.text.style.UnderlineSpan;
-import android.text.util.Linkify;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
 import com.ioabsoftware.gameraven.networking.NetDesc;
 import com.ioabsoftware.gameraven.networking.Session;
-import com.ioabsoftware.gameraven.util.MyLinkifier;
 import com.ioabsoftware.gameraven.util.Theming;
 import com.ioabsoftware.gameraven.views.BaseRowData;
-import com.ioabsoftware.gameraven.views.GRQuoteSpan;
 import com.ioabsoftware.gameraven.views.RowType;
-import com.ioabsoftware.gameraven.views.SpoilerBackgroundSpan;
-import com.ioabsoftware.gameraven.views.SpoilerClickSpan;
 import com.ioabsoftware.gameraven.views.rowview.HeaderRowView;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +37,7 @@ public class MessageRowData extends BaseRowData {
 
     private LinearLayout poll = null;
 
-    private Spannable spannedMessage;
+//    private Spannable spannedMessage;
 
     private int hlColor;
 
@@ -70,8 +58,8 @@ public class MessageRowData extends BaseRowData {
                 "\nboardID: " + boardID +
                 "\ntopicID: " + topicID +
                 "\nhasPoll: " + hasPoll() +
-                "\nunprocessedMessageText: " + unprocessedMessageText +
-                "\nspannedMessage: " + spannedMessage;
+                "\nunprocessedMessageText: " + unprocessedMessageText;
+//                "\nspannedMessage: " + spannedMessage;
     }
 
     public void disableTopClick() {
@@ -165,9 +153,9 @@ public class MessageRowData extends BaseRowData {
         return poll != null;
     }
 
-    public Spannable getSpannedMessage() {
-        return spannedMessage;
-    }
+//    public Spannable getSpannedMessage() {
+//        return spannedMessage;
+//    }
 
     public int getHLColor() {
         return hlColor;
@@ -353,25 +341,25 @@ public class MessageRowData extends BaseRowData {
             }
         }
 
-        Elements images = messageIn.select("a.img_container");
-        for (Element i : images) {
-            i.html(i.attr("href"));
-        }
-
-        Elements videos = messageIn.select("div.vid_container");
-        for (Element v : videos) {
-            String type = v.child(0).attr("class");
-            String data = v.child(0).attr("data-id");
-            String url;
-            switch (type) {
-                case "yt_player":
-                    url = "https://www.youtube.com/watch?v=" + data;
-                    break;
-                default:
-                    url = "GameRaven error: Video source not recognized. Source: " + type + ", Data: " + data;
-            }
-            v.html(url);
-        }
+//        Elements images = messageIn.select("a.img_container");
+//        for (Element i : images) {
+//            i.html(i.attr("href"));
+//        }
+//
+//        Elements videos = messageIn.select("div.vid_container");
+//        for (Element v : videos) {
+//            String type = v.child(0).attr("class");
+//            String data = v.child(0).attr("data-id");
+//            String url;
+//            switch (type) {
+//                case "yt_player":
+//                    url = "https://www.youtube.com/watch?v=" + data;
+//                    break;
+//                default:
+//                    url = "GameRaven error: Video source not recognized. Source: " + type + ", Data: " + data;
+//            }
+//            v.html(url);
+//        }
 
         unprocessedMessageText = messageIn.html() + sigHtml;
 
@@ -381,179 +369,166 @@ public class MessageRowData extends BaseRowData {
             cite.removeAttr("data-quote-id").removeAttr("data-user-id");
         }
 
-        String msgForSSB = messageIn.html() + sigHtml;
-
-        AllInOneV2.wtl("creating ssb");
-        SpannableStringBuilder ssb = new SpannableStringBuilder(processContent(false, true, msgForSSB));
-
-        AllInOneV2.wtl("adding bold spans");
-        addGenericSpans(ssb, "<b>", "</b>", new StyleSpan(Typeface.BOLD));
-        AllInOneV2.wtl("adding italic spans");
-        addGenericSpans(ssb, "<i>", "</i>", new StyleSpan(Typeface.ITALIC));
-        AllInOneV2.wtl("adding code spans");
-        addGenericSpans(ssb, "<code>", "</code>", new TypefaceSpan("monospace"));
-        AllInOneV2.wtl("adding cite spans");
-        addGenericSpans(ssb, "<cite>", "</cite>", new UnderlineSpan(), new StyleSpan(Typeface.ITALIC));
-        AllInOneV2.wtl("adding quote spans");
-        addQuoteSpans(ssb);
-
-        ssb.append('\n');
-
-        AllInOneV2.wtl("linkifying");
-        MyLinkifier.addLinks(ssb, Linkify.WEB_URLS);
-
-        AllInOneV2.wtl("adding spoiler spans");
-        addSpoilerSpans(ssb);
-
-        AllInOneV2.wtl("replacing &lt; with <");
-        while (ssb.toString().contains("&lt;")) {
-            int start = ssb.toString().indexOf("&lt;");
-            ssb.replace(start, start + "&lt;".length(), "<");
-        }
-
-        AllInOneV2.wtl("replacing &gt; with >");
-        while (ssb.toString().contains("&gt;")) {
-            int start = ssb.toString().indexOf("&gt;");
-            ssb.replace(start, start + "&gt;".length(), ">");
-        }
-
-        AllInOneV2.wtl("setting spannedMessage");
-        spannedMessage = ssb;
+//        String msgForSSB = messageIn.html() + sigHtml;
+//
+//        AllInOneV2.wtl("creating ssb");
+//        SpannableStringBuilder ssb = new SpannableStringBuilder(processContent(false, true, msgForSSB));
+//
+//        AllInOneV2.wtl("adding bold spans");
+//        addGenericSpans(ssb, "<b>", "</b>", new StyleSpan(Typeface.BOLD));
+//        AllInOneV2.wtl("adding italic spans");
+//        addGenericSpans(ssb, "<i>", "</i>", new StyleSpan(Typeface.ITALIC));
+//        AllInOneV2.wtl("adding code spans");
+//        addGenericSpans(ssb, "<code>", "</code>", new TypefaceSpan("monospace"));
+//        AllInOneV2.wtl("adding cite spans");
+//        addGenericSpans(ssb, "<cite>", "</cite>", new UnderlineSpan(), new StyleSpan(Typeface.ITALIC));
+//        AllInOneV2.wtl("adding quote spans");
+//        addQuoteSpans(ssb);
+//
+//        ssb.append('\n');
+//
+//        AllInOneV2.wtl("linkifying");
+//        MyLinkifier.addLinks(ssb, Linkify.WEB_URLS);
+//
+//        AllInOneV2.wtl("adding spoiler spans");
+//        addSpoilerSpans(ssb);
+//
+//        AllInOneV2.wtl("replacing &lt; with <");
+//        while (ssb.toString().contains("&lt;")) {
+//            int start = ssb.toString().indexOf("&lt;");
+//            ssb.replace(start, start + "&lt;".length(), "<");
+//        }
+//
+//        AllInOneV2.wtl("replacing &gt; with >");
+//        while (ssb.toString().contains("&gt;")) {
+//            int start = ssb.toString().indexOf("&gt;");
+//            ssb.replace(start, start + "&gt;".length(), ">");
+//        }
+//
+//        AllInOneV2.wtl("setting spannedMessage");
+//        spannedMessage = ssb;
     }
 
     public boolean isEdited() {
         return userTitles != null && userTitles.contains("(edited)");
     }
 
-    private static void addGenericSpans(SpannableStringBuilder ssb, String tag, String endTag, CharacterStyle... cs) {
-        // initialize array
-        int[] startEnd = spanStartAndEnd(ssb.toString(), tag, endTag);
+//    private static void addGenericSpans(SpannableStringBuilder ssb, String tag, String endTag, CharacterStyle... cs) {
+//        // initialize array
+//        int[] startEnd = spanStartAndEnd(ssb.toString(), tag, endTag);
+//
+//        // while start and end points are found...
+//        while (!Arrays.equals(startEnd, noStartEndBase)) {
+//            // remove the start tag
+//            ssb.delete(startEnd[0], startEnd[0] + tag.length());
+//
+//            // adjust end point for removed start tag
+//            startEnd[1] -= tag.length();
+//
+//            // remove end tag
+//            ssb.delete(startEnd[1], startEnd[1] + endTag.length());
+//
+//            // apply styles
+//            for (CharacterStyle c : cs)
+//                ssb.setSpan(CharacterStyle.wrap(c), startEnd[0], startEnd[1], 0);
+//
+//            // get new start and end points
+//            startEnd = spanStartAndEnd(ssb.toString(), tag, endTag);
+//        }
+//    }
+//
+//    public static final String QUOTE_START = "<blockquote>";
+//    public static final String QUOTE_END = "</blockquote>";
+//
+//    private static void addQuoteSpans(SpannableStringBuilder ssb) {
+//        // initialize array
+//        int[] startEnd = spanStartAndEnd(ssb.toString(), QUOTE_START, QUOTE_END);
+//
+//        // while start and end points are found...
+//        while (!Arrays.equals(startEnd, noStartEndBase)) {
+//            // replace the start tag
+//            ssb.replace(startEnd[0], startEnd[0] + QUOTE_START.length(), "\n");
+//            startEnd[0]++;
+//
+//            // adjust end point for replaced start tag
+//            startEnd[1] -= QUOTE_START.length() - 1;
+//
+//            // remove end tag
+//            ssb.replace(startEnd[1], startEnd[1] + QUOTE_END.length(), "\n");
+//
+//            // apply style
+//            ssb.setSpan(new GRQuoteSpan(), startEnd[0], startEnd[1], 0);
+//
+//            // get new start and end points
+//            startEnd = spanStartAndEnd(ssb.toString(), QUOTE_START, QUOTE_END);
+//        }
+//    }
+//
+//    public static final String SPOILER_START = "<s>";
+//    public static final String SPOILER_END = "</s>";
+//
+//    private void addSpoilerSpans(SpannableStringBuilder ssb) {
+//        // initialize array
+//        int[] startEnd = spanStartAndEnd(ssb.toString(), SPOILER_START, SPOILER_END);
+//
+//        // while start and end points are found...
+//        while (!Arrays.equals(startEnd, noStartEndBase)) {
+//            // remove the start tag
+//            ssb.delete(startEnd[0], startEnd[0] + SPOILER_START.length());
+//
+//            // adjust end point for removed start tag
+//            startEnd[1] -= SPOILER_START.length();
+//
+//            // remove end tag
+//            ssb.delete(startEnd[1], startEnd[1] + SPOILER_END.length());
+//
+//            // apply styles
+//            SpoilerBackgroundSpan spoiler = new SpoilerBackgroundSpan(Theming.colorHiddenSpoiler(), Theming.colorRevealedSpoiler());
+//            SpoilerClickSpan spoilerClick = new SpoilerClickSpan(spoiler);
+//            ssb.setSpan(spoiler, startEnd[0], startEnd[1], 0);
+//            ssb.setSpan(spoilerClick, startEnd[0], startEnd[1], 0);
+//
+//            // get new start and end points
+//            startEnd = spanStartAndEnd(ssb.toString(), SPOILER_START, SPOILER_END);
+//        }
+//    }
+//
+//    private static int[] noStartEndBase = {-1, -1};
+//
+//    private static int[] spanStartAndEnd(String text, String openTag, String closeTag) {
+//        int start = -1;
+//        int end = -1;
+//        if (text.contains(openTag) && text.contains(closeTag)) {
+//            start = text.indexOf(openTag);
+//            end = text.indexOf(closeTag);
+//
+//            int stackCount = 1;
+//            int closer;
+//            int opener;
+//            int innerStartPoint = start;
+//            do {
+//                opener = text.indexOf(openTag, innerStartPoint + 1);
+//                closer = text.indexOf(closeTag, innerStartPoint + 1);
+//                if (opener != -1 && opener < closer) {
+//                    // found a nested tag
+//                    stackCount++;
+//                    innerStartPoint = opener;
+//                } else {
+//                    // this closer is the right one
+//                    stackCount--;
+//                    innerStartPoint = closer;
+//                }
+//            } while (stackCount > 0);
+//
+//            if (closer != -1)
+//                end = closer;
+//
+//        }
+//        return new int[]{start, end};
+//    }
 
-        // while start and end points are found...
-        while (!Arrays.equals(startEnd, noStartEndBase)) {
-            // remove the start tag
-            ssb.delete(startEnd[0], startEnd[0] + tag.length());
-
-            // adjust end point for removed start tag
-            startEnd[1] -= tag.length();
-
-            // remove end tag
-            ssb.delete(startEnd[1], startEnd[1] + endTag.length());
-
-            // apply styles
-            for (CharacterStyle c : cs)
-                ssb.setSpan(CharacterStyle.wrap(c), startEnd[0], startEnd[1], 0);
-
-            // get new start and end points
-            startEnd = spanStartAndEnd(ssb.toString(), tag, endTag);
-        }
-    }
-
-    public static final String QUOTE_START = "<blockquote>";
-    public static final String QUOTE_END = "</blockquote>";
-
-    private static void addQuoteSpans(SpannableStringBuilder ssb) {
-        // initialize array
-        int[] startEnd = spanStartAndEnd(ssb.toString(), QUOTE_START, QUOTE_END);
-
-        // while start and end points are found...
-        while (!Arrays.equals(startEnd, noStartEndBase)) {
-            // replace the start tag
-            ssb.replace(startEnd[0], startEnd[0] + QUOTE_START.length(), "\n");
-            startEnd[0]++;
-
-            // adjust end point for replaced start tag
-            startEnd[1] -= QUOTE_START.length() - 1;
-
-            // remove end tag
-            ssb.replace(startEnd[1], startEnd[1] + QUOTE_END.length(), "\n");
-
-            // apply style
-            ssb.setSpan(new GRQuoteSpan(), startEnd[0], startEnd[1], 0);
-
-            // get new start and end points
-            startEnd = spanStartAndEnd(ssb.toString(), QUOTE_START, QUOTE_END);
-        }
-    }
-
-    public static final String SPOILER_START = "<s>";
-    public static final String SPOILER_END = "</s>";
-
-    private void addSpoilerSpans(SpannableStringBuilder ssb) {
-        // initialize array
-        int[] startEnd = spanStartAndEnd(ssb.toString(), SPOILER_START, SPOILER_END);
-
-        // while start and end points are found...
-        while (!Arrays.equals(startEnd, noStartEndBase)) {
-            // remove the start tag
-            ssb.delete(startEnd[0], startEnd[0] + SPOILER_START.length());
-
-            // adjust end point for removed start tag
-            startEnd[1] -= SPOILER_START.length();
-
-            // remove end tag
-            ssb.delete(startEnd[1], startEnd[1] + SPOILER_END.length());
-
-            // apply styles
-            SpoilerBackgroundSpan spoiler = new SpoilerBackgroundSpan(Theming.colorHiddenSpoiler(), Theming.colorRevealedSpoiler());
-            SpoilerClickSpan spoilerClick = new SpoilerClickSpan(spoiler);
-            ssb.setSpan(spoiler, startEnd[0], startEnd[1], 0);
-            ssb.setSpan(spoilerClick, startEnd[0], startEnd[1], 0);
-
-            // get new start and end points
-            startEnd = spanStartAndEnd(ssb.toString(), SPOILER_START, SPOILER_END);
-        }
-    }
-
-    private static int[] noStartEndBase = {-1, -1};
-
-    private static int[] spanStartAndEnd(String text, String openTag, String closeTag) {
-        int start = -1;
-        int end = -1;
-        if (text.contains(openTag) && text.contains(closeTag)) {
-            start = text.indexOf(openTag);
-            end = text.indexOf(closeTag);
-
-            int stackCount = 1;
-            int closer;
-            int opener;
-            int innerStartPoint = start;
-            do {
-                opener = text.indexOf(openTag, innerStartPoint + 1);
-                closer = text.indexOf(closeTag, innerStartPoint + 1);
-                if (opener != -1 && opener < closer) {
-                    // found a nested tag
-                    stackCount++;
-                    innerStartPoint = opener;
-                } else {
-                    // this closer is the right one
-                    stackCount--;
-                    innerStartPoint = closer;
-                }
-            } while (stackCount > 0);
-
-            if (closer != -1)
-                end = closer;
-
-        }
-        return new int[]{start, end};
-    }
-
-    public String getMessageForQuoting() {
-        return processContent(true, false, null);
-    }
-
-    public String getMessageForEditing() {
-        return processContent(true, false, null);
-    }
-
-    private String processContent(boolean removeSig, boolean ignoreLtGt, @Nullable String altText) {
-        String finalBody;
-        if (altText == null) {
-            finalBody = unprocessedMessageText;
-        } else {
-            finalBody = altText;
-        }
+    public String getMessageForQuotingOrEditing() {
+        String finalBody = unprocessedMessageText;
 
         AllInOneV2.wtl("beginning opening anchor tag removal");
         while (finalBody.contains("<a ")) {
@@ -585,25 +560,13 @@ public class MessageRowData extends BaseRowData {
         finalBody = finalBody.replace("\n", "");
         finalBody = finalBody.replace("<br />", "\n");
 
-        if (removeSig) {
-            AllInOneV2.wtl("removing sig");
-            int sigStart = finalBody.lastIndexOf("\n---\n");
-            if (sigStart != -1)
-                finalBody = finalBody.substring(0, sigStart);
-        }
-
-        if (ignoreLtGt) {
-            AllInOneV2.wtl("ignoring &lt; / &gt;, pre-unescape");
-            finalBody = finalBody.replace("&lt;", "&gameravenlt;").replace("&gt;", "&gameravengt;");
-        }
+        AllInOneV2.wtl("removing sig");
+        int sigStart = finalBody.lastIndexOf("\n---\n");
+        if (sigStart != -1)
+            finalBody = finalBody.substring(0, sigStart);
 
         AllInOneV2.wtl("unescaping finalbody html");
         finalBody = StringEscapeUtils.unescapeHtml4(finalBody);
-
-        if (ignoreLtGt) {
-            AllInOneV2.wtl("ignoring &lt; / &gt;, post-unescape");
-            finalBody = finalBody.replace("&gameravenlt;", "&lt;").replace("&gameravengt;", "&gt;");
-        }
 
         AllInOneV2.wtl("returning finalbody");
         return finalBody;

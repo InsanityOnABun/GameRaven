@@ -257,12 +257,8 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
         return myData.getPostNum();
     }
 
-    public String getMessageForQuoting() {
-        return myData.getMessageForQuoting();
-    }
-
-    public String getMessageForEditing() {
-        return myData.getMessageForEditing();
+    public String getMessageForQuotingOrEditing() {
+        return myData.getMessageForQuotingOrEditing();
     }
 
     private static boolean globalIsUsingAvatars;

@@ -1,4 +1,4 @@
-package com.ioabsoftware.gameraven.views;
+package com.ioabsoftware.gameraven.views.spans;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
