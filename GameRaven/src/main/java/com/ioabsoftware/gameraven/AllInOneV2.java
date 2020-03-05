@@ -1317,6 +1317,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         setAllMenuItemsExceptRefreshVisibility(false);
 
         adapterRows.clear();
+        viewAdapter.notifyDataSetChanged();
 
         wtl("setting board, topic, message id to null");
         boardID = null;
