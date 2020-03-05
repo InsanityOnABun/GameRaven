@@ -2951,11 +2951,11 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     session.get(NetDesc.MESSAGE_DETAIL, clickedMsg.getMessageDetailLink());
                     break;
                 case "Quote":
-                    String msg = (quoteSelection != null ? quoteSelection : clickedMsg.getMessageForQuotingOrEditing());
+                    String msg = (quoteSelection != null ? quoteSelection : clickedMsg.getMessageForQuoting());
                     quoteSetup(clickedMsg.getUser(), msg, clickedMsg.getMessageID(), clickedMsg.getUserID());
                     break;
                 case "Edit":
-                    editPostSetup(clickedMsg.getMessageForQuotingOrEditing(), clickedMsg.getMessageID());
+                    editPostSetup(clickedMsg.getMessageForEditing(), clickedMsg.getMessageID());
                     break;
                 case "Update Flair":
                     final String[] flairKeys = updateTopicFlairs.keySet().toArray(new String[0]);
