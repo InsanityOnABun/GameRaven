@@ -54,6 +54,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.ioabsoftware.gameraven.db.HighlightListDBHelper;
 import com.ioabsoftware.gameraven.db.HighlightedUser;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
+import com.ioabsoftware.gameraven.networking.GRUserAgent;
 import com.ioabsoftware.gameraven.networking.NetDesc;
 import com.ioabsoftware.gameraven.networking.Session;
 import com.ioabsoftware.gameraven.prefs.HeaderSettings;
@@ -268,6 +269,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         // get an instance of Theming to ensure values don't get GC'd
         // Will they get GC'd? I have no idea. Better safe than sorry.
         themingInstance = new Theming();
+
+        Ion.getDefault(this).configure().userAgent(GRUserAgent.get(this));
 
         // convert old startAtAMP setting to new loggedInStartLocation
         if (settings.contains("startAtAMP")) {
@@ -558,6 +561,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     protected void onResume() {
         wtl("onResume fired");
         super.onResume();
+
+        Log.d("useragent", GRUserAgent.get(this));
 
         swipeRefreshLayout.setEnabled(settings.getBoolean("enablePTR", false));
         contentList.setFastScrollEnabled(settings.getBoolean("enableFastScroll", true));

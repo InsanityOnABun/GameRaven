@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import androidx.core.app.NotificationCompat;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -23,6 +25,7 @@ import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.SimpleJobService;
 import com.firebase.jobdispatcher.Trigger;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
+import com.ioabsoftware.gameraven.networking.GRUserAgent;
 import com.ioabsoftware.gameraven.prefs.HeaderSettings;
 import com.ioabsoftware.gameraven.util.AccountManager;
 
@@ -32,12 +35,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
 public class NotifierJobService extends SimpleJobService {
+
+    private String useragent;
+    private HashMap<String, String> cookies;
 
     public static final String JOB_TAG = "GR_NOTIF_CHECK";
     public static final int NOTIF_ID = 1;
@@ -52,21 +59,22 @@ public class NotifierJobService extends SimpleJobService {
 
         String username = prefs.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT);
 
+        useragent = GRUserAgent.get(this);
+
         // double check notifications are enabled
         // service does nothing if there is no default account set or there is no generated salt
         if (prefs.getBoolean("notifsEnable", false) && !username.equals(HeaderSettings.NO_DEFAULT_ACCOUNT) && prefs.getString("secureSalt", null) != null) {
             try {
                 long rightNow = System.currentTimeMillis();
 
-                HashMap<String, String> cookies = new HashMap<>();
+                cookies = new HashMap<>();
                 String password = AccountManager.getPassword(getApplicationContext(), username);
 
                 String notifPath = GF_URLS.ROOT + "/user/notifications";
                 String pmPath = GF_URLS.ROOT + "/pm";
                 String loginPath = GF_URLS.ROOT + "/user/login";
 
-                Response notifResponse = Jsoup.connect(loginPath).method(Method.GET)
-                        .cookies(cookies).timeout(10000).execute();
+                Response notifResponse = jsoupRequest(loginPath, Method.GET, null);
 
                 cookies.putAll(notifResponse.cookies());
 
@@ -83,23 +91,19 @@ public class NotifierJobService extends SimpleJobService {
                 loginData.put("path", notifPath);
                 loginData.put("key", loginKey);
 
-                notifResponse = Jsoup.connect(loginPath).method(Method.POST)
-                        .cookies(cookies).data(loginData).timeout(10000)
-                        .execute();
+                notifResponse = jsoupRequest(loginPath, Method.POST, loginData);
 
                 cookies.putAll(notifResponse.cookies());
 
                 // second connection finished (logging in)
 
-                notifResponse = Jsoup.connect(notifPath).method(Method.GET)
-                        .cookies(cookies).timeout(10000).execute();
+                notifResponse = jsoupRequest(notifPath, Method.GET, null);
 
                 // third connection finished (notifs page)
 
                 cookies.putAll(notifResponse.cookies());
 
-                Response pmResponse = Jsoup.connect(pmPath).method(Method.GET)
-                        .cookies(cookies).timeout(10000).execute();
+                Response pmResponse = jsoupRequest(pmPath, Method.GET, null);
 
                 // fourth connection finished (pm page)
 
@@ -187,6 +191,25 @@ public class NotifierJobService extends SimpleJobService {
             }
         }
         return JobService.RESULT_SUCCESS;
+    }
+
+    private Response jsoupRequest(String path, Method method, @Nullable HashMap<String, String> data) throws IOException {
+        if (data == null) {
+            return Jsoup.connect(path)
+                    .method(method)
+                    .userAgent(useragent)
+                    .cookies(cookies)
+                    .timeout(10000)
+                    .execute();
+        } else {
+            return Jsoup.connect(path)
+                    .method(method)
+                    .userAgent(useragent)
+                    .cookies(cookies)
+                    .data(data)
+                    .timeout(10000)
+                    .execute();
+        }
     }
 
     private void initNotifManagerAndBuilder() {

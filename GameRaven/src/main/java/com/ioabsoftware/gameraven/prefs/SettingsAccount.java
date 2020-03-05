@@ -27,6 +27,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.ioabsoftware.gameraven.R;
 import com.ioabsoftware.gameraven.networking.GF_URLS;
+import com.ioabsoftware.gameraven.networking.GRUserAgent;
 import com.ioabsoftware.gameraven.networking.NetDesc;
 import com.ioabsoftware.gameraven.util.AccountManager;
 import com.ioabsoftware.gameraven.util.DocumentParser;
@@ -77,6 +78,7 @@ public class SettingsAccount extends PreferenceActivity implements FutureCallbac
 
         accountVerifier = Ion.getInstance(this, ION_INSTANCE);
         accountVerifier.getCookieMiddleware().clear();
+        accountVerifier.configure().userAgent(GRUserAgent.get(this));
 
         Theming.colorOverscroll(this);
 
