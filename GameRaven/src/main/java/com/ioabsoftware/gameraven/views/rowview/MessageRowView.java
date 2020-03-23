@@ -18,11 +18,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.text.HtmlCompat;
+import androidx.preference.PreferenceManager;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
@@ -364,6 +366,11 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
         protected Bitmap doInBackground(TextView... params) {
             t = params[0];
             try {
+                while (PreferenceManager.getDefaultSharedPreferences(context)
+                        .getInt("contentListScrollState", AbsListView.OnScrollListener.SCROLL_STATE_IDLE)
+                        != AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    // Effectively pause until no scrolling
+                }
                 Log.d("gr-imagegetter", "Downloading the image from: " + source);
                 return Ion.with(context).load(source).asBitmap().get();
             } catch (Exception e) {

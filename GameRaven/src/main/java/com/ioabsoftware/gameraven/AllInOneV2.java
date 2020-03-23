@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -421,6 +422,17 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         }
 
         contentList = findViewById(R.id.aioMainList);
+        contentList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                settings.edit().putInt("contentListScrollState", scrollState).apply();
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // stub
+            }
+        });
 
         titleWrapper = findViewById(R.id.aioPostTitleWrapper);
         postTitle = findViewById(R.id.aioPostTitle);
