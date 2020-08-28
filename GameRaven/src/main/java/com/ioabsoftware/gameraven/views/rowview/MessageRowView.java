@@ -34,6 +34,8 @@ import com.ioabsoftware.gameraven.views.BaseRowView;
 import com.ioabsoftware.gameraven.views.ClickableLinksTextView;
 import com.ioabsoftware.gameraven.views.RowType;
 import com.ioabsoftware.gameraven.views.rowdata.MessageRowData;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.koushikdutta.ion.Ion;
 
 public class MessageRowView extends BaseRowView implements View.OnClickListener {
@@ -192,7 +194,7 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                 HtmlCompat.FROM_HTML_MODE_LEGACY,
                 source -> {
                     LevelListDrawable d = new LevelListDrawable();
-                    Drawable empty = getResources().getDrawable(R.drawable.abc_btn_check_material);;
+                    Drawable empty = new IconDrawable(getContext(), MaterialIcons.md_cloud_download).color(Theming.colorPrimary()).sizeDp(16);
                     d.addLevel(0, 0, empty);
                     d.setBounds(0, 0, empty.getIntrinsicWidth(), empty.getIntrinsicHeight());
                     new ImageGetterAsyncTask(getContext(), source, d).execute(message);
