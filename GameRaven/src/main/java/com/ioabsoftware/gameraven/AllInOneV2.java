@@ -793,7 +793,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             searchIcon, topicListIcon, sendUserPMIcon, tagUserIcon, unreadPMsIcon,
             unreadNotifsIcon, clearUnreadNotifsIcon, filterFlairsIcon;
 
-    private final String GAME_SEARCH_URL = "/search_advanced/index.html?game=";
+    private final String GAME_SEARCH_URL = "/search_advanced?game=";
 
     /**
      * Adds menu items
