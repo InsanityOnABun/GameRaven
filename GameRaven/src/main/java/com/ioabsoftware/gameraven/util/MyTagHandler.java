@@ -32,7 +32,7 @@ public class MyTagHandler implements Html.TagHandler {
         }
     }
 
-    private Object getLast(Editable text, Class kind) {
+    private Object getLast(Editable text, Class<?> kind) {
         Object[] objs = text.getSpans(0, text.length(), kind);
 
         if (objs.length != 0) {
@@ -45,7 +45,7 @@ public class MyTagHandler implements Html.TagHandler {
         return null;
     }
 
-    private class GRMonospaceSpan extends TypefaceSpan {
+    private static class GRMonospaceSpan extends TypefaceSpan {
         public GRMonospaceSpan() {
             super("monospace");
         }
