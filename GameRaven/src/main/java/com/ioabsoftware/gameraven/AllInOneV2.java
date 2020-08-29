@@ -34,7 +34,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -88,6 +87,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.codechimp.apprater.AppRater;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
@@ -177,31 +178,17 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     private View pollSep, flairSep;
 
-    private boolean pollUse = false;
+    private JSONObject pollJSON = new JSONObject();
 
-    public boolean isUsingPoll() {
-        return pollUse;
+    public JSONObject getPollJSON() {
+        return pollJSON;
     }
 
-    private String pollTitle = EMPTY_STRING;
+    private int flairForNewTopic = 0;
 
-    public String getPollTitle() {
-        return pollTitle;
+    public int getFlairForNewTopicAsInt() {
+        return flairForNewTopic;
     }
-
-    private String[] pollOptions = new String[10];
-
-    public String[] getPollOptions() {
-        return pollOptions;
-    }
-
-    private int pollMinLevel = -1;
-
-    public String getPollMinLevel() {
-        return String.valueOf(pollMinLevel);
-    }
-
-    private int flairForNewTopic = 1;
 
     public String getFlairForNewTopicAsString() {
         return String.valueOf(flairForNewTopic);
@@ -1196,8 +1183,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 posButtonText = "Retry";
                 break;
             case MSG_POST:
-            case TOPIC_POST_S1:
-            case TOPIC_POST_S3:
+            case TOPIC_POST:
                 postTimeoutCleanup();
                 return;
             default:
@@ -1268,7 +1254,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postBody.setText(null);
             postTitle.setText(null);
             clearPoll();
-            flairForNewTopic = 1;
+            flairForNewTopic = 0;
             messageIDForEditing = null;
 
             fab.show();
@@ -1296,7 +1282,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void preExecuteSetup(NetDesc desc) {
-        if (desc != NetDesc.MSG_POST && desc != NetDesc.MSG_EDIT && desc != NetDesc.TOPIC_POST_S1)
+        if (desc != NetDesc.MSG_POST && desc != NetDesc.MSG_EDIT && desc != NetDesc.TOPIC_POST)
             postInterfaceCleanup();
 
         swipeRefreshLayout.setRefreshing(true);
@@ -2165,7 +2151,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     setMenuItemVisibility(tagUserIcon, true);
                     tagKey = doc.getElementsByAttributeValue("name", "key").attr("value");
                     tagText = doc.getElementsByAttributeValue("name", "tag_text").attr("value");
-                    if (tagText == null) tagText = "";
+                    if (tagText == null) tagText = EMPTY_STRING;
                 }
 
                 updateHeaderNoJumper(name + "'s Details", NetDesc.USER_DETAIL);
@@ -2245,8 +2231,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             case MSG_POST:
             case TOPIC_CLOSE:
             case NOTIFS_CLEAR:
-            case TOPIC_POST_S1:
-            case TOPIC_POST_S3:
+            case TOPIC_POST:
             case VERIFY_ACCOUNT_S1:
             case VERIFY_ACCOUNT_S2:
                 Log.e(AllInOneV2.class.getName(), desc.name() + " reached AIO HNR, this shouldn't happen");
@@ -2645,13 +2630,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             }
         }
 
-        AlertDialog.Builder filterBuilder = new AlertDialog.Builder(this);
-        filterBuilder.setSingleChoiceItems(flairNames, activeFlairIndex, (dialog, which) -> {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setSingleChoiceItems(flairNames, activeFlairIndex, (dialog, which) -> {
             flairForNewTopic = flairKeys[which];
             dialog.dismiss();
         });
-        filterBuilder.setNegativeButton(R.string.cancel, null);
-        filterBuilder.show();
+        b.setNegativeButton(R.string.cancel, null);
+        b.show();
     }
 
     public void postDo(View view) {
@@ -2666,9 +2651,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     private void postSubmit() {
-        assert postBody.getText() != null : "postBody.getText() is null";
         assert postTitle.getText() != null : "postTitle.getText() is null";
+        assert postBody.getText() != null : "postBody.getText() is null";
 
+        savedPostTitle = postTitle.getText().toString();
         savedPostBody = postBody.getText().toString();
 
         savedBoardID = boardID;
@@ -2682,17 +2668,24 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         if (titleWrapper.getVisibility() == View.VISIBLE) {
             // posting on a board
-            String path = GF_URLS.ROOT + "/boards/post?board=" + boardID;
-            int i = path.indexOf('-');
-            path = path.substring(0, i);
-            savedPostTitle = postTitle.getText().toString();
-            if (pollUse)
-                path += "&poll=1";
-
-            session.get(NetDesc.TOPIC_POST_S1, path);
+            HashMap<String, List<String>> data = new HashMap<>();
+            data.put("board", Collections.singletonList(savedBoardID));
+            data.put("topic", Collections.singletonList(savedPostTitle));
+            data.put("message", Collections.singletonList(savedPostBody));
+            data.put("key", Collections.singletonList(session.getSessionKey()));
+            if (pollJSON.length() > 0) {
+//                data.put("add_poll", Collections.singletonList("1"));
+                Log.d("gameraven-ajax", pollJSON.toString());
+                data.put("poll", Collections.singletonList(pollJSON.toString()));
+            }
+            if (flairForNewTopic > 0) {
+                data.put("flair", Collections.singletonList(getFlairForNewTopicAsString()));
+            } else {
+                data.put("flair", Collections.singletonList("1"));
+            }
+            session.post(NetDesc.TOPIC_POST, GF_URLS.AJAX_TOPIC_POST, data);
         } else {
             // posting on a topic
-
             HashMap<String, List<String>> data = new HashMap<>();
             data.put("board", Collections.singletonList(savedBoardID));
             data.put("topic", Collections.singletonList(savedTopicID));
@@ -2758,7 +2751,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         final EditText[] options = new EditText[10];
 
         assert v != null : "v is null";
-        final CheckBox poUse = v.findViewById(R.id.poUse);
         final EditText poTitle = v.findViewById(R.id.poTitle);
         options[0] = v.findViewById(R.id.po1);
         options[1] = v.findViewById(R.id.po2);
@@ -2772,26 +2764,34 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         options[9] = v.findViewById(R.id.po10);
         final Spinner minLevel = v.findViewById(R.id.poMinLevel);
 
-        poUse.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            poTitle.setEnabled(isChecked);
-            for (int x = 0; x < 10; x++)
-                options[x].setEnabled(isChecked);
-        });
-
-        for (int x = 0; x < 10; x++)
-            options[x].setText(pollOptions[x]);
-
-        minLevel.setSelection(pollMinLevel);
-        poTitle.setText(pollTitle);
-        poUse.setChecked(pollUse);
+        if (pollJSON.length() > 0) {
+            poTitle.setText(pollJSON.optString("poll_title", EMPTY_STRING));
+            minLevel.setSelection(pollJSON.optInt("min_level", 0));
+            JSONObject optionValues = pollJSON.optJSONObject("poll_option");
+            if (optionValues != null) {
+                for (int i = 0; i < 10; i++) {
+                    options[i].setText(optionValues.optString(String.valueOf(i), EMPTY_STRING));
+                }
+            }
+        }
 
         b.setPositiveButton("Save", (dialog, which) -> {
-            pollUse = poUse.isChecked();
-            pollTitle = poTitle.getText().toString();
-            pollMinLevel = minLevel.getSelectedItemPosition();
+            try {
+                pollJSON.put("poll_title", poTitle.getText().toString().trim());
 
-            for (int x = 0; x < 10; x++) {
-                pollOptions[x] = options[x].getText().toString();
+                JSONObject optionValues = new JSONObject();
+                for (int x = 0; x < 10; x++) {
+                    if (options[x].getText().toString().trim().length() > 0) {
+                        optionValues.put(String.valueOf(x), options[x].getText().toString().trim());
+                    }
+                }
+                pollJSON.put("poll_option", optionValues);
+
+                pollJSON.put("min_level", String.valueOf(minLevel.getSelectedItemPosition()));
+            } catch (JSONException e) {
+                clearPoll();
+                AlertDialog.Builder failedSaveAlert = new AlertDialog.Builder(this);
+                failedSaveAlert.setMessage("There was an error saving the poll!").show();
             }
         });
 
@@ -2808,11 +2808,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     private void clearPoll() {
-        pollUse = false;
-        pollTitle = EMPTY_STRING;
-        for (int x = 0; x < 10; x++)
-            pollOptions[x] = EMPTY_STRING;
-        pollMinLevel = -1;
+        pollJSON = new JSONObject();
     }
 
     private String reportCode;
@@ -2925,7 +2921,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 case "Edit":
                     editPostSetup(clickedMsg.getMessageForQuotingOrEditing(), clickedMsg.getMessageID());
                     break;
-                case "Update Flair":
+                case "Update Flair": //TODO update this to AJAX if available
                     final String[] flairKeys = updateTopicFlairs.keySet().toArray(new String[0]);
                     String[] flairNames = updateTopicFlairs.values().toArray(new String[0]);
                     AlertDialog.Builder flairUpdater = new AlertDialog.Builder(AllInOneV2.this);

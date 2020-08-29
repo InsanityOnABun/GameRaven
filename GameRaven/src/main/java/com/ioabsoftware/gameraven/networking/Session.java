@@ -33,7 +33,6 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.net.UnknownHostException;
@@ -391,7 +390,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case LOGIN_S1:
             case MSG_POST:
             case MSG_EDIT:
-            case TOPIC_POST_S1:
+            case TOPIC_POST:
             case NOTIFS_PAGE:
             case NOTIFS_CLEAR:
             case MENTIONS_PAGE:
@@ -403,7 +402,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 break;
 
             case LOGIN_S2:
-            case TOPIC_POST_S3:
             case VERIFY_ACCOUNT_S1:
             case VERIFY_ACCOUNT_S2:
             case PM_SEND_S1:
@@ -583,8 +581,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case MSG_DELETE:
                     case TOPIC_UPDATE_FLAIR:
                     case TOPIC_POLL_VOTE:
-                    case TOPIC_POST_S1:
-                    case TOPIC_POST_S3:
                     case VERIFY_ACCOUNT_S1:
                     case VERIFY_ACCOUNT_S2:
                     case NOTIFS_PAGE:
@@ -598,6 +594,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case MSG_EDIT:
                     case USER_TAG:
                     case MSG_MARK:
+                    case TOPIC_POST:
                     case TOPIC_CLOSE:
                     case PM_SEND_S1:
                     case PM_SEND_S2:
@@ -631,8 +628,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case LOGIN_S1:
                     case LOGIN_S2:
                     case TOPIC_POLL_VOTE:
-                    case TOPIC_POST_S1:
-                    case TOPIC_POST_S3:
                     case VERIFY_ACCOUNT_S1:
                     case VERIFY_ACCOUNT_S2:
                     case NOTIFS_PAGE:
@@ -658,6 +653,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case BOARD_UPDATE_FILTER:
                     case USER_TAG:
                     case MSG_MARK:
+                    case TOPIC_POST:
                     case TOPIC_CLOSE:
                     case PM_SEND_S1:
                     case PM_SEND_S2:
@@ -714,25 +710,25 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                     case MSG_POST:
                     case MSG_EDIT:
-                        String sanitizedJSONString = doc.body().html()
+                        String sanitizedMsgJSONString = doc.body().html()
                                 .replace("<br \\=\"\" />", "\n")
                                 .replace("\\n", "\n");
-                        JSONObject json = new JSONObject(sanitizedJSONString);
-                        Log.d("GR-AJAX", json.toString(4));
+                        JSONObject msgJSON = new JSONObject(sanitizedMsgJSONString);
+                        Log.d("gameraven-ajax", msgJSON.toString(4));
 
-                        String status = json.optString("status", "no_status");
+                        String msgStatus = msgJSON.optString("status", "no_status");
 
-                        if (status.equalsIgnoreCase("success")) {
+                        if (msgStatus.equalsIgnoreCase("success")) {
                             aio.enableGoToUrlDefinedPost();
                             applySavedScroll = false;
                             forceNoHistoryAddition();
                             String postOk = desc == NetDesc.MSG_POST ? "Message posted." : "Message edited.";
                             Crouton.showText(aio, postOk, Theming.croutonStyle());
-                            get(NetDesc.TOPIC, json.getString("message_url"));
-                        } else if (status.equalsIgnoreCase("error")) {
-                            aio.postError(json.optString("status_text", "There was an error, but GameFAQs did not provide any details."));
+                            get(NetDesc.TOPIC, msgJSON.getString("message_url"));
+                        } else if (msgStatus.equalsIgnoreCase("error")) {
+                            aio.postError(msgJSON.optString("status_text", "There was an error, but GameFAQs did not provide any details."));
                             postErrorDetected = true;
-                        } else if (status.equalsIgnoreCase("warning")) {
+                        } else if (msgStatus.equalsIgnoreCase("warning")) {
                             String msgAutoflagPath = desc == NetDesc.MSG_POST ? GF_URLS.AJAX_MSG_POST : GF_URLS.AJAX_MSG_EDIT;
                             HashMap<String, List<String>> msgAutoFlagData = new HashMap<>();
                             msgAutoFlagData.put("board", Collections.singletonList(aio.getSavedBoardID()));
@@ -746,90 +742,52 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                                 msgAutoFlagData.put("message_text", Collections.singletonList(aio.getSavedPostBody()));
                             }
                             showAutoFlagWarning(msgAutoflagPath, msgAutoFlagData, desc,
-                                    json.optString("warnings", "There was a warning, but GameFAQs did not provide any details."));
+                                    msgJSON.optString("warnings", "There was a warning, but GameFAQs did not provide any details."));
                             postErrorDetected = true;
                         } else {
-                            aio.postError("Post status response was unrecognized: " + status);
+                            aio.postError("Post status response was unrecognized: " + msgStatus);
                             postErrorDetected = true;
                         }
-
-//
-//                        Elements msg3AutoFlag = doc.select("b:contains(There are one or more potential issues with your message)");
-//                        Elements msg3Error = doc.select("b:contains(There was an error posting your message)");
-//                        if (!msg3Error.isEmpty()) {
-//                            aio.postError(((TextNode) msg3Error.first().nextSibling().nextSibling()).text());
-//                            postErrorDetected = true;
-//                        } else if (!msg3AutoFlag.isEmpty()) {
-//                            String msg = ((TextNode) msg3AutoFlag.first().nextSibling().nextSibling()).text();
-//
-//                            HashMap<String, List<String>> msg3Data = new HashMap<>();
-//                            msg3Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-//                            msg3Data.put("post", Collections.singletonList("Post Message"));
-//                            msg3Data.put("key", Collections.singletonList(sessionKey));
-//                            msg3Data.put("override", Collections.singletonList("checked"));
-//                            if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
-//                                msg3Data.put("custom_sig", Collections.singletonList(aio.getSig()));
-//
-////                            showAutoFlagWarning(lastPath, msg3Data, NetDesc.MSG_POST_S3, msg);
-//                            postErrorDetected = true;
-//                        } else {
-//                            lastDesc = NetDesc.TOPIC;
-//                            aio.enableGoToUrlDefinedPost();
-//                            Crouton.showText(aio, "Message posted.", Theming.croutonStyle());
-//                            processTopicsAndMessages(doc, resUrl, NetDesc.TOPIC);
-//                        }
                         break;
 
-                    case TOPIC_POST_S1:
+                    case TOPIC_POST:
+                        String sanitizedTopicJSONString = doc.body().html()
+                                .replace("<br \\=\"\" />", "\n")
+                                .replace("\\n", "\n");
+                        JSONObject topicJSON = new JSONObject(sanitizedTopicJSONString);
+                        Log.d("gameraven-ajax", topicJSON.toString(4));
 
-                        HashMap<String, List<String>> tpc1Data = new HashMap<>();
-                        tpc1Data.put("topictitle", Collections.singletonList(aio.getSavedPostTitle()));
-                        tpc1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-                        tpc1Data.put("flair", Collections.singletonList(aio.getFlairForNewTopicAsString()));
-                        tpc1Data.put("key", Collections.singletonList(sessionKey));
-                        tpc1Data.put("post", Collections.singletonList("Post Message"));
-                        if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
-                            tpc1Data.put("custom_sig", Collections.singletonList(aio.getSig()));
+                        String topicStatus = topicJSON.optString("status", "no_status");
 
-                        if (aio.isUsingPoll()) {
-                            tpc1Data.put("poll_text", Collections.singletonList(aio.getPollTitle()));
-                            for (int x = 0; x < 10; x++) {
-                                if (aio.getPollOptions()[x].length() != 0)
-                                    tpc1Data.put("poll_option_" + (x + 1), Collections.singletonList(aio.getPollOptions()[x]));
-                                else
-                                    x = 11;
-                            }
-                            tpc1Data.put("min_level", Collections.singletonList(aio.getPollMinLevel()));
-                        }
-
-                        post(NetDesc.TOPIC_POST_S3, lastPath, tpc1Data);
-                        break;
-
-                    case TOPIC_POST_S3:
-                        Elements tpc3AutoFlag = doc.select("b:contains(There are one or more potential issues with your message)");
-                        Elements tpc3Error = doc.select("b:contains(There was an error posting your message)");
-                        if (!tpc3Error.isEmpty()) {
-                            aio.postError(((TextNode) tpc3Error.first().nextSibling().nextSibling()).text());
-                            postErrorDetected = true;
-                        } else if (!tpc3AutoFlag.isEmpty()) {
-                            String msg = ((TextNode) tpc3AutoFlag.first().nextSibling().nextSibling()).text();
-
-                            HashMap<String, List<String>> tpc3Data = new HashMap<>();
-                            tpc3Data.put("topictitle", Collections.singletonList(aio.getSavedPostTitle()));
-                            tpc3Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-                            tpc3Data.put("flair", Collections.singletonList(aio.getFlairForNewTopicAsString()));
-                            tpc3Data.put("post", Collections.singletonList("Post Message"));
-                            tpc3Data.put("key", Collections.singletonList(sessionKey));
-                            tpc3Data.put("override", Collections.singletonList("checked"));
-                            if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
-                                tpc3Data.put("custom_sig", Collections.singletonList(aio.getSig()));
-
-                            showAutoFlagWarning(lastPath, tpc3Data, NetDesc.TOPIC_POST_S3, msg);
-                            postErrorDetected = true;
-                        } else {
-                            lastDesc = NetDesc.TOPIC;
+                        if (topicStatus.equalsIgnoreCase("success")) {
                             Crouton.showText(aio, "Topic posted.", Theming.croutonStyle());
-                            processTopicsAndMessages(doc, resUrl, NetDesc.TOPIC);
+                            get(NetDesc.TOPIC, topicJSON.getString("topic_url"));
+                        } else if (topicStatus.equalsIgnoreCase("error")) {
+                            aio.postError(topicJSON.optString("status_text", "There was an error, but GameFAQs did not provide any details."));
+                            postErrorDetected = true;
+                        } else if (topicStatus.equalsIgnoreCase("warning")) {
+                            HashMap<String, List<String>> topicAutoFlagData = new HashMap<>();
+                            topicAutoFlagData.put("board", Collections.singletonList(aio.getSavedBoardID()));
+                            topicAutoFlagData.put("topic", Collections.singletonList(aio.getSavedPostTitle()));
+                            topicAutoFlagData.put("message", Collections.singletonList(aio.getSavedPostBody()));
+                            topicAutoFlagData.put("key", Collections.singletonList(getSessionKey()));
+                            topicAutoFlagData.put("override", Collections.singletonList("1"));
+                            if (aio.getPollJSON().length() > 0) {
+//                                data.put("add_poll", Collections.singletonList("1"));
+                                topicAutoFlagData.put("poll", Collections.singletonList(aio.getPollJSON().toString()));
+                            }
+                            if (aio.getFlairForNewTopicAsInt() > 0) {
+                                topicAutoFlagData.put("flair", Collections.singletonList(aio.getFlairForNewTopicAsString()));
+                            } else {
+                                topicAutoFlagData.put("flair", Collections.singletonList("1"));
+                            }
+
+                            showAutoFlagWarning(GF_URLS.AJAX_TOPIC_POST, topicAutoFlagData, NetDesc.TOPIC_POST,
+                                    topicJSON.optString("warnings", "There was a warning, but GameFAQs did not provide any details."));
+                            postErrorDetected = true;
+                        } else {
+                            aio.postError("Post status response was unrecognized: " + topicStatus);
+                            postErrorDetected = true;
                         }
                         break;
 
@@ -976,8 +934,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case LOGIN_S2:
                 case MSG_POST:
                 case MSG_EDIT:
-                case TOPIC_POST_S1:
-                case TOPIC_POST_S3:
+                case TOPIC_POST:
                 case VERIFY_ACCOUNT_S1:
                 case VERIFY_ACCOUNT_S2:
                 case PM_SEND_S1:
@@ -1048,13 +1005,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case UNSPECIFIED:
                 if (!skipAIOCleanup)
                     aio.postExecuteCleanup(desc);
-
-                break;
-
-            case TOPIC_POST_S3:
-                if (!postErrorDetected)
-                    aio.postExecuteCleanup((desc == NetDesc.MSG_POST ? NetDesc.TOPIC : NetDesc.BOARD));
-
                 break;
 
             case BOARD_UPDATE_FILTER:
@@ -1062,7 +1012,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case LOGIN_S2:
             case MSG_POST:
             case MSG_EDIT:
-            case TOPIC_POST_S1:
+            case TOPIC_POST:
             case VERIFY_ACCOUNT_S1:
             case VERIFY_ACCOUNT_S2:
             case PM_SEND_S1:

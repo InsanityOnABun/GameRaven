@@ -12,7 +12,7 @@ public enum NetDesc {
     USER_TAG,
     MSG_POST,
     MSG_EDIT,
-    TOPIC_POST_S1, TOPIC_POST_S3, // no step 2 as all are quick-posted now
+    TOPIC_POST,
     NOTIFS_PAGE, NOTIFS_CLEAR,
     MENTIONS_PAGE
 }
