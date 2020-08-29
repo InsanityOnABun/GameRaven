@@ -10,7 +10,7 @@ public enum NetDesc {
     PM_INBOX, PM_OUTBOX, PM_INBOX_DETAIL, PM_OUTBOX_DETAIL, PM_SEND_S1, PM_SEND_S2,
     MSG_MARK, MSG_DELETE, TOPIC_CLOSE, TOPIC_UPDATE_FLAIR, TOPIC_POLL_VOTE,
     USER_TAG,
-    MSG_POST_S1, MSG_POST_S3, // no step 2 as all are quick-posted now
+    MSG_POST,
     TOPIC_POST_S1, TOPIC_POST_S3, // no step 2 as all are quick-posted now
     EDIT_MSG,
     NOTIFS_PAGE, NOTIFS_CLEAR,

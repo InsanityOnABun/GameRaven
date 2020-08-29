@@ -14,10 +14,6 @@ import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,6 +25,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.BuildConfig;
@@ -320,12 +321,16 @@ public class HeaderSettings extends PreferenceActivity {
 
                                         AllInOneV2.getHLDB().addUser(line, label, NumberUtils.toInt(color));
                                     }
-                                } else AllInOneV2.wtl("line unhandled in restore: " + line);
+                                } else {
+                                    Log.e("gameraven_settings", "line unhandled in restore: " + line);
+                                }
                             } else if (line.contains("=")) {
                                 splitLine = line.split("=", 2);
                                 keys.add(splitLine[0]);
                                 values.add(splitLine[1]);
-                            } else AllInOneV2.wtl("line unhandled in restore: " + line);
+                            } else {
+                                Log.e("gameraven_settings", "line unhandled in restore: " + line);
+                            }
                         }
                     }
 
@@ -352,8 +357,9 @@ public class HeaderSettings extends PreferenceActivity {
                                     editor.putInt(key, NumberUtils.toInt(val));
                             } else
                                 editor.putString(key, val);
-                        } else
-                            AllInOneV2.wtl("Key, Val pair not recognized in restore: " + key + ", " + val);
+                        } else  {
+                            Log.e("gameraven_settings", "Key, Val pair not recognized in restore: " + key + ", " + val);
+                        }
                     }
 
                     editor.apply();

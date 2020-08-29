@@ -195,7 +195,6 @@ public class MessageRowData extends BaseRowData {
         if (aio == null || aio != AllInOneV2.get())
             aio = AllInOneV2.get();
 
-        AllInOneV2.wtl("setting values");
         username = userIn;
         userTitles = userTitlesIn;
         avatarUrl = avatarUrlIn;
@@ -223,10 +222,7 @@ public class MessageRowData extends BaseRowData {
         if (!Session.isLoggedIn())
             messageIn.select("div.message_mpu").remove();
 
-        AllInOneV2.wtl("checking for poll");
         if (messageIn.getElementById("poll_results") != null) {
-            AllInOneV2.wtl("there is a poll");
-
             Element pollElem = messageIn.getElementById("poll_results");
 
             // Check if poll has been voted in, remove relevant html elements so
@@ -530,7 +526,6 @@ public class MessageRowData extends BaseRowData {
     public String getMessageForQuotingOrEditing() {
         String finalBody = unprocessedMessageText;
 
-        AllInOneV2.wtl("beginning opening anchor tag removal");
         while (finalBody.contains("<a ")) {
             int start = finalBody.indexOf("<a ");
             int end = finalBody.indexOf(">", start) + 1;
@@ -538,7 +533,6 @@ public class MessageRowData extends BaseRowData {
                     "");
         }
 
-        AllInOneV2.wtl("removing vid container divs");
         while (finalBody.contains("<div class=\"vid_container\">")) {
             int start = finalBody.indexOf("<div class=\"vid_container\">");
             int end = finalBody.indexOf(">", start) + 1;
@@ -551,24 +545,19 @@ public class MessageRowData extends BaseRowData {
                     "");
         }
 
-        AllInOneV2.wtl("removing closing anchor tags");
         finalBody = finalBody.replace("</a>", "");
 
-        AllInOneV2.wtl("removing existing \\n, replacing linebreak tags with \\n");
         if (finalBody.endsWith("<br />"))
             finalBody = finalBody.substring(0, finalBody.length() - 6);
         finalBody = finalBody.replace("\n", "");
         finalBody = finalBody.replace("<br />", "\n");
 
-        AllInOneV2.wtl("removing sig");
         int sigStart = finalBody.lastIndexOf("\n---\n");
         if (sigStart != -1)
             finalBody = finalBody.substring(0, sigStart);
 
-        AllInOneV2.wtl("unescaping finalbody html");
         finalBody = StringEscapeUtils.unescapeHtml4(finalBody);
 
-        AllInOneV2.wtl("returning finalbody");
         return finalBody;
     }
 

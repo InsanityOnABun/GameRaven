@@ -92,23 +92,16 @@ public class HistoryDBAdapter {
 
     public void insertHistory(String pathIn, String descIn, byte[] srcIn, int vLocFirstVisIn, int vLocOffsetIn) {
         if (!lastAddedPath.equals(pathIn)) {
-            AllInOneV2.wtl("starting insert history method");
             lastAddedPath = pathIn;
-            AllInOneV2.wtl("creating content vals obj");
             ContentValues vals = new ContentValues();
-            AllInOneV2.wtl("putting content vals");
             vals.put(COLUMN_HIST_PATH, pathIn);
             vals.put(COLUMN_HIST_DESC, descIn);
             vals.put(COLUMN_HIST_SRC, compress(srcIn));
             vals.put(COLUMN_HIST_VLOC_FIRSTVIS, vLocFirstVisIn);
             vals.put(COLUMN_HIST_VLOC_OFFSET, vLocOffsetIn);
-            AllInOneV2.wtl("inserting row");
             dbHelper.getWritableDatabase().insert(TABLE_HISTORY, null, vals);
-            AllInOneV2.wtl("trimming history");
             trimHistory();
-            AllInOneV2.wtl("updating hasHistory");
             updateHasHistory();
-            AllInOneV2.wtl("insert history method completing");
         }
     }
 
@@ -155,7 +148,6 @@ public class HistoryDBAdapter {
     }
 
     public static byte[] compress(byte[] data) {
-        AllInOneV2.wtl("starting history compression");
         try {
             Deflater deflater = new Deflater(Deflater.BEST_SPEED);
             deflater.setInput(data);
@@ -171,11 +163,7 @@ public class HistoryDBAdapter {
 
             deflater.end();
             outputStream.close();
-            byte[] output = outputStream.toByteArray();
-
-            AllInOneV2.wtl("CMPRSSN - Original: " + data.length / 1024 + " Kb");
-            AllInOneV2.wtl("CMPRSSN - Compressed: " + output.length / 1024 + " Kb");
-            return output;
+            return outputStream.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
             return data;
@@ -183,7 +171,6 @@ public class HistoryDBAdapter {
     }
 
     public static byte[] decompress(byte[] data) {
-        AllInOneV2.wtl("starting history decompression");
         try {
             Inflater inflater = new Inflater();
             inflater.setInput(data);
@@ -196,11 +183,7 @@ public class HistoryDBAdapter {
             }
             inflater.end();
             outputStream.close();
-            byte[] output = outputStream.toByteArray();
-
-            AllInOneV2.wtl("CMPRSSN - Original: " + data.length / 1024 + " Kb");
-            AllInOneV2.wtl("CMPRSSN - Decompressed: " + output.length / 1024 + " Kb");
-            return output;
+            return outputStream.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
             return data;
