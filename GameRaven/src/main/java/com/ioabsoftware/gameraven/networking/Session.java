@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -156,7 +158,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
     private boolean addToHistory = true;
 
     public void forceNoHistoryAddition() {
-        AllInOneV2.wtl("forcing history addition off");
         addToHistory = false;
     }
 
@@ -213,7 +214,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
      */
     private void finalConstructor(AllInOneV2 aioIn, String userIn, String passwordIn) {
         aio = aioIn;
-        AllInOneV2.wtl("NEW SESSION");
         aio.navDrawerReset();
 
         netManager = (ConnectivityManager) aio.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -235,11 +235,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
         Ion.getDefault(aio).getCookieMiddleware().clear();
 
         if (user == null) {
-            AllInOneV2.wtl("session constructor, user is null, starting logged out session");
             get(NetDesc.BOARDS_EXPLORE, GF_URLS.BOARDS_EXPLORE);
             aio.setLoginName(user);
         } else {
-            AllInOneV2.wtl("session constructor, user is not null, starting logged in session");
             get(NetDesc.LOGIN_S1, GF_URLS.ROOT + "/boards/");
             aio.setLoginName(user);
             aio.showLoggingInDialog(user);
@@ -392,7 +390,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case TOPIC_POLL_VOTE:
             case LOGIN_S1:
             case EDIT_MSG:
-            case MSG_POST_S1:
+            case MSG_POST:
             case TOPIC_POST_S1:
             case NOTIFS_PAGE:
             case NOTIFS_CLEAR:
@@ -405,7 +403,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 break;
 
             case LOGIN_S2:
-            case MSG_POST_S3:
             case TOPIC_POST_S3:
             case VERIFY_ACCOUNT_S1:
             case VERIFY_ACCOUNT_S2:
@@ -416,7 +413,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
     }
 
     private void handleNetworkResult(Exception e, NetDesc desc, Response<FinalDoc> result) {
-        AllInOneV2.wtl("session hNR fired, desc: " + desc.name());
         try {
             if (e != null)
                 throw e;
@@ -428,12 +424,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                 result.getResult().doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
 
-                AllInOneV2.wtl("parsing res");
                 Document doc = result.getResult().doc;
                 String resUrl = result.getRequest().getUri().toString();
-                AllInOneV2.wtl("resUrl: " + resUrl);
 
-                AllInOneV2.wtl("checking if res does not start with GF_URLS.ROOT");
                 if (!resUrl.startsWith(GF_URLS.ROOT)) {
                     AlertDialog.Builder b = new AlertDialog.Builder(aio);
                     b.setTitle("Redirected");
@@ -454,7 +447,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     return;
                 }
 
-                AllInOneV2.wtl("checking if pRes contains captcha");
                 if (!doc.select("header.page_header:contains(CAPTCHA)").isEmpty()) {
 
                     String captcha = doc.select("iframe").outerHtml();
@@ -497,24 +489,20 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     return;
                 }
 
-                AllInOneV2.wtl("checking for non-200 http response code");
                 int responseCode = result.getHeaders().code();
                 if (BuildConfig.DEBUG && responseCode != 200)
                     Crouton.showText(aio, "HTTP Response Code: " + responseCode, Theming.croutonStyle());
 
                 if (responseCode != 200) {
                     if (responseCode == 404) {
-                        AllInOneV2.wtl("status code 404");
                         Elements paragraphs = doc.getElementsByTag("p");
                         aio.genError("404 Error", paragraphs.get(1).text() + "\n\n" + paragraphs.get(2).text(), "Ok");
                         return;
                     } else if (responseCode == 403) {
-                        AllInOneV2.wtl("status code 403");
                         Elements paragraphs = doc.getElementsByTag("p");
                         aio.genError("403 Error", paragraphs.get(1).text() + "\n\n" + paragraphs.get(2).text(), "Ok");
                         return;
                     } else if (responseCode == 401) {
-                        AllInOneV2.wtl("status code 401");
                         if (lastDesc == NetDesc.LOGIN_S2) {
                             forceSkipAIOCleanup();
                             get(NetDesc.BOARDS_EXPLORE, GF_URLS.BOARDS_EXPLORE);
@@ -526,10 +514,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     }
                 }
 
-                AllInOneV2.wtl("checking for 408, 503, GameFAQs is Down pages");
                 Element firstHeader = doc.getElementsByTag("h1").first();
                 if (firstHeader != null && firstHeader.text().equals("408 Request Time-out")) {
-                    AllInOneV2.wtl("status code 408");
                     aio.genError("408 Error", "Your browser didn't send a complete request in time.", "Ok");
                     return;
                 }
@@ -547,8 +533,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     return;
                 }
 
-                AllInOneV2.wtl("checking for suspended, banned, and new accounts, " +
-                        "as well as register.html?miss=1 page");
                 if (resUrl.contains("account_suspended.html")) {
                     aio.genError("Account Suspended", "Your account seems to be suspended. Please " +
                             "log in to your account in a web browser for more details.", "Ok");
@@ -600,8 +584,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case TOPIC_UPDATE_FLAIR:
                     case TOPIC_POLL_VOTE:
                     case EDIT_MSG:
-                    case MSG_POST_S1:
-                    case MSG_POST_S3:
+                    case MSG_POST:
                     case TOPIC_POST_S1:
                     case TOPIC_POST_S3:
                     case VERIFY_ACCOUNT_S1:
@@ -611,7 +594,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case FRIENDS:
                     case FOLLOWERS:
                     case FOLLOWING:
-                        AllInOneV2.wtl("addToHistory unchanged: " + addToHistory);
                         break;
 
                     case USER_TAG:
@@ -620,7 +602,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case PM_SEND_S1:
                     case PM_SEND_S2:
                     case NOTIFS_CLEAR:
-                        AllInOneV2.wtl("setting addToHistory to false based on current NetDesc");
                         addToHistory = false;
                         break;
                 }
@@ -651,8 +632,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case LOGIN_S2:
                     case EDIT_MSG:
                     case TOPIC_POLL_VOTE:
-                    case MSG_POST_S1:
-                    case MSG_POST_S3:
+                    case MSG_POST:
                     case TOPIC_POST_S1:
                     case TOPIC_POST_S3:
                     case VERIFY_ACCOUNT_S1:
@@ -662,7 +642,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case FRIENDS:
                     case FOLLOWERS:
                     case FOLLOWING:
-                        AllInOneV2.wtl("beginning lastDesc, lastRes, etc. setting");
 
                         lastDesc = desc;
                         lastResBodyAsBytes = result.getResult().bytes;
@@ -672,7 +651,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         if (lastPath.contains("/boardaction/"))
                             lastPath = lastPath.replace("/boardaction/", "/boards/");
 
-                        AllInOneV2.wtl("finishing lastDesc, lastRes, etc. setting");
                         break;
 
                     case BOARD_UPDATE_FILTER:
@@ -682,7 +660,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case PM_SEND_S1:
                     case PM_SEND_S2:
                     case NOTIFS_CLEAR:
-                        AllInOneV2.wtl("not setting lastDesc, lastRes, etc.");
                         break;
 
                 }
@@ -696,7 +673,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                 switch (desc) {
                     case LOGIN_S1:
-                        AllInOneV2.wtl("session hNR determined this is login step 1");
                         String loginKey = doc.getElementsByAttributeValue("name", "key").attr("value");
 
                         HashMap<String, List<String>> loginData = new HashMap<>();
@@ -706,12 +682,10 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         loginData.put("path", Collections.singletonList(buildURL("answers", NetDesc.UNSPECIFIED)));
                         loginData.put("key", Collections.singletonList(loginKey));
 
-                        AllInOneV2.wtl("finishing login step 1, sending step 2");
                         post(NetDesc.LOGIN_S2, "/user/login", loginData);
                         break;
 
                     case LOGIN_S2:
-                        AllInOneV2.wtl("session hNR determined this is login step 2");
                         aio.setAMPLinkVisible(userCanViewAMP());
 
                         String ampStart = aio.getString(R.string.amp_list);
@@ -720,7 +694,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                                 "loggedInStartLocation", aio.getString(R.string.boards_explore));
 
                         if (initUrl != null) {
-                            AllInOneV2.wtl("loading previous page");
                             if (initUrl.equals(RESUME_INIT_URL) && canGoBack()) {
                                 aio.dismissLoginDialog();
                                 goBack(true);
@@ -728,66 +701,68 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             } else
                                 get(initDesc, initUrl);
                         } else if (userCanViewAMP() && loggedInStartLocation.equals(ampStart)) {
-                            AllInOneV2.wtl("loading AMP");
                             get(NetDesc.AMP_LIST, AllInOneV2.buildAMPLink());
                         } else if (loggedInStartLocation.equals(favsStart)) {
-                            AllInOneV2.wtl("loading favorite boards");
                             get(NetDesc.BOARDS_FAVORITE, GF_URLS.BOARDS_FAVORITES);
                         } else {
-                            AllInOneV2.wtl("loading board explorer");
                             get(NetDesc.BOARDS_EXPLORE, GF_URLS.BOARDS_EXPLORE);
                         }
 
                         break;
 
-                    case MSG_POST_S1:
                     case EDIT_MSG:
-                        AllInOneV2.wtl("session hNR determined this is post message step 1");
-
-                        HashMap<String, List<String>> msg1Data = new HashMap<>();
-                        msg1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-                        msg1Data.put("key", Collections.singletonList(sessionKey));
-                        msg1Data.put("post", Collections.singletonList("Post Message"));
-                        if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
-                            msg1Data.put("custom_sig", Collections.singletonList(aio.getSig()));
-
-                        post(NetDesc.MSG_POST_S3, lastPath, msg1Data);
+                        //TODO: rework for AJAX
+//
+//                        HashMap<String, List<String>> msg1Data = new HashMap<>();
+//                        msg1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
+//                        msg1Data.put("key", Collections.singletonList(sessionKey));
+//                        msg1Data.put("post", Collections.singletonList("Post Message"));
+//                        if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
+//                            msg1Data.put("custom_sig", Collections.singletonList(aio.getSig()));
+//
+//                        post(NetDesc.MSG_POST_S3, lastPath, msg1Data);
                         break;
 
-                    case MSG_POST_S3:
-                        AllInOneV2.wtl("session hNR determined this is post message step 3 (if jumping from 1 to 3, then app is quick posting)");
+                    case MSG_POST:
+                        JSONObject json = new JSONObject(doc.body().html());
+                        Log.d("GR-AJAX", json.toString(4));
 
-                        Elements msg3AutoFlag = doc.select("b:contains(There are one or more potential issues with your message)");
-                        Elements msg3Error = doc.select("b:contains(There was an error posting your message)");
-                        if (!msg3Error.isEmpty()) {
-                            AllInOneV2.wtl("there was an error in post msg step 3, ending early");
-                            aio.postError(((TextNode) msg3Error.first().nextSibling().nextSibling()).text());
-                            postErrorDetected = true;
-                        } else if (!msg3AutoFlag.isEmpty()) {
-                            AllInOneV2.wtl("autoflag got tripped in post msg step 3, getting data and showing autoflag dialog");
-                            String msg = ((TextNode) msg3AutoFlag.first().nextSibling().nextSibling()).text();
+                        String status = json.optString("status", "no_status");
 
-                            HashMap<String, List<String>> msg3Data = new HashMap<>();
-                            msg3Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-                            msg3Data.put("post", Collections.singletonList("Post Message"));
-                            msg3Data.put("key", Collections.singletonList(sessionKey));
-                            msg3Data.put("override", Collections.singletonList("checked"));
-                            if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
-                                msg3Data.put("custom_sig", Collections.singletonList(aio.getSig()));
-
-                            showAutoFlagWarning(lastPath, msg3Data, NetDesc.MSG_POST_S3, msg);
-                            postErrorDetected = true;
-                        } else {
-                            AllInOneV2.wtl("finishing post message step 3, refreshing topic");
-                            lastDesc = NetDesc.TOPIC;
+                        if (status.equalsIgnoreCase("success")) {
                             aio.enableGoToUrlDefinedPost();
                             Crouton.showText(aio, "Message posted.", Theming.croutonStyle());
-                            processTopicsAndMessages(doc, resUrl, NetDesc.TOPIC);
+                            get(NetDesc.TOPIC, json.getString("message_url"));
                         }
+
+//
+//                        Elements msg3AutoFlag = doc.select("b:contains(There are one or more potential issues with your message)");
+//                        Elements msg3Error = doc.select("b:contains(There was an error posting your message)");
+//                        if (!msg3Error.isEmpty()) {
+//                            aio.postError(((TextNode) msg3Error.first().nextSibling().nextSibling()).text());
+//                            postErrorDetected = true;
+//                        } else if (!msg3AutoFlag.isEmpty()) {
+//                            String msg = ((TextNode) msg3AutoFlag.first().nextSibling().nextSibling()).text();
+//
+//                            HashMap<String, List<String>> msg3Data = new HashMap<>();
+//                            msg3Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
+//                            msg3Data.put("post", Collections.singletonList("Post Message"));
+//                            msg3Data.put("key", Collections.singletonList(sessionKey));
+//                            msg3Data.put("override", Collections.singletonList("checked"));
+//                            if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
+//                                msg3Data.put("custom_sig", Collections.singletonList(aio.getSig()));
+//
+////                            showAutoFlagWarning(lastPath, msg3Data, NetDesc.MSG_POST_S3, msg);
+//                            postErrorDetected = true;
+//                        } else {
+//                            lastDesc = NetDesc.TOPIC;
+//                            aio.enableGoToUrlDefinedPost();
+//                            Crouton.showText(aio, "Message posted.", Theming.croutonStyle());
+//                            processTopicsAndMessages(doc, resUrl, NetDesc.TOPIC);
+//                        }
                         break;
 
                     case TOPIC_POST_S1:
-                        AllInOneV2.wtl("session hNR determined this is post topic step 1");
 
                         HashMap<String, List<String>> tpc1Data = new HashMap<>();
                         tpc1Data.put("topictitle", Collections.singletonList(aio.getSavedPostTitle()));
@@ -813,16 +788,12 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         break;
 
                     case TOPIC_POST_S3:
-                        AllInOneV2.wtl("session hNR determined this is post topic step 3 (if jumping from 1 to 3, then app is quick posting)");
-
                         Elements tpc3AutoFlag = doc.select("b:contains(There are one or more potential issues with your message)");
                         Elements tpc3Error = doc.select("b:contains(There was an error posting your message)");
                         if (!tpc3Error.isEmpty()) {
-                            AllInOneV2.wtl("there was an error in post topic step 3, ending early");
                             aio.postError(((TextNode) tpc3Error.first().nextSibling().nextSibling()).text());
                             postErrorDetected = true;
                         } else if (!tpc3AutoFlag.isEmpty()) {
-                            AllInOneV2.wtl("autoflag got tripped in post msg step 3, getting data and showing autoflag dialog");
                             String msg = ((TextNode) tpc3AutoFlag.first().nextSibling().nextSibling()).text();
 
                             HashMap<String, List<String>> tpc3Data = new HashMap<>();
@@ -838,7 +809,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             showAutoFlagWarning(lastPath, tpc3Data, NetDesc.TOPIC_POST_S3, msg);
                             postErrorDetected = true;
                         } else {
-                            AllInOneV2.wtl("finishing post topic step 3, processing new topic");
                             lastDesc = NetDesc.TOPIC;
                             Crouton.showText(aio, "Topic posted.", Theming.croutonStyle());
                             processTopicsAndMessages(doc, resUrl, NetDesc.TOPIC);
@@ -893,12 +863,10 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         break;
 
                     case TOPIC:
-                        AllInOneV2.wtl("session hNR determined this is a topic");
                         processTopicsAndMessages(doc, resUrl, NetDesc.TOPIC);
                         break;
 
                     case MESSAGE_DETAIL:
-                        AllInOneV2.wtl("session hNR determined this is a message");
                         processTopicsAndMessages(doc, resUrl, NetDesc.MESSAGE_DETAIL);
                         break;
 
@@ -927,13 +895,11 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case FRIENDS:
                     case FOLLOWERS:
                     case FOLLOWING:
-                        AllInOneV2.wtl("session hNR determined this should be handled by AIO");
                         aio.processContent(desc, doc, resUrl);
                         break;
                 }
             } else {
                 // connection failed for some reason, probably timed out
-                AllInOneV2.wtl("res was null in session hNR");
                 aio.timeoutCleanup(desc);
             }
         } catch (TimeoutException timeoutEx) {
@@ -951,8 +917,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
             throw new RuntimeException(ex);
         }
-
-        AllInOneV2.wtl("session hNR finishing, desc: " + desc.name());
     }
 
     private void addHistory() {
@@ -981,10 +945,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case FOLLOWERS:
                 case FOLLOWING:
                 case UNSPECIFIED:
-                    AllInOneV2.wtl("beginning history addition");
                     int[] vLoc = aio.getScrollerVertLoc();
                     hAdapter.insertHistory(lastPath, lastDesc.name(), lastResBodyAsBytes, vLoc[0], vLoc[1]);
-                    AllInOneV2.wtl("finished history addition");
                     break;
 
                 case BOARD_UPDATE_FILTER:
@@ -994,8 +956,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case LOGIN_S1:
                 case LOGIN_S2:
                 case EDIT_MSG:
-                case MSG_POST_S1:
-                case MSG_POST_S3:
+                case MSG_POST:
                 case TOPIC_POST_S1:
                 case TOPIC_POST_S3:
                 case VERIFY_ACCOUNT_S1:
@@ -1003,7 +964,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case PM_SEND_S1:
                 case PM_SEND_S2:
                 case NOTIFS_CLEAR:
-                    AllInOneV2.wtl("not adding to history");
                     break;
 
             }
@@ -1025,10 +985,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
         }
 
         if (processAsBoard) {
-            AllInOneV2.wtl("topic or message is no longer available, treat response as a board");
             aio.processContent(NetDesc.BOARD, doc, resUrl);
         } else {
-            AllInOneV2.wtl("handle the topic or message in AIO");
             aio.processContent(successDesc, doc, resUrl);
         }
     }
@@ -1036,7 +994,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
     private boolean skipAIOCleanup = false;
 
     public void forceSkipAIOCleanup() {
-        AllInOneV2.wtl("forcing AIO cleanup skip");
         skipAIOCleanup = true;
     }
 
@@ -1075,18 +1032,17 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                 break;
 
-            case MSG_POST_S3:
             case TOPIC_POST_S3:
                 if (!postErrorDetected)
-                    aio.postExecuteCleanup((desc == NetDesc.MSG_POST_S3 ? NetDesc.TOPIC : NetDesc.BOARD));
+                    aio.postExecuteCleanup((desc == NetDesc.MSG_POST ? NetDesc.TOPIC : NetDesc.BOARD));
 
                 break;
 
             case BOARD_UPDATE_FILTER:
             case LOGIN_S1:
             case LOGIN_S2:
+            case MSG_POST:
             case EDIT_MSG:
-            case MSG_POST_S1:
             case TOPIC_POST_S1:
             case VERIFY_ACCOUNT_S1:
             case VERIFY_ACCOUNT_S2:
@@ -1117,10 +1073,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
         if (forceReload || getPrefObj().getBoolean("reloadOnBack", false)) {
             forceNoHistoryAddition();
-            AllInOneV2.wtl("going back in history, refreshing: " + h.getDesc().name() + " " + h.getPath());
             get(h.getDesc(), h.getPath());
         } else {
-            AllInOneV2.wtl("going back in history: " + h.getDesc().name() + " " + h.getPath());
             lastDesc = h.getDesc();
             lastResBodyAsBytes = h.getResBodyAsBytes();
             lastPath = h.getPath();
@@ -1150,7 +1104,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
     public void refresh() {
         forceNoHistoryAddition();
-        AllInOneV2.wtl("refreshing: " + lastDesc.name() + " " + lastPath);
         applySavedScroll = true;
         savedScrollVal = aio.getScrollerVertLoc();
 
@@ -1191,8 +1144,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             if (end > start)
                 userLevel = NumberUtils.toInt(sc.substring(start, end));
         }
-
-        AllInOneV2.wtl("user level: " + userLevel);
     }
 
     public static NetDesc determineNetDesc(String url) {

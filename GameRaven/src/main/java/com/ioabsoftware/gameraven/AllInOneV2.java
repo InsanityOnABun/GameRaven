@@ -513,10 +513,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         postWrapper = findViewById(R.id.aioPostWrapper);
 
-        wtl("creating default sig");
         defaultSig = "Posted with GameRaven *grver*";
 
-        wtl("starting db creation");
         hlDB = new HighlightListDBHelper(this);
 
         View foot = new View(this);
@@ -543,8 +541,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         fab.hide();
 
         AppRater.app_launched(this);
-
-        wtl("onCreate finishing");
     }
 
     @Override
@@ -571,7 +567,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     @Override
     protected void onResume() {
-        wtl("onResume fired");
         super.onResume();
 
         Log.d("useragent", GRUserAgent.get(this));
@@ -584,16 +579,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         @SuppressWarnings("deprecation") Time now = new Time();
         now.setToNow();
         if (lastUpdateYear != now.year || lastUpdateYearDay != now.yearDay) {
-            wtl("checking for update");
             try {
-                wtl("my version is " + BuildConfig.VERSION_CODE);
                 Ion.with(this)
                         .load("GET", "http://ioabsoftware.com/gameraven/latest.txt")
                         .asString()
                         .setCallback((e, result) -> {
                             if (NumberUtils.isCreatable(result)) {
                                 int netVersion = Integer.valueOf(result);
-                                wtl("net version is " + netVersion);
 
                                 if (netVersion > BuildConfig.VERSION_CODE) {
                                     AlertDialog.Builder b = new AlertDialog.Builder(AllInOneV2.this);
@@ -663,16 +655,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             if (firstResume && resumeSession && AccountManager.containsUser(this, resumeAccount)) {
                 session = new Session(this, resumeAccount, AccountManager.getPassword(this, resumeAccount), Session.RESUME_INIT_URL, NetDesc.UNSPECIFIED);
             } else if (AccountManager.containsUser(this, defaultAccount)) {
-                wtl("starting new session from onResume, logged in");
                 session = new Session(this, defaultAccount, AccountManager.getPassword(this, defaultAccount), initUrl, initDesc);
             } else {
-                wtl("starting new session from onResume, no login");
                 session = new Session(this, null, null, initUrl, initDesc);
             }
         } else {
             setLoginName(Session.getUser());
             if (settings.getBoolean("reloadOnResume", false)) {
-                wtl("session exists, reload on resume is true, refreshing page");
                 isRoR = true;
                 session.refresh();
             }
@@ -689,8 +678,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         }
 
         firstResume = false;
-
-        wtl("onResume finishing");
     }
 
     @Override
@@ -717,7 +704,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     @Override
     protected void onDestroy() {
-        wtl("Destroying!");
         Crouton.clearCroutonsForActivity(this);
 
         if (isFinishing())
@@ -847,10 +833,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     try {
                         String encodedQuery = URLEncoder.encode(query, DocumentParser.CHARSET_NAME);
                         if (session.getLastDesc() == NetDesc.BOARD) {
-                            wtl("searching board for query");
                             session.get(NetDesc.BOARD, session.getLastPathWithoutData() + "?search=" + encodedQuery);
                         } else if (session.getLastDesc() == NetDesc.BOARDS_EXPLORE || session.getLastDesc() == NetDesc.GAME_SEARCH) {
-                            wtl("searching for games");
                             session.get(NetDesc.GAME_SEARCH, GAME_SEARCH_URL + encodedQuery);
                         }
                     } catch (UnsupportedEncodingException e) {
@@ -1014,8 +998,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     data.put("key", Collections.singletonList(session.getSessionKey()));
                     data.put("b", Collections.singletonList(boardToFilter));
                     data.put("list", Collections.singletonList(myrows.toString()));
-                    session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
-                    wtl(data.toString());
+                    session.post(NetDesc.BOARD_UPDATE_FILTER, GF_URLS.AJAX_BOARD_FILTER, data);
                 });
                 filterBuilder.setNeutralButton("Clear Filter", (dialog, which) -> {
                     StringBuilder myrows = new StringBuilder().append('[');
@@ -1031,7 +1014,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     data.put("key", Collections.singletonList(session.getSessionKey()));
                     data.put("b", Collections.singletonList(boardToFilter));
                     data.put("list", Collections.singletonList(myrows.toString()));
-                    session.post(NetDesc.BOARD_UPDATE_FILTER, "/ajax/board_topic_filter", data);
+                    session.post(NetDesc.BOARD_UPDATE_FILTER, GF_URLS.AJAX_BOARD_FILTER, data);
                 });
                 filterBuilder.setNegativeButton(R.string.cancel, null);
                 filterBuilder.show();
@@ -1081,10 +1064,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             case R.id.refresh:
                 if (session.getLastPath() == null) {
                     if (Session.isLoggedIn()) {
-                        wtl("starting new session from case R.id.refresh, logged in");
                         session = new Session(this, Session.getUser(), AccountManager.getPassword(this, Session.getUser()));
                     } else {
-                        wtl("starting new session from R.id.refresh, no login");
                         session = new Session(this);
                     }
                 } else
@@ -1196,8 +1177,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 msg = "Login timed out, press retry to try again.";
                 posButtonText = "Retry";
                 break;
-            case MSG_POST_S1:
-            case MSG_POST_S3:
+            case MSG_POST:
             case TOPIC_POST_S1:
             case TOPIC_POST_S3:
                 postTimeoutCleanup();
@@ -1262,7 +1242,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     private void postInterfaceCleanup() {
         if (!isRoR && postWrapper.getVisibility() == View.VISIBLE) {
-            wtl("postInterfaceCleanup fired --NEL");
             postWrapper.setVisibility(View.GONE);
             pollButton.setVisibility(View.GONE);
             pollSep.setVisibility(View.GONE);
@@ -1299,9 +1278,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void preExecuteSetup(NetDesc desc) {
-        wtl("GRAIO dPreES fired --NEL, desc: " + desc.name());
-
-        if (desc != NetDesc.MSG_POST_S1 && desc != NetDesc.TOPIC_POST_S1 && desc != NetDesc.EDIT_MSG)
+        if (desc != NetDesc.MSG_POST && desc != NetDesc.TOPIC_POST_S1 && desc != NetDesc.EDIT_MSG)
             postInterfaceCleanup();
 
         swipeRefreshLayout.setRefreshing(true);
@@ -1318,9 +1295,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     ViewAdapter viewAdapter = new ViewAdapter(this, adapterRows);
 
     public void processContent(NetDesc desc, Document doc, String resUrl) {
-
-        wtl("GRAIO hNR fired, desc: " + desc.name());
-
         swipeRefreshLayout.setEnabled(false);
 
         if (searchIcon != null)
@@ -1331,7 +1305,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         adapterRows.clear();
         viewAdapter.notifyDataSetChanged();
 
-        wtl("setting board, topic, message id to null");
         boardID = null;
         topicID = null;
         messageIDForEditing = null;
@@ -1578,8 +1551,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 break;
 
             case AMP_LIST:
-                wtl("GRAIO hNR determined this is an amp response");
-
                 tbody = doc.getElementsByTag("tbody").first();
 
                 headerTitle = Session.getUser() + "'s Active Messages";
@@ -1640,8 +1611,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 } else {
                     adapterRows.add(new HeaderRowData("You have no active messages at this time."));
                 }
-
-                wtl("amp response block finished");
                 break;
 
             case TRACKED_TOPICS:
@@ -1695,15 +1664,11 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 break;
 
             case BOARD:
-                wtl("GRAIO hNR determined this is a board response");
-
-                wtl("setting board id");
                 boardID = parseBoardID(resUrl);
 
                 boolean isSplitList = false;
                 if (doc.getElementsByTag("th").first() != null) {
                     if (doc.getElementsByTag("th").first().text().equals("Board Title")) {
-                        wtl("is actually a split board list");
 
                         updateHeaderNoJumper(doc.select("h1.page-title").first().text(), NetDesc.BOARD);
 
@@ -1717,7 +1682,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     String searchQuery = EMPTY_STRING;
                     String searchPJAddition = EMPTY_STRING;
                     if (resUrl.contains("search=")) {
-                        wtl("board search url: " + resUrl);
                         searchQuery = resUrl.substring(resUrl.indexOf("search=") + 7);
                         int i = searchQuery.indexOf('&');
                         if (i != -1)
@@ -1840,7 +1804,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         table.getElementsByTag("col").get(0).remove();
                         table.getElementsByTag("th").get(0).remove();
 
-                        wtl("board row parsing start");
                         boolean skipFirst = true;
                         Set<String> hlUsers = hlDB.getHighlightedUsers().keySet();
                         table.select("div.ad").remove();
@@ -1867,8 +1830,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                     type = TopicType.LOCKED;
                                 else if (tImg.contains("archived"))
                                     type = TopicType.ARCHIVED;
-
-                                wtl(tImg + ", " + type.name());
 
                                 ReadStatus status = ReadStatus.UNREAD;
                                 if (tImg.endsWith("_read"))
@@ -1897,13 +1858,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                             } else
                                 skipFirst = false;
                         }
-                        wtl("board row parsing end");
                     } else {
                         adapterRows.add(new HeaderRowData("There are no topics at this time."));
                     }
                 }
-
-                wtl("board response block finished");
                 break;
 
             case TOPIC:
@@ -1912,7 +1870,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 topicID = parseTopicID(resUrl);
 
                 tlUrl = "boards/" + boardID;
-                wtl(tlUrl);
                 setMenuItemVisibility(topicListIcon, true);
 
                 Element headerElem = doc.selectFirst("h1.page-title");
@@ -2078,7 +2035,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                         String avatarUrl = row.getElementsByClass("imgboxart").first().attr("src");
 
-                        wtl("creating messagerowdata object");
                         adapterRows.add(new MessageRowData(user, userTitles, avatarUrl, postNum,
                                 postTime, msgBody, boardID, topicID, mID, uID, hlColor, canReport,
                                 canDelete, canEdit, canQuote, canUpdateFlair));
@@ -2129,7 +2085,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 break;
 
             case USER_TAG:
-                wtl("starting check for user tag success");
                 Element error = doc.getElementsByClass("error").first();
                 if (error == null) {
                     Crouton.showText(this, "User tag updated successfully.", Theming.croutonStyle());
@@ -2141,7 +2096,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                     b.show();
                 }
             case USER_DETAIL:
-                wtl("starting user detail processing");
                 tbody = doc.select("table.board").first().getElementsByTag("tbody").first();
                 String name = null;
                 String ID = null;
@@ -2155,7 +2109,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 String tagText = null;
                 for (Element row : tbody.children()) {
                     String label = row.child(0).text().toLowerCase(Locale.US);
-                    wtl("user detail row label: " + label);
                     switch (label) {
                         case "user name":
                             name = row.child(1).text();
@@ -2165,7 +2118,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                             break;
                         case "board user level":
                             level = row.child(1).html();
-                            wtl("set level: " + level);
                             break;
                         case "account created":
                             creation = row.child(1).text();
@@ -2204,10 +2156,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 break;
 
             case GAME_SEARCH:
-                wtl("GRAIO hNR determined this is a game search response");
-
-                wtl("game search url: " + resUrl);
-
                 String searchQuery = resUrl.substring(resUrl.indexOf("game=") + 5);
                 int i = searchQuery.indexOf("&");
                 if (i != -1)
@@ -2246,7 +2194,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
                 Element gameSearchResults = doc.select("div.search_results_product").first();
                 if (gameSearchResults != null) {
-                    wtl("board row parsing start");
                     for (Element row : gameSearchResults.select("div.sr_row")) {
                         String platform = row.select("div.sr_platform").text();
                         String bName = row.select("div.sr_title").text();
@@ -2256,13 +2203,9 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         if (!bUrl.equals(EMPTY_STRING))
                             adapterRows.add(new GameSearchRowData(bName, platform, bYear, bUrl));
                     }
-                    wtl("board row parsing end");
-
                 } else {
                     adapterRows.add(new HeaderRowData("No results."));
                 }
-
-                wtl("game search response block finished");
                 break;
 
             case FRIENDS:
@@ -2279,8 +2222,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             case TOPIC_UPDATE_FLAIR:
             case PM_SEND_S1:
             case PM_SEND_S2:
-            case MSG_POST_S1:
-            case MSG_POST_S3:
+            case MSG_POST:
             case TOPIC_CLOSE:
             case NOTIFS_CLEAR:
             case TOPIC_POST_S1:
@@ -2292,7 +2234,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 break;
 
             case UNSPECIFIED:
-                wtl("GRAIO hNR determined response type is unhandled");
                 getSupportActionBar().setTitle("Page unhandled - " + resUrl);
                 break;
         }
@@ -2351,8 +2292,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
         if (swipeRefreshLayout.isRefreshing())
             swipeRefreshLayout.setRefreshing(false);
-
-        wtl("GRAIO hNR finishing");
     }
 
     /*
@@ -2377,7 +2316,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     private void processBoardTbodyRows(Elements rows) {
         for (Element row : rows) {
-            wtl(row.outerHtml());
             if (row.hasClass("head")) {
                 adapterRows.add(new HeaderRowData(row.text()));
             } else {
@@ -2468,8 +2406,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void postExecuteCleanup(NetDesc desc) {
-        wtl("GRAIO dPostEC --NEL, desc: " + (desc == null ? "null" : desc.name()));
-
         if (needToSetNavList) {
             setNavDrawerVisibility(Session.isLoggedIn());
         }
@@ -2569,7 +2505,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         x = jumperPageUrl.indexOf("&page=") + 6;
 
                     String go = jumperPageUrl.substring(0, x) + which + jumperPageUrl.substring(x);
-                    wtl("jumper dialog url: " + go);
                     session.get(pageJumperDesc, go);
                 });
 
@@ -2606,7 +2541,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     private void quoteSetup(String user, String msg, String mID, String uID) {
-        wtl("quoteSetup fired");
         // <cite data-quote-id="925122238" data-user-id="3705639">
         String openCite = "<cite data-quote-id=\"" + mID + "\" data-user-id=\"" + uID + "\">";
         String quotedMsg = openCite + user + " posted...</cite>\n" + "<quote>" + msg + "</quote>\n";
@@ -2621,8 +2555,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postSetup(true);
         else
             postBody.setSelection(Math.min(start, end) + quotedMsg.length());
-
-        wtl("quoteSetup finishing");
     }
 
     private void postSetup(boolean postingOnTopic) {
@@ -2657,7 +2589,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void postCancel(View view) {
-        wtl("postCancel fired --NEL");
         if (settings.getBoolean("confirmPostCancel", false)) {
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setMessage("Cancel this post?");
@@ -2702,7 +2633,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void postDo(View view) {
-        wtl("postDo fired");
         if (settings.getBoolean("confirmPostSubmit", false)) {
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setMessage("Submit this post?");
@@ -2718,17 +2648,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         assert postTitle.getText() != null : "postTitle.getText() is null";
 
         if (titleWrapper.getVisibility() == View.VISIBLE) {
-            wtl("posting on a board");
             // posting on a board
             String path = GF_URLS.ROOT + "/boards/post?board=" + boardID;
             int i = path.indexOf('-');
             path = path.substring(0, i);
-            wtl("post path: " + path);
             savedPostBody = postBody.getText().toString();
-            wtl("saved post body: " + savedPostBody);
             savedPostTitle = postTitle.getText().toString();
-            wtl("saved post title: " + savedPostTitle);
-            wtl("sending topic");
             postSubmitButton.setEnabled(false);
             pollButton.setEnabled(false);
             flairButton.setEnabled(false);
@@ -2739,22 +2664,25 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             session.get(NetDesc.TOPIC_POST_S1, path);
         } else {
             // posting on a topic
-            wtl("posting on a topic");
             String path = GF_URLS.ROOT + "/boards/post?board=" + boardID + "&topic=" + topicID;
             if (messageIDForEditing != null)
                 path += "&message=" + messageIDForEditing;
 
-            wtl("post path: " + path);
             savedPostBody = postBody.getText().toString();
-            wtl("saved post body: " + savedPostBody);
-            wtl("sending post");
             postSubmitButton.setEnabled(false);
             postCancelButton.setEnabled(false);
             if (messageIDForEditing != null) {
                 session.get(NetDesc.EDIT_MSG, path);
             }
             else {
-                session.get(NetDesc.MSG_POST_S1, path);
+//                session.get(NetDesc.MSG_POST_S1, path);
+                HashMap<String, List<String>> data = new HashMap<>();
+                data.put("board", Collections.singletonList(boardID));
+                data.put("topic", Collections.singletonList(topicID));
+                data.put("message", Collections.singletonList(savedPostBody));
+                data.put("key", Collections.singletonList(session.getSessionKey()));
+                data.put("override", Collections.singletonList("1"));
+                session.post(NetDesc.MSG_POST, GF_URLS.AJAX_MSG_POST, data);
             }
         }
     }
@@ -3168,16 +3096,13 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
 
     public void refreshClicked(View view) {
-        wtl("refreshClicked fired --NEL");
         if (view != null)
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
         if (session.getLastPath() == null) {
             if (Session.isLoggedIn()) {
-                wtl("starting new session from refreshClicked, logged in");
                 session = new Session(this, Session.getUser(), AccountManager.getPassword(this, Session.getUser()));
             } else {
-                wtl("starting new session from refreshClicked, no login");
                 session = new Session(this);
             }
         } else
@@ -3201,34 +3126,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         return sig.replace("*grver*", BuildConfig.VERSION_NAME);
     }
 
-    private static long lastNano = 0;
-
-    public static void wtl(String msg) {
-        if (BuildConfig.DEBUG) {
-            long currNano = System.nanoTime();
-
-            msg = msg.replaceAll("\\\\n", "(nl)");
-
-            long elapsed;
-            if (lastNano == 0)
-                elapsed = 0;
-            else
-                elapsed = currNano - lastNano;
-
-            elapsed = elapsed / 1000000;
-
-            if (elapsed > 100)
-                Log.w("logger", "time since previous log was over 100 milliseconds");
-
-            lastNano = System.nanoTime();
-
-            msg = elapsed + "// " + msg;
-            Log.d("logger", msg);
-        }
-    }
-
     private String parseBoardID(String url) {
-        wtl("parseBoardID fired");
         // board example: https://www.gamefaqs.com/boards/400-current-events
         String boardUrl = url.substring(GF_URLS.ROOT.length() + 8);
 
@@ -3248,13 +3146,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             String replacer = boardUrl.substring(i);
             boardUrl = boardUrl.replace(replacer, EMPTY_STRING);
         }
-
-        wtl("boardID: " + boardUrl);
         return boardUrl;
     }
 
     private String parseTopicID(String url) {
-        wtl("parseTopicID fired");
         // topic example: https://www.gamefaqs.com/boards/400-current-events/64300205
         String topicUrl = url.substring(url.indexOf('/', GF_URLS.ROOT.length() + 8) + 1);
         int i = topicUrl.indexOf('/');
@@ -3272,15 +3167,11 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             String replacer = topicUrl.substring(i);
             topicUrl = topicUrl.replace(replacer, EMPTY_STRING);
         }
-        wtl("topicID: " + topicUrl);
         return topicUrl;
     }
 
     private String parseMessageID(String url) {
-        wtl("parseMessageID fired");
-        String msgID = url.substring(url.lastIndexOf('/') + 1);
-        wtl("messageIDForEditing: " + msgID);
-        return msgID;
+        return url.substring(url.lastIndexOf('/') + 1);
     }
 
 
@@ -3294,10 +3185,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postCancel(postCancelButton);
         } else {
             if (session != null && session.canGoBack()) {
-                wtl("back pressed, history exists, going back");
                 session.goBack(false);
             } else {
-                wtl("back pressed, no history, exiting app");
                 finish();
             }
         }
