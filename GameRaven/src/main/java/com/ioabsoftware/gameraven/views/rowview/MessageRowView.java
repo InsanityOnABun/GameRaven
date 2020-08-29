@@ -28,6 +28,7 @@ import androidx.preference.PreferenceManager;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
+import com.ioabsoftware.gameraven.util.MyTagHandler;
 import com.ioabsoftware.gameraven.util.Theming;
 import com.ioabsoftware.gameraven.views.BaseRowData;
 import com.ioabsoftware.gameraven.views.BaseRowView;
@@ -200,7 +201,7 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                     new ImageGetterAsyncTask(getContext(), source, d).execute(message);
 
                     return d;
-                }, null);
+                }, new MyTagHandler());
         message.setText(spanned);
 
         message.setMovementMethod(ArrowKeyMovementMethod.getInstance());
