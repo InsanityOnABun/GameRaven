@@ -1714,10 +1714,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                         }
                     }
 
+                    boardFlairsCurrent = new LinkedHashMap<>();
+                    boardFlairsNames = new LinkedHashMap<>();
                     Elements flairsElem = doc.select("div.flair_option");
                     if (flairsElem != null && !flairsElem.isEmpty()) {
-                        boardFlairsCurrent = new LinkedHashMap<>();
-                        boardFlairsNames = new LinkedHashMap<>();
                         boolean pastFirstCurrent = false;
                         StringBuilder filterHeader = new StringBuilder("Applied Filters: ");
 
@@ -2591,9 +2591,11 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             postBody.setSelection(postBody.getText().length());
         } else {
             titleWrapper.setVisibility(View.VISIBLE);
-            flairButton.setEnabled(true);
-            flairButton.setVisibility(View.VISIBLE);
-            flairSep.setVisibility(View.VISIBLE);
+            if (boardFlairsNames.size() > 0) {
+                flairButton.setEnabled(true);
+                flairButton.setVisibility(View.VISIBLE);
+                flairSep.setVisibility(View.VISIBLE);
+            }
             if (Session.userHasAdvancedPosting()) {
                 pollButton.setEnabled(true);
                 pollButton.setVisibility(View.VISIBLE);
