@@ -11,8 +11,8 @@ public enum NetDesc {
     MSG_MARK, MSG_DELETE, TOPIC_CLOSE, TOPIC_UPDATE_FLAIR, TOPIC_POLL_VOTE,
     USER_TAG,
     MSG_POST,
+    MSG_EDIT,
     TOPIC_POST_S1, TOPIC_POST_S3, // no step 2 as all are quick-posted now
-    EDIT_MSG,
     NOTIFS_PAGE, NOTIFS_CLEAR,
     MENTIONS_PAGE
 }

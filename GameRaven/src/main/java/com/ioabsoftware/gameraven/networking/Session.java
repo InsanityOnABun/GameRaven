@@ -389,8 +389,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case TOPIC_UPDATE_FLAIR:
             case TOPIC_POLL_VOTE:
             case LOGIN_S1:
-            case EDIT_MSG:
             case MSG_POST:
+            case MSG_EDIT:
             case TOPIC_POST_S1:
             case NOTIFS_PAGE:
             case NOTIFS_CLEAR:
@@ -583,7 +583,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case MSG_DELETE:
                     case TOPIC_UPDATE_FLAIR:
                     case TOPIC_POLL_VOTE:
-                    case EDIT_MSG:
                     case TOPIC_POST_S1:
                     case TOPIC_POST_S3:
                     case VERIFY_ACCOUNT_S1:
@@ -596,6 +595,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         break;
 
                     case MSG_POST:
+                    case MSG_EDIT:
                     case USER_TAG:
                     case MSG_MARK:
                     case TOPIC_CLOSE:
@@ -630,7 +630,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case UNSPECIFIED:
                     case LOGIN_S1:
                     case LOGIN_S2:
-                    case EDIT_MSG:
                     case TOPIC_POLL_VOTE:
                     case TOPIC_POST_S1:
                     case TOPIC_POST_S3:
@@ -655,6 +654,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         break;
 
                     case MSG_POST:
+                    case MSG_EDIT:
                     case BOARD_UPDATE_FILTER:
                     case USER_TAG:
                     case MSG_MARK:
@@ -712,21 +712,12 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                         break;
 
-                    case EDIT_MSG:
-                        //TODO: rework for AJAX
-//
-//                        HashMap<String, List<String>> msg1Data = new HashMap<>();
-//                        msg1Data.put("messagetext", Collections.singletonList(aio.getSavedPostBody()));
-//                        msg1Data.put("key", Collections.singletonList(sessionKey));
-//                        msg1Data.put("post", Collections.singletonList("Post Message"));
-//                        if (!getPrefObj().getBoolean("useGFAQsSig" + user, false))
-//                            msg1Data.put("custom_sig", Collections.singletonList(aio.getSig()));
-//
-//                        post(NetDesc.MSG_POST_S3, lastPath, msg1Data);
-                        break;
-
                     case MSG_POST:
-                        JSONObject json = new JSONObject(doc.body().html());
+                    case MSG_EDIT:
+                        String sanitizedJSONString = doc.body().html()
+                                .replace("<br \\=\"\" />", "\n")
+                                .replace("\\n", "\n");
+                        JSONObject json = new JSONObject(sanitizedJSONString);
                         Log.d("GR-AJAX", json.toString(4));
 
                         String status = json.optString("status", "no_status");
@@ -735,8 +726,31 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             aio.enableGoToUrlDefinedPost();
                             applySavedScroll = false;
                             forceNoHistoryAddition();
-                            Crouton.showText(aio, "Message posted.", Theming.croutonStyle());
+                            String postOk = desc == NetDesc.MSG_POST ? "Message posted." : "Message edited.";
+                            Crouton.showText(aio, postOk, Theming.croutonStyle());
                             get(NetDesc.TOPIC, json.getString("message_url"));
+                        } else if (status.equalsIgnoreCase("error")) {
+                            aio.postError(json.optString("status_text", "There was an error, but GameFAQs did not provide any details."));
+                            postErrorDetected = true;
+                        } else if (status.equalsIgnoreCase("warning")) {
+                            String msgAutoflagPath = desc == NetDesc.MSG_POST ? GF_URLS.AJAX_MSG_POST : GF_URLS.AJAX_MSG_EDIT;
+                            HashMap<String, List<String>> msgAutoFlagData = new HashMap<>();
+                            msgAutoFlagData.put("board", Collections.singletonList(aio.getSavedBoardID()));
+                            msgAutoFlagData.put("topic", Collections.singletonList(aio.getSavedTopicID()));
+                            msgAutoFlagData.put("key", Collections.singletonList(getSessionKey()));
+                            msgAutoFlagData.put("override", Collections.singletonList("1"));
+                            if (desc == NetDesc.MSG_POST) {
+                                msgAutoFlagData.put("message", Collections.singletonList(aio.getSavedPostBody()));
+                            } else {
+                                msgAutoFlagData.put("message", Collections.singletonList(aio.getSavedMessageID()));
+                                msgAutoFlagData.put("message_text", Collections.singletonList(aio.getSavedPostBody()));
+                            }
+                            showAutoFlagWarning(msgAutoflagPath, msgAutoFlagData, desc,
+                                    json.optString("warnings", "There was a warning, but GameFAQs did not provide any details."));
+                            postErrorDetected = true;
+                        } else {
+                            aio.postError("Post status response was unrecognized: " + status);
+                            postErrorDetected = true;
                         }
 
 //
@@ -960,8 +974,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case TOPIC_CLOSE:
                 case LOGIN_S1:
                 case LOGIN_S2:
-                case EDIT_MSG:
                 case MSG_POST:
+                case MSG_EDIT:
                 case TOPIC_POST_S1:
                 case TOPIC_POST_S3:
                 case VERIFY_ACCOUNT_S1:
@@ -1047,7 +1061,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case LOGIN_S1:
             case LOGIN_S2:
             case MSG_POST:
-            case EDIT_MSG:
+            case MSG_EDIT:
             case TOPIC_POST_S1:
             case VERIFY_ACCOUNT_S1:
             case VERIFY_ACCOUNT_S2:
@@ -1127,10 +1141,10 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
     private void showAutoFlagWarning(final String path, final HashMap<String, List<String>> data, final NetDesc desc, String msg) {
         AlertDialog.Builder b = new AlertDialog.Builder(aio);
-        b.setTitle("Post Warning");
+        b.setTitle("GameFAQs says...");
         b.setMessage(msg);
 
-        b.setPositiveButton("Post anyway", (dialog, which) -> post(desc, path, data));
+        b.setPositiveButton("Post Anyway", (dialog, which) -> post(desc, path, data));
 
         b.setNegativeButton("Cancel", (dialog, which) -> aio.postExecuteCleanup(desc));
 

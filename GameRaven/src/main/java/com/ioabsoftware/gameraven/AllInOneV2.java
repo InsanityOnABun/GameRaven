@@ -142,6 +142,24 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         return savedPostTitle;
     }
 
+    private String savedBoardID;
+
+    public String getSavedBoardID() {
+        return savedBoardID;
+    }
+
+    private String savedTopicID;
+
+    public String getSavedTopicID() {
+        return savedTopicID;
+    }
+
+    private String savedMessageID;
+
+    public String getSavedMessageID() {
+        return savedMessageID;
+    }
+
     private static SharedPreferences settings = null;
 
     public static SharedPreferences getSettingsPref() {
@@ -1142,7 +1160,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     public void postError(String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg);
-        builder.setTitle("There was a problem with your post...");
+        builder.setTitle("There was an error. GameFAQs says...");
         builder.setPositiveButton("Ok", null);
         builder.show();
 
@@ -1278,7 +1296,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     public void preExecuteSetup(NetDesc desc) {
-        if (desc != NetDesc.MSG_POST && desc != NetDesc.TOPIC_POST_S1 && desc != NetDesc.EDIT_MSG)
+        if (desc != NetDesc.MSG_POST && desc != NetDesc.MSG_EDIT && desc != NetDesc.TOPIC_POST_S1)
             postInterfaceCleanup();
 
         swipeRefreshLayout.setRefreshing(true);
@@ -2217,7 +2235,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 //TODO: implement me
                 break;
 
-            case EDIT_MSG:
+            case MSG_EDIT:
             case LOGIN_S1:
             case MSG_MARK:
             case MSG_DELETE:
@@ -2649,41 +2667,47 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         assert postBody.getText() != null : "postBody.getText() is null";
         assert postTitle.getText() != null : "postTitle.getText() is null";
 
+        savedPostBody = postBody.getText().toString();
+
+        savedBoardID = boardID;
+        savedTopicID = topicID;
+        savedMessageID = messageIDForEditing;
+
+        postSubmitButton.setEnabled(false);
+        pollButton.setEnabled(false);
+        flairButton.setEnabled(false);
+        postCancelButton.setEnabled(false);
+
         if (titleWrapper.getVisibility() == View.VISIBLE) {
             // posting on a board
             String path = GF_URLS.ROOT + "/boards/post?board=" + boardID;
             int i = path.indexOf('-');
             path = path.substring(0, i);
-            savedPostBody = postBody.getText().toString();
             savedPostTitle = postTitle.getText().toString();
-            postSubmitButton.setEnabled(false);
-            pollButton.setEnabled(false);
-            flairButton.setEnabled(false);
-            postCancelButton.setEnabled(false);
             if (pollUse)
                 path += "&poll=1";
 
             session.get(NetDesc.TOPIC_POST_S1, path);
         } else {
             // posting on a topic
-            String path = GF_URLS.ROOT + "/boards/post?board=" + boardID + "&topic=" + topicID;
-            if (messageIDForEditing != null)
-                path += "&message=" + messageIDForEditing;
 
-            savedPostBody = postBody.getText().toString();
-            postSubmitButton.setEnabled(false);
-            postCancelButton.setEnabled(false);
-            if (messageIDForEditing != null) {
-                session.get(NetDesc.EDIT_MSG, path);
+            HashMap<String, List<String>> data = new HashMap<>();
+            data.put("board", Collections.singletonList(savedBoardID));
+            data.put("topic", Collections.singletonList(savedTopicID));
+            data.put("key", Collections.singletonList(session.getSessionKey()));
+            if (!getSettingsPref().getBoolean("useGFAQsSig" + Session.getUser(), false)) {
+                data.put("custom_sig", Collections.singletonList(getSig()));
+//                AJAX endpoint doesn't seem to support custom sigs :(
             }
-            else {
-//                session.get(NetDesc.MSG_POST_S1, path);
-                HashMap<String, List<String>> data = new HashMap<>();
-                data.put("board", Collections.singletonList(boardID));
-                data.put("topic", Collections.singletonList(topicID));
+
+            if (messageIDForEditing != null) {
+                // editing existing message
+                data.put("message", Collections.singletonList(savedMessageID));
+                data.put("message_text", Collections.singletonList(savedPostBody));
+                session.post(NetDesc.MSG_EDIT, GF_URLS.AJAX_MSG_EDIT, data);
+            } else {
+                // posting new message
                 data.put("message", Collections.singletonList(savedPostBody));
-                data.put("key", Collections.singletonList(session.getSessionKey()));
-                data.put("override", Collections.singletonList("1"));
                 session.post(NetDesc.MSG_POST, GF_URLS.AJAX_MSG_POST, data);
             }
         }
