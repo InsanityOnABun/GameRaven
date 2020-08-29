@@ -356,7 +356,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
      */
     @Override
     public void onCompleted(Exception e, Response<FinalDoc> result) {
-        if (e != null && e instanceof CancellationException)
+        if (e instanceof CancellationException)
             return;
 
         NetDesc thisDesc = currentDesc;
@@ -584,7 +584,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case TOPIC_UPDATE_FLAIR:
                     case TOPIC_POLL_VOTE:
                     case EDIT_MSG:
-                    case MSG_POST:
                     case TOPIC_POST_S1:
                     case TOPIC_POST_S3:
                     case VERIFY_ACCOUNT_S1:
@@ -596,6 +595,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case FOLLOWING:
                         break;
 
+                    case MSG_POST:
                     case USER_TAG:
                     case MSG_MARK:
                     case TOPIC_CLOSE:
@@ -632,7 +632,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case LOGIN_S2:
                     case EDIT_MSG:
                     case TOPIC_POLL_VOTE:
-                    case MSG_POST:
                     case TOPIC_POST_S1:
                     case TOPIC_POST_S3:
                     case VERIFY_ACCOUNT_S1:
@@ -647,12 +646,15 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         lastResBodyAsBytes = result.getResult().bytes;
                         lastPath = resUrl;
 
+                        Log.d("gameravenHistory", "Setting lastDesc and lastPath: " + lastDesc.name() + ", " + lastPath);
+
                         // replace boardaction part of url, don't want it being added to history
                         if (lastPath.contains("/boardaction/"))
                             lastPath = lastPath.replace("/boardaction/", "/boards/");
 
                         break;
 
+                    case MSG_POST:
                     case BOARD_UPDATE_FILTER:
                     case USER_TAG:
                     case MSG_MARK:
@@ -731,6 +733,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                         if (status.equalsIgnoreCase("success")) {
                             aio.enableGoToUrlDefinedPost();
+                            applySavedScroll = false;
+                            forceNoHistoryAddition();
                             Crouton.showText(aio, "Message posted.", Theming.croutonStyle());
                             get(NetDesc.TOPIC, json.getString("message_url"));
                         }
@@ -947,6 +951,7 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case UNSPECIFIED:
                     int[] vLoc = aio.getScrollerVertLoc();
                     hAdapter.insertHistory(lastPath, lastDesc.name(), lastResBodyAsBytes, vLoc[0], vLoc[1]);
+                    Log.d("gameravenHistory", "Added history (lastDesc, lastPath: " + lastDesc.name() + ", " + lastPath);
                     break;
 
                 case BOARD_UPDATE_FILTER:

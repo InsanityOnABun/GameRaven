@@ -1933,8 +1933,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 if (goToUrlDefinedPost) {
                     if (resUrl.indexOf('#') != -1) {
                         goToThisPost = resUrl.substring(resUrl.indexOf('#'));
+                        Log.d("gameravenUrlDefinedPost", goToThisPost);
                     } else {
                         // goToUrlDefinedPost is true when there is no url defined post, oops
+                        Log.d("gameravenUrlDefinedPost", "aint nuffin");
                         goToUrlDefinedPost = false;
                     }
                 }
