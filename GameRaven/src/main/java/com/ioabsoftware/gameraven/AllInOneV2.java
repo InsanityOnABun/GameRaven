@@ -1832,7 +1832,7 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                                 null, null, null, splitListLink, BoardType.SPLIT));
                     }
 
-                    Element table = doc.select("table.board").first();
+                    Element table = doc.select("table.tlist").first();
                     if (table != null && !table.select("td").first().hasAttr("colspan")) {
 
                         table.getElementsByTag("col").get(2).remove();
@@ -2750,14 +2750,14 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             wtl("sending post");
             postSubmitButton.setEnabled(false);
             postCancelButton.setEnabled(false);
-            if (messageIDForEditing != null)
+            if (messageIDForEditing != null) {
                 session.get(NetDesc.EDIT_MSG, path);
-            else
+            }
+            else {
                 session.get(NetDesc.MSG_POST_S1, path);
+            }
         }
     }
-
-    //TODO: strip these out
 
     /**
      * creates dialogs
