@@ -1,9 +1,11 @@
-package com.ioabsoftware.gameraven.views;
+package com.ioabsoftware.gameraven.views.spans;
 
 import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
+
+import com.ioabsoftware.gameraven.views.ClickableLinksTextView;
 
 import org.jetbrains.annotations.NotNull;
 
