@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.text.Spanned;
 import android.text.method.ArrowKeyMovementMethod;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
@@ -374,7 +373,6 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                         != AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                     // Effectively pause until no scrolling
                 }
-                Log.d("gr-imagegetter", "Downloading the image from: " + source);
                 return Ion.with(context).load(source).asBitmap().get();
             } catch (Exception e) {
                 return null;
@@ -389,7 +387,6 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                 ((Activity) context).getWindowManager().getDefaultDisplay().getSize(size);
                 // Lets calculate the ratio according to the screen width in px
                 int multiplier = size.x / bitmap.getWidth();
-                Log.d("gr-imagegetter", "multiplier: " + multiplier);
                 levelListDrawable.addLevel(1, 1, d);
                 // Set bounds width  and height according to the bitmap resized size
                 levelListDrawable.setBounds(0, 0, bitmap.getWidth() * multiplier, bitmap.getHeight() * multiplier);

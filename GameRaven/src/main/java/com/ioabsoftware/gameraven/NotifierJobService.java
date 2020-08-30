@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -54,7 +53,6 @@ public class NotifierJobService extends SimpleJobService {
 
     @Override
     public int onRunJob(JobParameters job) {
-        Log.d("notif", "notif service starting");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         String username = prefs.getString("defaultAccount", HeaderSettings.NO_DEFAULT_ACCOUNT);
@@ -186,7 +184,6 @@ public class NotifierJobService extends SimpleJobService {
                 }
 
             } catch (Exception e) {
-                Log.d("notif", "exception raised in notifierservice");
                 e.printStackTrace();
             }
         }

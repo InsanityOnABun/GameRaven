@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.widget.EditText;
@@ -640,8 +639,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         lastResBodyAsBytes = result.getResult().bytes;
                         lastPath = resUrl;
 
-                        Log.d("gameravenHistory", "Setting lastDesc and lastPath: " + lastDesc.name() + ", " + lastPath);
-
                         // replace boardaction part of url, don't want it being added to history
                         if (lastPath.contains("/boardaction/"))
                             lastPath = lastPath.replace("/boardaction/", "/boards/");
@@ -714,7 +711,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                                 .replace("<br \\=\"\" />", "\n")
                                 .replace("\\n", "\n");
                         JSONObject msgJSON = new JSONObject(sanitizedMsgJSONString);
-                        Log.d("gameraven-ajax", msgJSON.toString(4));
 
                         String msgStatus = msgJSON.optString("status", "no_status");
 
@@ -755,7 +751,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                                 .replace("<br \\=\"\" />", "\n")
                                 .replace("\\n", "\n");
                         JSONObject topicJSON = new JSONObject(sanitizedTopicJSONString);
-                        Log.d("gameraven-ajax", topicJSON.toString(4));
 
                         String topicStatus = topicJSON.optString("status", "no_status");
 
@@ -923,7 +918,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                 case UNSPECIFIED:
                     int[] vLoc = aio.getScrollerVertLoc();
                     hAdapter.insertHistory(lastPath, lastDesc.name(), lastResBodyAsBytes, vLoc[0], vLoc[1]);
-                    Log.d("gameravenHistory", "Added history (lastDesc, lastPath: " + lastDesc.name() + ", " + lastPath);
                     break;
 
                 case BOARD_UPDATE_FILTER:

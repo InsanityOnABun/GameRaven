@@ -18,7 +18,6 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.Time;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
@@ -573,8 +572,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     @Override
     protected void onResume() {
         super.onResume();
-
-        Log.d("useragent", GRUserAgent.get(this));
 
         swipeRefreshLayout.setEnabled(settings.getBoolean("enablePTR", false));
         contentList.setFastScrollEnabled(settings.getBoolean("enableFastScroll", true));
@@ -1937,10 +1934,8 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 if (goToUrlDefinedPost) {
                     if (resUrl.indexOf('#') != -1) {
                         goToThisPost = resUrl.substring(resUrl.indexOf('#'));
-                        Log.d("gameravenUrlDefinedPost", goToThisPost);
                     } else {
                         // goToUrlDefinedPost is true when there is no url defined post, oops
-                        Log.d("gameravenUrlDefinedPost", "aint nuffin");
                         goToUrlDefinedPost = false;
                     }
                 }
@@ -2234,7 +2229,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             case TOPIC_POST:
             case VERIFY_ACCOUNT_S1:
             case VERIFY_ACCOUNT_S2:
-                Log.e(AllInOneV2.class.getName(), desc.name() + " reached AIO HNR, this shouldn't happen");
                 getSupportActionBar().setTitle(desc.name() + " Unhandled");
                 break;
 
@@ -2674,8 +2668,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             data.put("message", Collections.singletonList(savedPostBody));
             data.put("key", Collections.singletonList(session.getSessionKey()));
             if (pollJSON.length() > 0) {
-//                data.put("add_poll", Collections.singletonList("1"));
-                Log.d("gameraven-ajax", pollJSON.toString());
                 data.put("poll", Collections.singletonList(pollJSON.toString()));
             }
             if (flairForNewTopic > 0) {
