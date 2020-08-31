@@ -12,8 +12,10 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.os.AsyncTask;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.ArrowKeyMovementMethod;
+import android.text.style.BulletSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,7 @@ import com.ioabsoftware.gameraven.views.BaseRowView;
 import com.ioabsoftware.gameraven.views.ClickableLinksTextView;
 import com.ioabsoftware.gameraven.views.RowType;
 import com.ioabsoftware.gameraven.views.rowdata.MessageRowData;
+import com.ioabsoftware.gameraven.views.spans.GRBulletSpan;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.koushikdutta.ion.Ion;
@@ -201,7 +204,16 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
 
                     return d;
                 }, new MyTagHandler());
-        message.setText(spanned);
+
+        SpannableStringBuilder spanReplacer = new SpannableStringBuilder(spanned);
+        for (BulletSpan b : spanReplacer.getSpans(0, spanReplacer.length(), BulletSpan.class)) {
+            int start = spanReplacer.getSpanStart(b);
+            int end = spanReplacer.getSpanEnd(b);
+            spanReplacer.removeSpan(b);
+            spanReplacer.setSpan(new GRBulletSpan(), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+
+        message.setText(spanReplacer);
 
         message.setMovementMethod(ArrowKeyMovementMethod.getInstance());
         message.setTextIsSelectable(true);

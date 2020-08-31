@@ -14,6 +14,7 @@ import org.xml.sax.XMLReader;
 public class MyTagHandler implements Html.TagHandler {
 
     public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+        // Get span for the tag
         CharacterStyle span = null;
         switch (tag.toLowerCase()) {
             case "code":
@@ -25,11 +26,12 @@ public class MyTagHandler implements Html.TagHandler {
                 break;
         }
 
+        // If there's a span to use
         if (span != null) {
             int len = output.length();
-            if(opening) {
+            if(opening) { // Set a marker span to flag the start for this span
                 output.setSpan(span, len, len, Spannable.SPAN_MARK_MARK);
-            } else {
+            } else { // Remove the marker for this span and add the final one
                 Object obj = getLast(output, span.getClass());
                 int where = output.getSpanStart(obj);
 
