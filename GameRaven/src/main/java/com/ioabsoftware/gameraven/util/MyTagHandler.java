@@ -3,31 +3,46 @@ package com.ioabsoftware.gameraven.util;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
-import android.text.style.TypefaceSpan;
+import android.text.style.CharacterStyle;
+
+import com.ioabsoftware.gameraven.views.spans.GRMonospaceSpan;
+import com.ioabsoftware.gameraven.views.spans.SpoilerBackgroundSpan;
+import com.ioabsoftware.gameraven.views.spans.SpoilerClickSpan;
 
 import org.xml.sax.XMLReader;
 
 public class MyTagHandler implements Html.TagHandler {
 
-    public void handleTag(boolean opening, String tag, Editable output,
-                          XMLReader xmlReader) {
-        if(tag.equalsIgnoreCase("code")) {
-            processCode(opening, output);
+    public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+        CharacterStyle span = null;
+        switch (tag.toLowerCase()) {
+            case "code":
+                span = new GRMonospaceSpan();
+                break;
+
+            case "gr_spoiler":
+                span = new SpoilerBackgroundSpan(Theming.colorHiddenSpoiler(), Theming.colorRevealedSpoiler());
+                break;
         }
-    }
 
-    private void processCode(boolean opening, Editable output) {
-        int len = output.length();
-        if(opening) {
-            output.setSpan(new GRMonospaceSpan(), len, len, Spannable.SPAN_MARK_MARK);
-        } else {
-            Object obj = getLast(output, GRMonospaceSpan.class);
-            int where = output.getSpanStart(obj);
+        if (span != null) {
+            int len = output.length();
+            if(opening) {
+                output.setSpan(span, len, len, Spannable.SPAN_MARK_MARK);
+            } else {
+                Object obj = getLast(output, span.getClass());
+                int where = output.getSpanStart(obj);
 
-            output.removeSpan(obj);
+                output.removeSpan(obj);
 
-            if (where != len) {
-                output.setSpan(new GRMonospaceSpan(), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if (where != len) {
+                    output.setSpan(span, where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                    if (span instanceof SpoilerBackgroundSpan) {
+                        output.setSpan(new SpoilerClickSpan((SpoilerBackgroundSpan) span), where, len,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
             }
         }
     }
@@ -43,11 +58,5 @@ public class MyTagHandler implements Html.TagHandler {
             }
         }
         return null;
-    }
-
-    private static class GRMonospaceSpan extends TypefaceSpan {
-        public GRMonospaceSpan() {
-            super("monospace");
-        }
     }
 }

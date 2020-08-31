@@ -190,7 +190,7 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                     .load(myData.getAvatarUrl());
 
 //        message.setText(myData.getSpannedMessage());
-        Spanned spanned = HtmlCompat.fromHtml(myData.getUnprocessedMessageText(),
+        Spanned spanned = HtmlCompat.fromHtml(myData.getMessageTextForDisplay(),
                 HtmlCompat.FROM_HTML_MODE_LEGACY,
                 source -> {
                     LevelListDrawable d = new LevelListDrawable();

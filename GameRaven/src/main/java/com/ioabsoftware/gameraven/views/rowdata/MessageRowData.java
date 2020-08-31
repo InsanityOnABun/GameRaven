@@ -23,6 +23,7 @@ import com.ioabsoftware.gameraven.views.RowType;
 import com.ioabsoftware.gameraven.views.rowview.HeaderRowView;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -33,7 +34,7 @@ import java.util.List;
 public class MessageRowData extends BaseRowData {
 
     private String username, userTitles, avatarUrl, postNum, postTime, messageID, boardID, topicID, userID;
-    private final String unprocessedMessageText;
+    private final String unprocessedMessageText, messageTextForDisplay;
 
     private LinearLayout poll = null;
 
@@ -47,6 +48,7 @@ public class MessageRowData extends BaseRowData {
     private boolean canReport = false, canDelete = false,
             canEdit = false, canQuote = false, canUpdateFlair = false;
 
+    @NotNull
     @Override
     public String toString() {
         return "username: " + username +
@@ -142,6 +144,10 @@ public class MessageRowData extends BaseRowData {
         return unprocessedMessageText;
     }
 
+    public String getMessageTextForDisplay() {
+        return messageTextForDisplay;
+    }
+
     public LinearLayout getPoll() {
         if (poll.getParent() != null)
             ((ViewGroup) poll.getParent()).removeView(poll);
@@ -185,6 +191,7 @@ public class MessageRowData extends BaseRowData {
         isDeleted = isDeletedIn;
         postNum = postNumIn;
         unprocessedMessageText = "";
+        messageTextForDisplay = "";
     }
 
     public MessageRowData(String userIn, String userTitlesIn, String avatarUrlIn, String postNumIn,
@@ -358,6 +365,10 @@ public class MessageRowData extends BaseRowData {
 //        }
 
         unprocessedMessageText = messageIn.html() + sigHtml;
+
+        messageTextForDisplay = unprocessedMessageText
+                .replace("<s>", "<gr_spoiler>")
+                .replace("</s>", "</gr_spoiler>");
 
         // remove data elements in cite tag for spannedMessage building
         Elements cites = messageIn.select("cite[data-quote-id]");
