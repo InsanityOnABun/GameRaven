@@ -346,6 +346,7 @@ public class MessageRowData extends BaseRowData {
 
         unprocessedMessageText = messageIn.html() + sigHtml;
 
+        // Replace certain tags so I can handle them myself later when the message is displayed
         messageTextForDisplay = unprocessedMessageText
                 .replace("<s>", "<gr_spoiler>")
                 .replace("</s>", "</gr_spoiler>");

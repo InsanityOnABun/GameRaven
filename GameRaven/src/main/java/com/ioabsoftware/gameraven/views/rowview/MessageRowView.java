@@ -16,6 +16,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.ArrowKeyMovementMethod;
 import android.text.style.BulletSpan;
+import android.text.style.QuoteSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,7 @@ import androidx.preference.PreferenceManager;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.R;
-import com.ioabsoftware.gameraven.util.MyTagHandler;
+import com.ioabsoftware.gameraven.util.CharacterLevelTagHandler;
 import com.ioabsoftware.gameraven.util.Theming;
 import com.ioabsoftware.gameraven.views.BaseRowData;
 import com.ioabsoftware.gameraven.views.BaseRowView;
@@ -37,6 +38,7 @@ import com.ioabsoftware.gameraven.views.ClickableLinksTextView;
 import com.ioabsoftware.gameraven.views.RowType;
 import com.ioabsoftware.gameraven.views.rowdata.MessageRowData;
 import com.ioabsoftware.gameraven.views.spans.GRBulletSpan;
+import com.ioabsoftware.gameraven.views.spans.GRQuoteSpan;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.koushikdutta.ion.Ion;
@@ -203,14 +205,23 @@ public class MessageRowView extends BaseRowView implements View.OnClickListener 
                     new ImageGetterAsyncTask(getContext(), source, d).execute(message);
 
                     return d;
-                }, new MyTagHandler());
+                }, new CharacterLevelTagHandler());
 
+        // Replace block-level Bulletspans that fromHtml doesn't make look good
         SpannableStringBuilder spanReplacer = new SpannableStringBuilder(spanned);
         for (BulletSpan b : spanReplacer.getSpans(0, spanReplacer.length(), BulletSpan.class)) {
             int start = spanReplacer.getSpanStart(b);
             int end = spanReplacer.getSpanEnd(b);
             spanReplacer.removeSpan(b);
             spanReplacer.setSpan(new GRBulletSpan(), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+
+        // Replace block-level Quotespans that fromHtml doesn't make look good
+        for (QuoteSpan q : spanReplacer.getSpans(0, spanReplacer.length(), QuoteSpan.class)) {
+            int start = spanReplacer.getSpanStart(q);
+            int end = spanReplacer.getSpanEnd(q);
+            spanReplacer.removeSpan(q);
+            spanReplacer.setSpan(new GRQuoteSpan(), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
 
         message.setText(spanReplacer);

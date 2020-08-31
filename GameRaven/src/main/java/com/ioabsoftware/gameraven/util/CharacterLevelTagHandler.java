@@ -11,7 +11,7 @@ import com.ioabsoftware.gameraven.views.spans.SpoilerClickSpan;
 
 import org.xml.sax.XMLReader;
 
-public class MyTagHandler implements Html.TagHandler {
+public class CharacterLevelTagHandler implements Html.TagHandler {
 
     public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
         // Get span for the tag
