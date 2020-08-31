@@ -535,8 +535,6 @@ public class MessageRowData extends BaseRowData {
 //    }
 
     public String getMessageForQuotingOrEditing() {
-        String preBuilder = unprocessedMessageText;
-
         final String br = "<br />";
         final String sigSeperator = "\n---\n";
         final String aStart = "<a ";
@@ -547,23 +545,8 @@ public class MessageRowData extends BaseRowData {
         final String imgPostArtifact = "\" />";
         final String tagEnd = ">";
 
-        // Remove signature
-        int sigStart = preBuilder.lastIndexOf("\n---\n");
-        if (sigStart != -1)
-            preBuilder = preBuilder.substring(0, sigStart);
-
-        // Remove trailing line break
-        if (preBuilder.endsWith(br))
-            preBuilder = preBuilder.substring(0, preBuilder.length() - br.length());
-
         // Make StringBuilder for following edits
-        StringBuilder stringBuilder = new StringBuilder(preBuilder);
-
-        // Remove signature
-//        int sigStart = stringBuilder.lastIndexOf(sigSeperator);
-//        if (sigStart != -1) {
-//            stringBuilder.delete(sigStart, stringBuilder.length());
-//        }
+        StringBuilder stringBuilder = new StringBuilder(unprocessedMessageText);
 
         // Remove opening anchor tags
         while (stringBuilder.indexOf(aStart) != -1) {
@@ -612,6 +595,16 @@ public class MessageRowData extends BaseRowData {
             int end = start + br.length();
             stringBuilder.replace(start, end, "\n");
         }
+
+        // Remove signature
+        int sigStart = stringBuilder.lastIndexOf(sigSeperator);
+        if (sigStart != -1) {
+            stringBuilder.delete(sigStart, stringBuilder.length());
+        }
+
+        // Remove any trailing newlines
+        while (stringBuilder.charAt(stringBuilder.length() - 1) == '\n')
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 
         // Return
         return StringEscapeUtils.unescapeHtml4(stringBuilder.toString());
