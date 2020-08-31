@@ -535,41 +535,86 @@ public class MessageRowData extends BaseRowData {
 //    }
 
     public String getMessageForQuotingOrEditing() {
-        String finalBody = unprocessedMessageText;
+        String preBuilder = unprocessedMessageText;
 
-        while (finalBody.contains("<a ")) {
-            int start = finalBody.indexOf("<a ");
-            int end = finalBody.indexOf(">", start) + 1;
-            finalBody = finalBody.replace(finalBody.substring(start, end),
-                    "");
-        }
+        final String br = "<br />";
+        final String sigSeperator = "\n---\n";
+        final String aStart = "<a ";
+        final String aClose = "</a>";
+        final String divVidStart = "<div class=\"vid_container\">";
+        final String divEnd = "</div>";
+        final String imgPreArtifact = "<img src=\"";
+        final String imgPostArtifact = "\" />";
+        final String tagEnd = ">";
 
-        while (finalBody.contains("<div class=\"vid_container\">")) {
-            int start = finalBody.indexOf("<div class=\"vid_container\">");
-            int end = finalBody.indexOf(">", start) + 1;
-            finalBody = finalBody.replace(finalBody.substring(start, end),
-                    "");
-
-            start = finalBody.indexOf("</div>", end);
-            end = start + 6;
-            finalBody = finalBody.replace(finalBody.substring(start, end),
-                    "");
-        }
-
-        finalBody = finalBody.replace("</a>", "");
-
-        if (finalBody.endsWith("<br />"))
-            finalBody = finalBody.substring(0, finalBody.length() - 6);
-        finalBody = finalBody.replace("\n", "");
-        finalBody = finalBody.replace("<br />", "\n");
-
-        int sigStart = finalBody.lastIndexOf("\n---\n");
+        // Remove signature
+        int sigStart = preBuilder.lastIndexOf("\n---\n");
         if (sigStart != -1)
-            finalBody = finalBody.substring(0, sigStart);
+            preBuilder = preBuilder.substring(0, sigStart);
 
-        finalBody = StringEscapeUtils.unescapeHtml4(finalBody);
+        // Remove trailing line break
+        if (preBuilder.endsWith(br))
+            preBuilder = preBuilder.substring(0, preBuilder.length() - br.length());
 
-        return finalBody;
+        // Make StringBuilder for following edits
+        StringBuilder stringBuilder = new StringBuilder(preBuilder);
+
+        // Remove signature
+//        int sigStart = stringBuilder.lastIndexOf(sigSeperator);
+//        if (sigStart != -1) {
+//            stringBuilder.delete(sigStart, stringBuilder.length());
+//        }
+
+        // Remove opening anchor tags
+        while (stringBuilder.indexOf(aStart) != -1) {
+            int start = stringBuilder.indexOf(aStart);
+            int end = stringBuilder.indexOf(tagEnd, start) + 1;
+            stringBuilder.delete(start, end);
+        }
+
+        // Remove divs surrounding embedded video URLs
+        while (stringBuilder.indexOf(divVidStart) != -1) {
+            int start = stringBuilder.indexOf(divVidStart);
+            int end = stringBuilder.indexOf(tagEnd, start) + 1;
+            stringBuilder.delete(start, end);
+
+            start = stringBuilder.indexOf(divEnd, start);
+            end = start + divEnd.length();
+            stringBuilder.delete(start, end);
+        }
+
+        // Remove img tag bits from around embedded image URLs
+        while (stringBuilder.indexOf(imgPreArtifact) != -1) {
+            int start = stringBuilder.indexOf(imgPreArtifact);
+            int end = start + imgPreArtifact.length();
+            stringBuilder.delete(start, end);
+
+            start = stringBuilder.indexOf(imgPostArtifact, start);
+            end = start + imgPostArtifact.length();
+            stringBuilder.delete(start, end);
+        }
+
+        // Remove closing anchor tags
+        while (stringBuilder.indexOf(aClose) != -1) {
+            int start = stringBuilder.indexOf(aClose);
+            int end = start + aClose.length();
+            stringBuilder.delete(start, end);
+        }
+
+        // Remove newline characters (these are from html layout)
+        while (stringBuilder.indexOf("\n") != -1) {
+            stringBuilder.deleteCharAt(stringBuilder.indexOf("\n"));
+        }
+
+        // Replace line break tags with newline characters (these are the actual breaks in the post)
+        while (stringBuilder.indexOf(br) != -1) {
+            int start = stringBuilder.indexOf(br);
+            int end = start + br.length();
+            stringBuilder.replace(start, end, "\n");
+        }
+
+        // Return
+        return StringEscapeUtils.unescapeHtml4(stringBuilder.toString());
     }
 
 }
