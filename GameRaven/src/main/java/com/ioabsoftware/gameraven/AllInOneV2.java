@@ -2660,13 +2660,17 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
         flairButton.setEnabled(false);
         postCancelButton.setEnabled(false);
 
+        HashMap<String, List<String>> data = new HashMap<>();
+        data.put("board", Collections.singletonList(savedBoardID));
+        data.put("key", Collections.singletonList(session.getSessionKey()));
+        data.put("message", Collections.singletonList(savedPostBody));
+        if (!getSettingsPref().getBoolean("useGFAQsSig" + Session.getUser(), false)) {
+            data.put("sig", Collections.singletonList(getSig()));
+        }
+
         if (titleWrapper.getVisibility() == View.VISIBLE) {
             // posting on a board
-            HashMap<String, List<String>> data = new HashMap<>();
-            data.put("board", Collections.singletonList(savedBoardID));
             data.put("topic", Collections.singletonList(savedPostTitle));
-            data.put("message", Collections.singletonList(savedPostBody));
-            data.put("key", Collections.singletonList(session.getSessionKey()));
             if (pollJSON.length() > 0) {
                 data.put("poll", Collections.singletonList(pollJSON.toString()));
             }
@@ -2678,24 +2682,16 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
             session.post(NetDesc.TOPIC_POST, GF_URLS.AJAX_TOPIC_POST, data);
         } else {
             // posting on a topic
-            HashMap<String, List<String>> data = new HashMap<>();
-            data.put("board", Collections.singletonList(savedBoardID));
             data.put("topic", Collections.singletonList(savedTopicID));
-            data.put("key", Collections.singletonList(session.getSessionKey()));
-            if (!getSettingsPref().getBoolean("useGFAQsSig" + Session.getUser(), false)) {
-                data.put("custom_sig", Collections.singletonList(getSig()));
-//                AJAX endpoint doesn't seem to support custom sigs :(
-            }
 
-            if (messageIDForEditing != null) {
-                // editing existing message
+            if (messageIDForEditing == null) {
+                // posting new message
+                session.post(NetDesc.MSG_POST, GF_URLS.AJAX_MSG_POST, data);
+            } else {
+                // editing existing message, change fields to match
                 data.put("message", Collections.singletonList(savedMessageID));
                 data.put("message_text", Collections.singletonList(savedPostBody));
                 session.post(NetDesc.MSG_EDIT, GF_URLS.AJAX_MSG_EDIT, data);
-            } else {
-                // posting new message
-                data.put("message", Collections.singletonList(savedPostBody));
-                session.post(NetDesc.MSG_POST, GF_URLS.AJAX_MSG_POST, data);
             }
         }
     }

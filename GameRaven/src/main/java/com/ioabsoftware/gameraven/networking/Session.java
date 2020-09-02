@@ -731,6 +731,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             msgAutoFlagData.put("topic", Collections.singletonList(aio.getSavedTopicID()));
                             msgAutoFlagData.put("key", Collections.singletonList(getSessionKey()));
                             msgAutoFlagData.put("override", Collections.singletonList("1"));
+                            if (!getPrefObj().getBoolean("useGFAQsSig" + Session.getUser(), false)) {
+                                msgAutoFlagData.put("sig", Collections.singletonList(aio.getSig()));
+                            }
                             if (desc == NetDesc.MSG_POST) {
                                 msgAutoFlagData.put("message", Collections.singletonList(aio.getSavedPostBody()));
                             } else {
@@ -767,6 +770,9 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                             topicAutoFlagData.put("message", Collections.singletonList(aio.getSavedPostBody()));
                             topicAutoFlagData.put("key", Collections.singletonList(getSessionKey()));
                             topicAutoFlagData.put("override", Collections.singletonList("1"));
+                            if (!getPrefObj().getBoolean("useGFAQsSig" + Session.getUser(), false)) {
+                                topicAutoFlagData.put("sig", Collections.singletonList(aio.getSig()));
+                            }
                             if (aio.getPollJSON().length() > 0) {
 //                                data.put("add_poll", Collections.singletonList("1"));
                                 topicAutoFlagData.put("poll", Collections.singletonList(aio.getPollJSON().toString()));
