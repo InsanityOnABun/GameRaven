@@ -381,7 +381,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case PM_INBOX_DETAIL:
             case PM_OUTBOX:
             case PM_OUTBOX_DETAIL:
-            case MSG_MARK:
+            case MSG_REPORT_START:
+            case MSG_REPORT_SUBMIT:
             case TOPIC_CLOSE:
             case MSG_DELETE:
             case TOPIC_UPDATE_FLAIR:
@@ -592,7 +593,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case MSG_POST:
                     case MSG_EDIT:
                     case USER_TAG:
-                    case MSG_MARK:
+                    case MSG_REPORT_START:
+                    case MSG_REPORT_SUBMIT:
                     case TOPIC_POST:
                     case TOPIC_CLOSE:
                     case PM_SEND_S1:
@@ -649,7 +651,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case MSG_EDIT:
                     case BOARD_UPDATE_FILTER:
                     case USER_TAG:
-                    case MSG_MARK:
+                    case MSG_REPORT_START:
+                    case MSG_REPORT_SUBMIT:
                     case TOPIC_POST:
                     case TOPIC_CLOSE:
                     case PM_SEND_S1:
@@ -792,14 +795,6 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                         }
                         break;
 
-                    case MSG_MARK:
-                        String response = doc.text();
-                        int start = response.indexOf("\":\"") + 3;
-                        int end = response.indexOf("\",\"");
-                        String markMessage = response.substring(start, end);
-                        Crouton.showText(aio, markMessage, Theming.croutonStyle());
-                        break;
-
                     case TOPIC_UPDATE_FLAIR:
                     case MSG_DELETE:
                         Crouton.showText(aio, "Done.", Theming.croutonStyle());
@@ -850,6 +845,18 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
                     case BOARD_UPDATE_FILTER:
                     case TOPIC_POLL_VOTE:
                         goBack(true);
+                        break;
+
+                    case MSG_REPORT_START:
+                        aio.showMsgReportDialog(doc);
+                        break;
+
+                    case MSG_REPORT_SUBMIT:
+                        String sanitizedReportJSONString = doc.body().html()
+                                .replace("<br \\=\"\" />", "\n")
+                                .replace("\\n", "\n");
+                        JSONObject reportJSON = new JSONObject(sanitizedReportJSONString);
+                        Crouton.showText(aio, reportJSON.getString("mark_msg"), Theming.croutonStyle());
                         break;
 
                     case GAME_SEARCH:
@@ -928,7 +935,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
 
                 case BOARD_UPDATE_FILTER:
                 case USER_TAG:
-                case MSG_MARK:
+                case MSG_REPORT_START:
+                case MSG_REPORT_SUBMIT:
                 case TOPIC_CLOSE:
                 case LOGIN_S1:
                 case LOGIN_S2:
@@ -991,7 +999,8 @@ public class Session implements FutureCallback<Response<FinalDoc>> {
             case PM_INBOX_DETAIL:
             case PM_OUTBOX:
             case PM_OUTBOX_DETAIL:
-            case MSG_MARK:
+            case MSG_REPORT_START:
+            case MSG_REPORT_SUBMIT:
             case MSG_DELETE:
             case TOPIC_UPDATE_FLAIR:
             case TOPIC_POLL_VOTE:

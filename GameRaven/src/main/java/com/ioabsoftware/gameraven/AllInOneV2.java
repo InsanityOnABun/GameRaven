@@ -112,7 +112,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
 
     public static final int SEND_PM_DIALOG = 102;
     public static final int MESSAGE_ACTION_DIALOG = 103;
-    public static final int REPORT_MESSAGE_DIALOG = 104;
     public static final int POLL_OPTIONS_DIALOG = 105;
 
     public static final String EMPTY_STRING = "";
@@ -2216,9 +2215,10 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 //TODO: implement me
                 break;
 
+            case MSG_REPORT_START:
+            case MSG_REPORT_SUBMIT:
             case MSG_EDIT:
             case LOGIN_S1:
-            case MSG_MARK:
             case MSG_DELETE:
             case TOPIC_UPDATE_FLAIR:
             case PM_SEND_S1:
@@ -2298,6 +2298,50 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
      * END HNR
      * ********************************
      */
+
+    public void showMsgReportDialog(Document doc) {
+        Element error = doc.selectFirst("div.msg_error");
+        if (error == null) {
+            String title = doc.selectFirst("div.forum_report_title").text();
+            Elements buttons = doc.select("button");
+
+            ArrayList<String> reasonTexts = new ArrayList<>();
+            ArrayList<String> reasonCodes = new ArrayList<>();
+            for (Element b : buttons) {
+                if (!b.id().equals("report_abuse") && !b.id().equals("ignore_user")) {
+                    String attrCode = b.attr("onclick");
+                    int codeOpen = attrCode.indexOf('(') + 1;
+                    int codeClose = attrCode.indexOf(')');
+                    String code = attrCode.substring(codeOpen, codeClose);
+                    String text = b.selectFirst("span").text() + ": " + b.ownText();
+                    reasonCodes.add(code);
+                    reasonTexts.add(text);
+                }
+            }
+
+            AlertDialog.Builder reportBuilder = new AlertDialog.Builder(this);
+            reportBuilder.setTitle(title);
+            reportBuilder.setItems(reasonTexts.toArray(new String[0]), (dialog, which) -> {
+                HashMap<String, List<String>> reportSubmitData = new HashMap<>();
+                reportSubmitData.put("b", Collections.singletonList(boardID));
+                reportSubmitData.put("t", Collections.singletonList(topicID));
+                reportSubmitData.put("m", Collections.singletonList(clickedMsg.getMessageID()));
+                reportSubmitData.put("r", Collections.singletonList(reasonCodes.get(which)));
+                reportSubmitData.put("rt", Collections.singletonList(""));
+                reportSubmitData.put("i", Collections.singletonList("0"));
+                reportSubmitData.put("key", Collections.singletonList(session.getSessionKey()));
+                session.post(NetDesc.MSG_REPORT_SUBMIT, GF_URLS.AJAX_MSG_REPORT_SUBMIT, reportSubmitData);
+                dialog.dismiss();
+            });
+            reportBuilder.setNegativeButton(R.string.cancel, null);
+            reportBuilder.show();
+        } else {
+            AlertDialog.Builder errorBuilder = new AlertDialog.Builder(this);
+            errorBuilder.setMessage(error.text());
+            errorBuilder.setPositiveButton(R.string.ok, null);
+            errorBuilder.show();
+        }
+    }
 
     private void processBoardWraps(Elements boardWraps,
                                    String boardWrapHeaderPrefix,
@@ -2714,10 +2758,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                 dialog = createMessageActionDialog();
                 break;
 
-            case REPORT_MESSAGE_DIALOG:
-                dialog = createReportMessageDialog();
-                break;
-
             case POLL_OPTIONS_DIALOG:
                 dialog = createPollOptionsDialog();
                 break;
@@ -2800,57 +2840,6 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
     }
 
     private String reportCode;
-
-    private Dialog createReportMessageDialog() {
-        AlertDialog.Builder reportMsgBuilder = new AlertDialog.Builder(this);
-        reportMsgBuilder.setTitle("Report Message");
-
-        final String[] reportOptions;
-        if (clickedMsg.getPostNum().equals("1"))
-            reportOptions = getResources().getStringArray(R.array.msgReportReasonsWithOffTopic);
-        else
-            reportOptions = getResources().getStringArray(R.array.msgReportReasons);
-
-        reportMsgBuilder.setItems(reportOptions, (dialog, which) -> {
-            reportCode = getResources().getStringArray(R.array.msgReportCodes)[which];
-
-            /*
-            <form action="https://www.gamefaqs.com/features/board_mark/pick.php" method="post">
-            <input type="hidden" name="b" value="848">
-            <input type="hidden" name="t" value="71881473">
-            <input type="hidden" name="m" value="821951056">
-            <input type="hidden" name="r" value="8">
-            <input type="hidden" name="rt" value="Testing">
-            <input type="hidden" name="i" value="0">
-            <input type="hidden" name="key" value="[session key]">
-            <input type="submit">
-            </form>
-             */
-
-            HashMap<String, List<String>> markData = new HashMap<>();
-            markData.put("b", Collections.singletonList(boardID));
-            markData.put("t", Collections.singletonList(topicID));
-            markData.put("m", Collections.singletonList(clickedMsg.getMessageID()));
-            markData.put("r", Collections.singletonList(reportCode));
-            markData.put("rt", Collections.singletonList(EMPTY_STRING));
-            markData.put("i", Collections.singletonList("0"));
-            markData.put("key", Collections.singletonList(session.getSessionKey()));
-
-            session.post(NetDesc.MSG_MARK, "/features/board_mark/pick.php", markData);
-
-
-//                session.get(NetDesc.MARKMSG_S1, clickedMsg.getMessageDetailLink());
-        });
-
-        reportMsgBuilder.setNegativeButton("Cancel", null);
-
-        Dialog dialog = reportMsgBuilder.create();
-        dialog.setOnDismissListener(dialog1 -> {
-            //noinspection deprecation
-            removeDialog(REPORT_MESSAGE_DIALOG);
-        });
-        return dialog;
-    }
 
     private Dialog createMessageActionDialog() {
         AlertDialog.Builder msgActionBuilder = new AlertDialog.Builder(this);
@@ -2936,8 +2925,12 @@ public class AllInOneV2 extends AppCompatActivity implements SwipeRefreshLayout.
                             clickedMsg.getBoardActionLink(), delData);
                     break;
                 case "Report":
-                    //noinspection deprecation
-                    showDialog(REPORT_MESSAGE_DIALOG);
+                    HashMap<String, List<String>> reportStartData = new HashMap<>();
+                    reportStartData.put("board", Collections.singletonList(boardID));
+                    reportStartData.put("topic", Collections.singletonList(topicID));
+                    reportStartData.put("message", Collections.singletonList(clickedMsg.getMessageID()));
+                    reportStartData.put("key", Collections.singletonList(session.getSessionKey()));
+                    session.post(NetDesc.MSG_REPORT_START, GF_URLS.AJAX_MSG_REPORT_START, reportStartData);
                     break;
                 case "Highlight User":
                     HighlightedUser user = hlDB.getHighlightedUsers().get(clickedMsg.getUser().toLowerCase(Locale.US));
