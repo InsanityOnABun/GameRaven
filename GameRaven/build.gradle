@@ -9,8 +9,8 @@ android {
         targetSdkVersion 29
 
         // <1-or-2-digit-major><2-digit-minor><2-digit-point><3-digit-increment>
-        versionCode 30600002
-        versionName "3.6.0_B2"
+        versionCode 30600003
+        versionName "3.6.0_B3"
     }
     signingConfigs {
         release {
