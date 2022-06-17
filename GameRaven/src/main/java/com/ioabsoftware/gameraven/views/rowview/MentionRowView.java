@@ -2,7 +2,6 @@ package com.ioabsoftware.gameraven.views.rowview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
@@ -68,7 +67,6 @@ public class MentionRowView extends BaseRowView {
             throw new IllegalArgumentException("data RowType does not match myType");
 
         myData = (MentionRowData) data;
-        Log.d("asdfasdf", myData.getUrl());
 
         topic.setText(myData.getTopic());
         board.setText(myData.getBoard());

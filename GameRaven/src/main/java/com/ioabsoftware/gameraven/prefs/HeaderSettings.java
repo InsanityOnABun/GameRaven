@@ -14,13 +14,8 @@ import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +24,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.BuildConfig;
@@ -240,7 +240,6 @@ public class HeaderSettings extends PreferenceActivity {
         } else {
             // Something else is wrong. It may be one of many other states, but all we need
             //  to know is we can neither read nor write
-            Log.e("writeToLog", "error writing to log, external storage is not writable");
             Toast.makeText(this, "Backup failed. Storage is most likely not accessible.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -275,57 +274,66 @@ public class HeaderSettings extends PreferenceActivity {
 
                             if (line.startsWith("[")) {
 
-                                if (line.equals("[ACCOUNTS]")) {
-                                    while (!(line = br.readLine()).equals("[END_ACCOUNTS]")) {
-                                        String user = line;
+                                switch (line) {
+                                    case "[ACCOUNTS]":
+                                        while (!(line = br.readLine()).equals("[END_ACCOUNTS]")) {
+                                            String user = line;
 
-                                        users.add(user);
-                                        passwords.add(br.readLine());
-                                        keys.add("useGFAQsSig" + user);
-                                        values.add(br.readLine());
+                                            users.add(user);
+                                            passwords.add(br.readLine());
+                                            keys.add("useGFAQsSig" + user);
+                                            values.add(br.readLine());
 
-                                        br.readLine();
-                                        StringBuilder sig = new StringBuilder();
+                                            br.readLine();
+                                            StringBuilder sig = new StringBuilder();
+                                            boolean isFirstLine = true;
+                                            while (!(line = br.readLine()).equals("[END_CUSTOM_SIG]")) {
+                                                if (!isFirstLine)
+                                                    sig.append('\n');
+
+                                                sig.append(line);
+                                                isFirstLine = false;
+                                            }
+
+                                            keys.add("customSig" + user);
+                                            values.add(sig.toString());
+
+                                        }
+                                        break;
+
+                                    case "[GLOBAL_SIG]":
+                                        StringBuilder globalSig = new StringBuilder();
                                         boolean isFirstLine = true;
-                                        while (!(line = br.readLine()).equals("[END_CUSTOM_SIG]")) {
+                                        while (!(line = br.readLine()).equals("[END_GLOBAL_SIG]")) {
                                             if (!isFirstLine)
-                                                sig.append('\n');
+                                                globalSig.append('\n');
 
-                                            sig.append(line);
+                                            globalSig.append(line);
                                             isFirstLine = false;
                                         }
+                                        keys.add("customSig");
+                                        values.add(globalSig.toString());
+                                        break;
 
-                                        keys.add("customSig" + user);
-                                        values.add(sig.toString());
+                                    case "[HIGHLIGHT_LIST]":
+                                        while (!(line = br.readLine()).equals("[END_HIGHLIGHT_LIST]")) {
+                                            String label = br.readLine();
+                                            String color = br.readLine();
+                                            if (AllInOneV2.getHLDB().hasUser(line))
+                                                AllInOneV2.getHLDB().deleteUser(line);
 
-                                    }
-                                } else if (line.equals("[GLOBAL_SIG]")) {
-                                    StringBuilder globalSig = new StringBuilder();
-                                    boolean isFirstLine = true;
-                                    while (!(line = br.readLine()).equals("[END_GLOBAL_SIG]")) {
-                                        if (!isFirstLine)
-                                            globalSig.append('\n');
+                                            AllInOneV2.getHLDB().addUser(line, label, NumberUtils.toInt(color));
+                                        }
+                                        break;
 
-                                        globalSig.append(line);
-                                        isFirstLine = false;
-                                    }
-                                    keys.add("customSig");
-                                    values.add(globalSig.toString());
-                                } else if (line.equals("[HIGHLIGHT_LIST]")) {
-                                    while (!(line = br.readLine()).equals("[END_HIGHLIGHT_LIST]")) {
-                                        String label = br.readLine();
-                                        String color = br.readLine();
-                                        if (AllInOneV2.getHLDB().hasUser(line))
-                                            AllInOneV2.getHLDB().deleteUser(line);
-
-                                        AllInOneV2.getHLDB().addUser(line, label, NumberUtils.toInt(color));
-                                    }
-                                } else AllInOneV2.wtl("line unhandled in restore: " + line);
+                                    default:
+                                        break;
+                                }
                             } else if (line.contains("=")) {
                                 splitLine = line.split("=", 2);
                                 keys.add(splitLine[0]);
                                 values.add(splitLine[1]);
-                            } else AllInOneV2.wtl("line unhandled in restore: " + line);
+                            }
                         }
                     }
 
@@ -352,8 +360,7 @@ public class HeaderSettings extends PreferenceActivity {
                                     editor.putInt(key, NumberUtils.toInt(val));
                             } else
                                 editor.putString(key, val);
-                        } else
-                            AllInOneV2.wtl("Key, Val pair not recognized in restore: " + key + ", " + val);
+                        }
                     }
 
                     editor.apply();
@@ -376,7 +383,6 @@ public class HeaderSettings extends PreferenceActivity {
         } else {
             // Something else is wrong. It may be one of many other states, but all we need
             //  to know is we can neither read nor write
-            Log.e("writeToLog", "error writing to log, external storage is not writable");
             Toast.makeText(this, "Restore failed. Storage is most likely not accessible.", Toast.LENGTH_SHORT).show();
         }
     }

@@ -1,4 +1,4 @@
-package com.ioabsoftware.gameraven.views;
+package com.ioabsoftware.gameraven.views.spans;
 
 import android.text.TextPaint;
 import android.text.style.BackgroundColorSpan;

@@ -27,7 +27,7 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
-import com.ioabsoftware.gameraven.views.MessageLinkSpan;
+import com.ioabsoftware.gameraven.views.spans.MessageLinkSpan;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

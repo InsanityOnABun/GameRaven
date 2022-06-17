@@ -7,7 +7,7 @@ import android.text.style.URLSpan;
 
 import com.ioabsoftware.gameraven.AllInOneV2;
 import com.ioabsoftware.gameraven.views.BaseRowData;
-import com.ioabsoftware.gameraven.views.MessageLinkSpan;
+import com.ioabsoftware.gameraven.views.spans.MessageLinkSpan;
 import com.ioabsoftware.gameraven.views.RowType;
 
 public class PMDetailRowData extends BaseRowData {
